@@ -8,10 +8,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import sparta.nbcamp.wachu.security.jwt.JwtAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         return http
@@ -21,7 +25,6 @@ class SecurityConfig {
             .headers { header -> header.frameOptions { it.disable() } }
             .authorizeHttpRequests {
                 it.requestMatchers(
-                    // 인증 대상에서 제외할 URL 설정
                     "/auth/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
@@ -30,6 +33,7 @@ class SecurityConfig {
                     .requestMatchers(PathRequest.toH2Console()).permitAll()
                     .anyRequest().authenticated()
             }
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
     }
 
