@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import org.hibernate.annotations.CreationTimestamp
-import org.springframework.data.annotation.CreatedBy
 import java.time.LocalDateTime
 
 @Entity(name = "pairing")
@@ -17,10 +16,10 @@ class Pairing(
     @Column
     val memberId: Long,
 
-    @Column
+    @Column(length = 100)
     val title: String,
 
-    @Column
+    @Column(length = 255)
     val description: String,
 
     @Column
@@ -31,10 +30,6 @@ class Pairing(
     val id: Long? = null
 
     @CreationTimestamp
-    @Column(nullable = true, updatable = false)
+    @Column(updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now()
-
-    @CreatedBy
-    @Column
-    val createdBy: Long = 0
 }
