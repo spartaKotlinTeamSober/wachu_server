@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
-import sparta.nbcamp.wachu.security.jwt.JwtTokenManager
+import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import java.nio.charset.StandardCharsets
 
 @SpringBootTest
