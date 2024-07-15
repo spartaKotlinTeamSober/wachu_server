@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import sparta.nbcamp.wachu.domain.member.entity.UserRole
+import sparta.nbcamp.wachu.domain.member.dto.UserRole
 import java.nio.charset.StandardCharsets
 import java.util.Date
 
@@ -17,11 +17,11 @@ class JwtTokenManager(
 
     ) {
 
-    fun generateToken(memberId: Long, email: String, nickname: String, userRole: UserRole): String {
+    fun generateToken(memberId: Long, userRole: UserRole): String {
 
         val claims: Claims =
             Jwts.claims()
-                .add(mapOf("memberId" to memberId, "email" to email, "nickname" to nickname, "userRole" to userRole))
+                .add(mapOf("memberId" to memberId, "userRole" to userRole))
                 .build()
 
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))

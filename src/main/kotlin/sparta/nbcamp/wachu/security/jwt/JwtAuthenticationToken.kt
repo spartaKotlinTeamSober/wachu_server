@@ -4,11 +4,10 @@ import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.web.authentication.WebAuthenticationDetails
 
 class JwtAuthenticationToken(
-    private val userPrincipal: UserPrincipal,
-    details: WebAuthenticationDetails
-): AbstractAuthenticationToken(userPrincipal.authorities) {
+    private val userPrincipal: UserPrincipal, details: WebAuthenticationDetails
+) : AbstractAuthenticationToken(userPrincipal.authorities) {
 
-    init{
+    init {
         super.setAuthenticated(true)
         super.setDetails(details)
     }
@@ -17,7 +16,5 @@ class JwtAuthenticationToken(
 
     override fun getPrincipal() = userPrincipal
 
-    override fun isAuthenticated():Boolean = true
-
-
+    override fun isAuthenticated(): Boolean = true
 }

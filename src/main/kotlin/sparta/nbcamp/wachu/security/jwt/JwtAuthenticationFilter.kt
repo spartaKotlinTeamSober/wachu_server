@@ -34,7 +34,7 @@ class JwtAuthenticationFilter(
             val memberId = it.payload.get("memberId", String::class.java).toLong()
 
             val userPrincipal =
-                UserPrincipal(memberId = memberId, nickname = nickname, userRole = setOf(userRole), email = email)
+                UserPrincipal(memberId = memberId, userRole = setOf(userRole))
             val authentication = JwtAuthenticationToken(
                 userPrincipal = userPrincipal,
                 details = WebAuthenticationDetailsSource()
