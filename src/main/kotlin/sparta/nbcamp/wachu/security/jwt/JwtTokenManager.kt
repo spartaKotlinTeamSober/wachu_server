@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import sparta.nbcamp.wachu.domain.member.dto.UserRole
+import sparta.nbcamp.wachu.domain.member.entity.UserRole
 import java.nio.charset.StandardCharsets
 import java.util.Date
 

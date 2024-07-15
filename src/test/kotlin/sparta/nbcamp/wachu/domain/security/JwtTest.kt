@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import sparta.nbcamp.wachu.domain.member.dto.UserRole
+import sparta.nbcamp.wachu.domain.member.entity.UserRole
 import sparta.nbcamp.wachu.security.jwt.JwtTokenManager
 import java.nio.charset.StandardCharsets
 
