@@ -1,4 +1,4 @@
-package sparta.nbcamp.wachu.security.jwt
+package sparta.nbcamp.wachu.infra.security.jwt
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws

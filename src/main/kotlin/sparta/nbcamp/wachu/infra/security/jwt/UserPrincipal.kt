@@ -1,4 +1,4 @@
-package sparta.nbcamp.wachu.security.jwt
+package sparta.nbcamp.wachu.infra.security.jwt
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
