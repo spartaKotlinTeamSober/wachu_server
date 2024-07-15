@@ -21,6 +21,7 @@ class PairingServiceImpl : PairingService {
         TODO()
     }
 
+    @Transactional
     override fun deletePairing(id: Long) {
         TODO()
     }
