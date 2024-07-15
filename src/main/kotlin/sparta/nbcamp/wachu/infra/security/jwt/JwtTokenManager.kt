@@ -1,4 +1,4 @@
-package sparta.nbcamp.wachu.security.jwt
+package sparta.nbcamp.wachu.infra.security.jwt
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
@@ -6,7 +6,6 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import sparta.nbcamp.wachu.domain.member.dto.UserRole
 import java.nio.charset.StandardCharsets
 import java.util.Date
 
@@ -17,11 +16,11 @@ class JwtTokenManager(
 
     ) {
 
-    fun generateToken(memberId: Long, userRole: UserRole): String {
+    fun generateToken(memberId: Long, memberRole: MemberRole): String {
 
         val claims: Claims =
             Jwts.claims()
-                .add(mapOf("memberId" to memberId, "userRole" to userRole))
+                .add(mapOf("memberId" to memberId, "userRole" to memberRole))
                 .build()
 
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))

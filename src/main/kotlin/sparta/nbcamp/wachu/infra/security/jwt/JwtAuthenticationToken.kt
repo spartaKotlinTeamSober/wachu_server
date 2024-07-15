@@ -1,4 +1,4 @@
-package sparta.nbcamp.wachu.security.jwt
+package sparta.nbcamp.wachu.infra.security.jwt
 
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.web.authentication.WebAuthenticationDetails

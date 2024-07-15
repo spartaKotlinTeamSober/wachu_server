@@ -1,4 +1,4 @@
-package sparta.nbcamp.wachu.security.jwt
+package sparta.nbcamp.wachu.infra.security.jwt
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -8,8 +8,8 @@ data class UserPrincipal(
     val authorities: Collection<GrantedAuthority>
 ) {
 
-    constructor(memberId: Long, userRole: Set<String>) : this(
+    constructor(memberId: Long, memberRole: Set<String>) : this(
         memberId,
-        userRole.map { SimpleGrantedAuthority("ROLE_$it") }
+        memberRole.map { SimpleGrantedAuthority("ROLE_$it") }
     )
 }
