@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import sparta.nbcamp.wachu.exception.dto.ErrorDto
-import kotlin.io.AccessDeniedException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
