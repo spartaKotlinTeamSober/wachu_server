@@ -26,24 +26,23 @@ class JwtAuthenticationFilter(
             throw RuntimeException("토큰이 null이거나 Bearer로 시작하지 않음")
         }
 
-        if (pureToken != null) {
-            jwtTokenManager.validateToken(pureToken).onSuccess {
+        jwtTokenManager.validateToken(pureToken).onSuccess {
 
-                val email = it.payload.subject
-                val nickname = it.payload.get("nickname", String::class.java)
-                val userRole = it.payload.get("userRole", String::class.java)
+            val email = it.payload.subject
+            val nickname = it.payload.get("nickname", String::class.java)
+            val userRole = it.payload.get("userRole", String::class.java)
 
-                val userPrincipal = UserPrincipal(nickname = nickname, userRole = setOf(userRole), email = email)
-                val authentication = JwtAuthenticationToken(
-                    userPrincipal = userPrincipal,
-                    details = WebAuthenticationDetailsSource()
-                        .buildDetails(request)
-                )
-                SecurityContextHolder.getContext().authentication = authentication
-            }.onFailure {
-                logger.debug("Token validation failed", it)
-            }
+            val userPrincipal = UserPrincipal(nickname = nickname, userRole = setOf(userRole), email = email)
+            val authentication = JwtAuthenticationToken(
+                userPrincipal = userPrincipal,
+                details = WebAuthenticationDetailsSource()
+                    .buildDetails(request)
+            )
+            SecurityContextHolder.getContext().authentication = authentication
+        }.onFailure {
+            logger.debug("Token validation failed", it)
         }
+
         filterChain.doFilter(request, response)
     }
 }
