@@ -18,7 +18,7 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        var pureToken: String? = null
+        val pureToken: String?
 
         if (request.getHeader(AUTHORIZATION) != null && request.getHeader(AUTHORIZATION).startsWith("Bearer ")) {
             pureToken = request.getHeader("Authorization").substring(7)
