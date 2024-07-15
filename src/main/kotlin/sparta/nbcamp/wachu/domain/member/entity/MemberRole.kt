@@ -1,5 +1,5 @@
 package sparta.nbcamp.wachu.domain.member.entity
 
-enum class UserRole {
+enum class MemberRole {
     MEMBER, ADMIN
 }

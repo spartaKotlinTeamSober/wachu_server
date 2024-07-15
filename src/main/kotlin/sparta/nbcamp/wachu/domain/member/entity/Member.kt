@@ -27,7 +27,7 @@ class Member(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    val userRole: UserRole = UserRole.MEMBER,
+    val memberRole: MemberRole = MemberRole.MEMBER,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
