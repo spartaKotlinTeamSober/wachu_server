@@ -29,17 +29,13 @@ class JwtTest {
         val `토큰 값` =
             jwtTokenManager.generateToken(
                 memberId = 1,
-                email = "test@gmail.com",
-                nickname = "홍길동",
                 userRole = UserRole.MEMBER
             )
 
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
 
         val `토큰 꺼내기` = Jwts.parser().verifyWith(key).build().parseSignedClaims(`토큰 값`)
-        `토큰 꺼내기`.payload.get("email", String::class.java) shouldBe "test@gmail.com"
         `토큰 꺼내기`.payload.get("memberId") shouldBe 1
-        `토큰 꺼내기`.payload.get("nickname", String::class.java) shouldBe "홍길동"
         `토큰 꺼내기`.payload.get("userRole", String::class.java) shouldBe "MEMBER"
     }
 
@@ -49,8 +45,6 @@ class JwtTest {
         val `토큰 값` =
             jwtTokenManager.generateToken(
                 memberId = 2,
-                email = "test2@gmail.com",
-                nickname = "이순신",
                 userRole = UserRole.ADMIN
             )
 
