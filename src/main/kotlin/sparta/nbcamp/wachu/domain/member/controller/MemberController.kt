@@ -12,12 +12,12 @@ class MemberController(
     private val memberService: MemberService
 ) {
 
-    @PostMapping("/sign-up")
+    @PostMapping("/auth/sign-up")
     fun signUp(@RequestBody request: SignUpRequest) {
         return memberService.signup(request)
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     fun login(@RequestBody request: LoginRequest) {
         return memberService.login(request)
     }
