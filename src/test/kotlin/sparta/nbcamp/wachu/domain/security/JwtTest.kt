@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import sparta.nbcamp.wachu.security.jwt.JwtTokenManager
 import java.nio.charset.StandardCharsets
 
@@ -28,14 +29,14 @@ class JwtTest {
         val `토큰 값` =
             jwtTokenManager.generateToken(
                 memberId = 1,
-                userRole = UserRole.MEMBER
+                memberRole = MemberRole.MEMBER
             )
 
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
 
         val `토큰 꺼내기` = Jwts.parser().verifyWith(key).build().parseSignedClaims(`토큰 값`)
         `토큰 꺼내기`.payload.get("memberId") shouldBe 1
-        `토큰 꺼내기`.payload.get("userRole", String::class.java) shouldBe "MEMBER"
+        `토큰 꺼내기`.payload.get("memberRole", String::class.java) shouldBe "MEMBER"
     }
 
     @Test
@@ -44,7 +45,7 @@ class JwtTest {
         val `토큰 값` =
             jwtTokenManager.generateToken(
                 memberId = 2,
-                userRole = UserRole.ADMIN
+                memberRole = MemberRole.ADMIN
             )
 
         val `검증된 토큰` = jwtTokenManager.validateToken(`토큰 값`)

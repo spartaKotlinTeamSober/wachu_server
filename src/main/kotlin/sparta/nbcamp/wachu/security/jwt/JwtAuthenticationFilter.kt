@@ -14,9 +14,7 @@ class JwtAuthenticationFilter(
     private val jwtTokenManager: JwtTokenManager,
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        filterChain: FilterChain
+        request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain
     ) {
         val pureToken: String?
 
@@ -26,24 +24,21 @@ class JwtAuthenticationFilter(
             throw RuntimeException("토큰이 null이거나 Bearer로 시작하지 않음")
         }
 
+
         jwtTokenManager.validateToken(pureToken).onSuccess {
 
-            val email = it.payload.subject
-            val nickname = it.payload.get("nickname", String::class.java)
-            val userRole = it.payload.get("userRole", String::class.java)
+            val memberRole = it.payload.get("memberRole", String::class.java)
             val memberId = it.payload.get("memberId", String::class.java).toLong()
 
-            val userPrincipal =
-                UserPrincipal(memberId = memberId, userRole = setOf(userRole))
+            val userPrincipal = UserPrincipal(memberId = memberId, memberRole = setOf(memberRole))
             val authentication = JwtAuthenticationToken(
-                userPrincipal = userPrincipal,
-                details = WebAuthenticationDetailsSource()
-                    .buildDetails(request)
+                userPrincipal = userPrincipal, details = WebAuthenticationDetailsSource().buildDetails(request)
             )
             SecurityContextHolder.getContext().authentication = authentication
         }.onFailure {
             logger.debug("Token validation failed", it)
         }
+
 
         filterChain.doFilter(request, response)
     }
