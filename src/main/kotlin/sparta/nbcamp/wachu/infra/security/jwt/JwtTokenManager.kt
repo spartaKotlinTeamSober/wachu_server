@@ -21,7 +21,7 @@ class JwtTokenManager(
 
         val claims: Claims =
             Jwts.claims()
-                .add(mapOf("memberId" to memberId, "userRole" to memberRole))
+                .add(mapOf("memberId" to memberId, "memberRole" to memberRole))
                 .build()
 
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))

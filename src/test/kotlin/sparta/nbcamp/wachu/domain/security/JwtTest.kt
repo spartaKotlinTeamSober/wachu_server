@@ -52,11 +52,4 @@ class JwtTest {
 
         `검증된 토큰`.isSuccess shouldBe true
     }
-
-    @Test
-    fun `1`() {
-        val a = 1
-        val b = 2
-        a + b shouldBe 3
-    }
 }
