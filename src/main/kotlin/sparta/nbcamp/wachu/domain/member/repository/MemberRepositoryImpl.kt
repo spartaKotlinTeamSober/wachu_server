@@ -1,3 +1,6 @@
 package sparta.nbcamp.wachu.domain.member.repository
 
-interface MemberRepositoryImpl : MemberJpaRepository
+import org.springframework.stereotype.Repository
+
+@Repository
+interface MemberRepositoryImpl : MemberRepository
