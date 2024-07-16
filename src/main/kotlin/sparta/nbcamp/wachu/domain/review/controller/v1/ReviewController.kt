@@ -22,9 +22,9 @@ class ReviewController(
         TODO()
     }
 
-    @GetMapping("/{review_id}")
+    @GetMapping("/{reviewId}")
     fun getReview(
-        @PathVariable id: Long,
+        @PathVariable reviewId: Long,
     ): ResponseEntity<ReviewResponse> {
         TODO()
     }
@@ -36,9 +36,9 @@ class ReviewController(
         TODO()
     }
 
-    @DeleteMapping("/{review_id}")
+    @DeleteMapping("/{reviewId}")
     fun deleteReview(
-        @PathVariable id: Long,
+        @PathVariable reviewId: Long,
     ) {
         TODO()
     }
