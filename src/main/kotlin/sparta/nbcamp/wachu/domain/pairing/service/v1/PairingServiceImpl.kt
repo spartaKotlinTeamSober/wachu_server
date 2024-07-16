@@ -11,7 +11,7 @@ class PairingServiceImpl : PairingService {
         TODO()
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     override fun getPairing(id: Long): PairingResponse {
         TODO()
     }
@@ -21,7 +21,6 @@ class PairingServiceImpl : PairingService {
         TODO()
     }
 
-    @Transactional
     override fun deletePairing(id: Long) {
         TODO()
     }
