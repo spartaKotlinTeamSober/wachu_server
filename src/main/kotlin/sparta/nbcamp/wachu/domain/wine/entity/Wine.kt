@@ -31,7 +31,7 @@ class Wine(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    val type: Type = Type.UNDEFINED,
+    val wineType: WineType = WineType.UNDEFINED,
 
     @Column(name = "aroma")
     val aroma: String,

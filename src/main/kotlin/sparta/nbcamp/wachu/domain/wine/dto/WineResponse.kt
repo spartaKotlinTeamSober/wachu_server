@@ -1,7 +1,7 @@
 package sparta.nbcamp.wachu.domain.wine.dto
 
-import sparta.nbcamp.wachu.domain.wine.entity.Type
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
+import sparta.nbcamp.wachu.domain.wine.entity.WineType
 
 data class WineResponse(
 
@@ -10,7 +10,7 @@ data class WineResponse(
     val acidity: Int,
     val body: Int,
     val tannin: Int,
-    val type: Type,
+    val wineType: WineType,
     val aroma: String,
     val price: Int?,
     val kind: String?,
@@ -27,7 +27,7 @@ data class WineResponse(
                 acidity = entity.acidity,
                 body = entity.body,
                 tannin = entity.tannin,
-                type = entity.type,
+                wineType = entity.wineType,
                 aroma = entity.aroma,
                 price = entity.price,
                 kind = entity.kind,
