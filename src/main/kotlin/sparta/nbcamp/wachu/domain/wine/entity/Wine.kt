@@ -2,16 +2,19 @@ package sparta.nbcamp.wachu.domain.wine.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Lob
 import jakarta.persistence.Table
 
 @Entity
 @Table(name = "wine")
 class Wine(
 
-    @Column(name = "name")
+    @Column(name = "name", length = 100, unique = true)
     val name: String,
 
     @Column(name = "sweetness")
@@ -26,8 +29,9 @@ class Wine(
     @Column(name = "tannin")
     val tannin: Int,
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    val type: String,
+    val type: Type = Type.UNDEFINED,
 
     @Column(name = "aroma")
     val aroma: String,
@@ -35,20 +39,21 @@ class Wine(
     @Column(name = "price")
     var price: Int?,
 
-    @Column(name = "kind")
+    @Column(name = "kind", length = 50)
     val kind: String?,
 
-    @Column(name = "style")
+    @Column(name = "style", length = 50)
     val style: String?,
 
-    @Column(name = "country")
+    @Column(name = "country", length = 50)
     val country: String?,
 
-    @Column(name = "region")
+    @Column(name = "region", length = 50)
     val region: String?,
 
+    @Lob
     @Column(name = "embedding")
-    val embedding: String?, // 임시로 String 타입 명시
+    val embedding: String?,
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
