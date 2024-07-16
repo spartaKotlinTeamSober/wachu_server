@@ -42,7 +42,12 @@ class WineController(
 
     @GetMapping("/promotion")
     fun getPopularWineList(
-        @PageableDefault(page = 0, size = 5, sort = ["미정?"], direction = Sort.Direction.DESC) pageable: Pageable
+        @PageableDefault(
+            page = 0,
+            size = 5,
+            sort = ["미정?"],
+            direction = Sort.Direction.DESC
+        ) pageable: Pageable //TODO() sort가 필요한가?
     ): ResponseEntity<List<WineResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(wineService.getPopularWineList(pageable = pageable))
     }

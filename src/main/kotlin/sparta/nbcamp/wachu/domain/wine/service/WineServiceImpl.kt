@@ -9,6 +9,7 @@ import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.repository.WineJpaRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
+import sparta.nbcamp.wachu.exception.ModelNotFoundException
 
 @Service
 class WineServiceImpl @Autowired constructor(
@@ -18,12 +19,13 @@ class WineServiceImpl @Autowired constructor(
     override fun getWineList(query: String?, pageable: Pageable): List<WineResponse> {
         val wines: Page<Wine>
         if (query.isNullOrEmpty()) wines = wineRepository.findAll(pageable)
-        else wines = wineRepository.findByNameContaining(query, pageable)
+        else wines = wineRepository.searchWines(query, pageable)
         return wines.map { WineResponse.from(it) }.toList()
     }
 
     override fun getWineById(wineId: Long): WineResponse {
-        TODO("Not yet implemented")
+        val wine = wineRepository.findByIdOrNull(wineId) ?: throw ModelNotFoundException("wineRepository", id = wineId)
+        return WineResponse.from(wine)
     }
 
     override fun compareWine(wineIds: List<Long>): List<WineResponse> {
@@ -42,7 +44,7 @@ class WineServiceImpl @Autowired constructor(
 
         wineJpaRepository.save(
             Wine(
-                name = "테스트용 이름",
+                name = request.name,
                 sweetness = request.sweetness,
                 acidity = request.acidity,
                 aroma = request.aroma,
