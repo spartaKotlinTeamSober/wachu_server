@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.service.WineService
 
@@ -38,10 +40,11 @@ class WineController(
     fun getPopularWineList(
         @PageableDefault(page = 0, size = 5, sort = ["미정?"], direction = Sort.Direction.DESC) pageable: Pageable
     ): ResponseEntity<List<WineResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(wineService.getPopularWineList(pageable))
+        return ResponseEntity.status(HttpStatus.OK).body(wineService.getPopularWineList(pageable = pageable))
     }
 
     @GetMapping("/recommend")
-    fun recommendWine() {
+    fun recommendWine(@RequestBody request: RecommendWineRequest): ResponseEntity<List<WineResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(wineService.recommendWine(request = request))
     }
 }
