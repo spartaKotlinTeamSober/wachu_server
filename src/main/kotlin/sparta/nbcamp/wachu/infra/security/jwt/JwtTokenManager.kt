@@ -21,12 +21,12 @@ class JwtTokenManager(
 
         val claims: Claims =
             Jwts.claims()
-                .add(mapOf("memberId" to memberId, "memberRole" to memberRole))
+                .add(mapOf("memberRole" to memberRole))
                 .build()
 
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
 
-        return Jwts.builder().claims(claims).issuer(issuer)
+        return Jwts.builder().subject(memberId.toString()).claims(claims).issuer(issuer)
             .expiration(Date(System.currentTimeMillis() + 3600 * 1000)).signWith(key).compact()
     }
 
