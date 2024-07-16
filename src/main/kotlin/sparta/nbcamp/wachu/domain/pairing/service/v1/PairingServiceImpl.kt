@@ -6,6 +6,8 @@ import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingResponse
 import sparta.nbcamp.wachu.domain.pairing.repository.v1.PairingRepository
+import sparta.nbcamp.wachu.exception.AccessDeniedException
+import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 @Service
@@ -21,24 +23,22 @@ class PairingServiceImpl(
     @Transactional(readOnly = true)
     override fun getPairing(id: Long): PairingResponse {
         val pairing = pairingRepository.findById(id)
-            ?: throw IllegalArgumentException("Pairing not found")
+            ?: throw ModelNotFoundException("Pairing", id)
         return PairingResponse.from(pairing)
     }
 
     @Transactional
     override fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest): PairingResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
-            ?: throw IllegalArgumentException("Member not found")
-        val pairing = PairingRequest.toPairing(member.id, pairingRequest)
+            ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
+        val pairing = PairingRequest.toEntity(member.id, pairingRequest)
         return PairingResponse.from(pairingRepository.save(pairing))
     }
 
     override fun deletePairing(userPrincipal: UserPrincipal, id: Long) {
         val pairing = pairingRepository.findById(id)
-            ?: throw IllegalArgumentException("Pairing not found")
-        if (pairing.memberId != userPrincipal.memberId) {
-            throw IllegalArgumentException("not your pairing")
-        }
+            ?: throw ModelNotFoundException("Pairing", id)
+        check(pairing.memberId == userPrincipal.memberId) { AccessDeniedException("not your pairing") }
         pairingRepository.delete(pairing)
     }
 }
