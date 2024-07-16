@@ -32,4 +32,8 @@ class Pairing(
     @CreationTimestamp
     @Column(updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now()
+
+    fun hasPermission(memberId: Long, memberRole: String): Boolean {
+        return this.memberId == memberId || memberRole == "ROLE_ADMIN"
+    }
 }
