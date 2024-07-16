@@ -6,7 +6,6 @@ import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingResponse
 import sparta.nbcamp.wachu.domain.pairing.repository.v1.PairingRepository
-import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
@@ -38,7 +37,7 @@ class PairingServiceImpl(
     override fun deletePairing(userPrincipal: UserPrincipal, id: Long) {
         val pairing = pairingRepository.findById(id)
             ?: throw ModelNotFoundException("Pairing", id)
-        check(pairing.memberId == userPrincipal.memberId) { AccessDeniedException("not your pairing") }
+        pairing.hasPermission(userPrincipal.memberId, userPrincipal.role)
         pairingRepository.delete(pairing)
     }
 }
