@@ -22,9 +22,9 @@ class PairingController(
         TODO()
     }
 
-    @GetMapping("/{pairing_id}")
+    @GetMapping("/{pairingId}")
     fun getPairing(
-        @PathVariable id: Long
+        @PathVariable pairingId: Long
     ): ResponseEntity<PairingResponse> {
         TODO()
     }
@@ -36,9 +36,9 @@ class PairingController(
         TODO()
     }
 
-    @DeleteMapping("/{pairing_id}")
+    @DeleteMapping("/{pairingId}")
     fun deletePairing(
-        @PathVariable id: Long
+        @PathVariable pairingId: Long
     ) {
         TODO()
     }
