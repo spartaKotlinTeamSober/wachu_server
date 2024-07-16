@@ -8,13 +8,15 @@ data class SignUpRequest(
     val password: String,
     val nickname: String,
     val confirmPassword: String,
-)
-
-fun SignUpRequest.toEntity(passwordEncoder: PasswordEncoder): Member {
-    return Member(
-        email = this.email,
-        password = passwordEncoder.encode(this.password),
-        nickname = this.nickname,
-        profileImageUrl = null,
-    )
+) {
+    companion object {
+        fun toEntity(request: SignUpRequest, passwordEncoder: PasswordEncoder): Member {
+            return Member(
+                email = request.email,
+                password = passwordEncoder.encode(request.password),
+                nickname = request.nickname,
+                profileImageUrl = null,
+            )
+        }
+    }
 }

@@ -7,9 +7,7 @@ import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
-import sparta.nbcamp.wachu.domain.member.dto.toEntity
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
-import sparta.nbcamp.wachu.domain.member.entity.toSignUpResponse
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 
@@ -21,12 +19,13 @@ class MemberServiceImpl @Autowired constructor(
 ) : MemberService {
 
     override fun signup(request: SignUpRequest): SignUpResponse {
-        check(!memberRepository.existsByEmail(request.email)) { "이미 존재하는 이메일입니다." }
-        check(request.password == request.confirmPassword) { "처음에 설정한 비밀번호와 다릅니다." }
-        check(!memberRepository.existsByNickname(request.nickname)) { "이미 존재하는 닉네임입니다." }
+        check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
+        check(request.password == request.confirmPassword) { "처음에 설정한 비밀번호와 다름" }
+        check(!memberRepository.existsByNickname(request.nickname)) { "이미 존재하는 닉네임" }
 
-        val member = memberRepository.addMember(request.toEntity(passwordEncoder))
-        return member.toSignUpResponse()
+        val member = SignUpRequest.toEntity(request, passwordEncoder)
+        memberRepository.addMember(member)
+        return SignUpResponse.from(member)
     }
 
     override fun login(request: LoginRequest): TokenResponse {

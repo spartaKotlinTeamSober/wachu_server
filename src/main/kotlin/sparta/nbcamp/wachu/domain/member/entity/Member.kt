@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 
 @Entity
 @Table(name = "member")
@@ -34,11 +33,3 @@ class Member(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0
 )
-
-fun Member.toSignUpResponse(): SignUpResponse {
-    return SignUpResponse(
-        id = this.id,
-        email = this.email,
-        nickname = this.nickname
-    )
-}
