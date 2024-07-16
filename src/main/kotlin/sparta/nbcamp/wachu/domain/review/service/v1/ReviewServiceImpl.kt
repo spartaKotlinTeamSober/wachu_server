@@ -11,7 +11,7 @@ class ReviewServiceImpl : ReviewService {
         TODO()
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     override fun getReview(id: Long): ReviewResponse {
         TODO()
     }
@@ -21,7 +21,6 @@ class ReviewServiceImpl : ReviewService {
         TODO()
     }
 
-    @Transactional
     override fun deleteReview(id: Long) {
         TODO()
     }
