@@ -12,4 +12,6 @@ data class UserPrincipal(
         memberId,
         memberRole.map { SimpleGrantedAuthority("ROLE_$it") }
     )
+
+    val role: String = authorities.first().authority ?: "ROLE_UNKNOWN"
 }
