@@ -23,8 +23,10 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
 }
 
+val springAiVersion = "1.0.0-M1"
 val kotestVersion = "5.8.1"
 
 dependencies {
@@ -33,6 +35,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.springframework.ai:spring-ai-openai-spring-boot-starter:${springAiVersion}")
 
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
