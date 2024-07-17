@@ -29,7 +29,7 @@ class JwtAuthenticationFilter(
             jwtTokenManager.validateToken(pureToken).onSuccess {
 
                 val memberRole = it.payload.get("memberRole", String::class.java)
-                val memberId = it.payload.get("memberId", String::class.java).toLong()
+                val memberId: Long = it.payload.subject.toLong()
 
                 val userPrincipal = UserPrincipal(memberId = memberId, memberRole = setOf(memberRole))
                 val authentication = JwtAuthenticationToken(

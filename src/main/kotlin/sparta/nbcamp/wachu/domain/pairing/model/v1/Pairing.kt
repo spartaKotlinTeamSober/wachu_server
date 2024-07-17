@@ -27,9 +27,13 @@ class Pairing(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    var id: Long? = null
 
     @CreationTimestamp
     @Column(updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now()
+
+    fun hasPermission(memberId: Long, role: String): Boolean {
+        return this.memberId == memberId || role == "ROLE_ADMIN"
+    }
 }

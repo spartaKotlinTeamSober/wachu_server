@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.domain.member.repository
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import sparta.nbcamp.wachu.domain.member.entity.Member
 
@@ -21,5 +22,9 @@ class MemberRepositoryImpl(
 
     override fun addMember(member: Member): Member {
         return memberJpaRepository.save(member)
+    }
+
+    override fun findById(id: Long): Member? {
+        return memberJpaRepository.findByIdOrNull(id)
     }
 }
