@@ -1,9 +1,7 @@
 package sparta.nbcamp.wachu.domain.wine
 
 import io.kotest.matchers.shouldBe
-import jakarta.persistence.EntityManager
-import jakarta.persistence.PersistenceContext
-import org.junit.jupiter.api.AfterEach
+import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,6 +13,7 @@ import sparta.nbcamp.wachu.domain.wine.repository.WineJpaRepository
 import sparta.nbcamp.wachu.domain.wine.service.WineService
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional
 @SpringBootTest
 @ActiveProfiles("test")
 class WineDBTest {
@@ -24,14 +23,6 @@ class WineDBTest {
 
     @Autowired
     private lateinit var wineJpaRepository: WineJpaRepository
-
-    @PersistenceContext
-    private lateinit var entityManager: EntityManager
-
-    @AfterEach
-    fun deleteDB() {
-        wineJpaRepository.deleteAll()
-    }
 
     @Test
     fun `정렬이 잘 되는지 테스트 하는 함수`() {
