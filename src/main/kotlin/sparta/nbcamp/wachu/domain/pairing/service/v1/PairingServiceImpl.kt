@@ -38,8 +38,12 @@ class PairingServiceImpl(
     override fun deletePairing(userPrincipal: UserPrincipal, id: Long) {
         val pairing = pairingRepository.findById(id)
             ?: throw ModelNotFoundException("Pairing", id)
-        check(pairing.hasPermission(userPrincipal.memberId, userPrincipal.role))
-        { AccessDeniedException("not your pairing") }
+        check(
+            pairing.hasPermission(
+                userPrincipal.memberId,
+                userPrincipal.role
+            )
+        ) { AccessDeniedException("not your pairing") }
         pairingRepository.delete(pairing)
     }
 }
