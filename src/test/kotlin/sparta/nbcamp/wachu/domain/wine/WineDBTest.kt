@@ -3,18 +3,18 @@ package sparta.nbcamp.wachu.domain.wine
 import io.kotest.matchers.shouldBe
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
-import jakarta.transaction.Transactional
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.repository.WineJpaRepository
 import sparta.nbcamp.wachu.domain.wine.service.WineService
 
-@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest
 @ActiveProfiles("test")
 class WineDBTest {
@@ -31,7 +31,6 @@ class WineDBTest {
     @AfterEach
     fun deleteDB() {
         wineJpaRepository.deleteAll()
-        entityManager.createNativeQuery("ALTER TABLE wine AUTO_INCREMENT = 1").executeUpdate()
     }
 
     @Test
