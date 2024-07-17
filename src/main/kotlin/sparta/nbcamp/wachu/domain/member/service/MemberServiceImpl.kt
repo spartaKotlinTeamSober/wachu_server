@@ -38,7 +38,7 @@ class MemberServiceImpl @Autowired constructor(
             )
         ) { "비밀번호가 맞지 않음" }
         return TokenResponse(
-            accessToken = jwtTokenManager.generateToken(memberId = loginMember.id, memberRole = MemberRole.MEMBER),
+            accessToken = jwtTokenManager.generateToken(memberId = loginMember.id!!, memberRole = MemberRole.MEMBER),
             refreshToken = null
         )
     }

@@ -10,7 +10,7 @@ data class SignUpResponse(
     companion object {
         fun from(entity: Member): SignUpResponse {
             return SignUpResponse(
-                id = entity.id,
+                id = entity.id!!,
                 email = entity.email,
                 nickname = entity.nickname
             )
