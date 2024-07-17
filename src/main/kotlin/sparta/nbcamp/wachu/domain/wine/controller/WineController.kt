@@ -45,7 +45,6 @@ class WineController(
 
     @GetMapping("/promotion")
     fun getPopularWineList(
-        @RequestParam(value = "query", defaultValue = "") query: String,
         @RequestParam(value = "page", defaultValue = "0") page: Int,
         @RequestParam(value = "size", defaultValue = "10") size: Int,
         @RequestParam(value = "sort_by", defaultValue = "createdAt") sortBy: String,
@@ -53,7 +52,6 @@ class WineController(
     ): ResponseEntity<List<WineResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(
             wineService.getPopularWineList(
-                query = query,
                 page = page,
                 size = size,
                 sortBy = sortBy,

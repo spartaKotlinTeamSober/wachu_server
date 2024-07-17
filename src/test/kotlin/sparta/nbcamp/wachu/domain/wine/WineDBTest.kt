@@ -1,6 +1,10 @@
 package sparta.nbcamp.wachu.domain.wine
 
 import io.kotest.matchers.shouldBe
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
+import jakarta.transaction.Transactional
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -10,15 +14,25 @@ import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.repository.WineJpaRepository
 import sparta.nbcamp.wachu.domain.wine.service.WineService
 
+@Transactional
 @SpringBootTest
 @ActiveProfiles("test")
-class WineServiceTest {
+class WineDBTest {
 
     @Autowired
     private lateinit var wineService: WineService
 
     @Autowired
-    private lateinit var wineJpaRepository: WineJpaRepository // wineRepository 에서 참조하는식으로 구현하지 않은 이유는 테스트 코드에서만 사용되기때문에 애매해서 wineJpaRepository 를 사용하였음
+    private lateinit var wineJpaRepository: WineJpaRepository
+
+    @PersistenceContext
+    private lateinit var entityManager: EntityManager
+
+    @AfterEach
+    fun deleteDB() {
+        wineJpaRepository.deleteAll()
+        entityManager.createNativeQuery("ALTER TABLE wine AUTO_INCREMENT = 1").executeUpdate()
+    }
 
     @Test
     fun `정렬이 잘 되는지 테스트 하는 함수`() {

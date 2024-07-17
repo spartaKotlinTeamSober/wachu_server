@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
+import sparta.nbcamp.wachu.domain.wine.repository.WineQueryDslRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 
 @Service
 class WineServiceImpl @Autowired constructor(
     private val wineRepository: WineRepository,
+    private val wineQueryDslRepository: WineQueryDslRepository
 ) : WineService {
     override fun getWineList(
         query: String,
@@ -24,7 +26,7 @@ class WineServiceImpl @Autowired constructor(
         direction: String
     ): List<WineResponse> {
         val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy)
-        val wines: Page<Wine> = wineRepository.searchWines(pageable = pageable, query = query)
+        val wines: Page<Wine> = wineQueryDslRepository.searchWines(pageable = pageable, query = query)
         return wines.map { WineResponse.from(it) }.toList()
     }
 
@@ -44,7 +46,6 @@ class WineServiceImpl @Autowired constructor(
     }
 
     override fun getPopularWineList(
-        query: String,
         page: Int,
         size: Int,
         sortBy: String,
