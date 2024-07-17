@@ -34,4 +34,8 @@ class Review(
     @CreationTimestamp
     @Column(updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now()
+
+    fun hasPermission(memberId: Long, role: String): Boolean {
+        return this.memberId == memberId || role == "ROLE_ADMIN"
+    }
 }
