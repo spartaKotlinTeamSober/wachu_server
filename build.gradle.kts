@@ -26,6 +26,7 @@ repositories {
 }
 
 val kotestVersion = "5.8.1"
+val mockkVersion = "1.13.8"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -48,9 +49,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
 
-    // Mockito
-    testImplementation("org.mockito:mockito-core")
-    testImplementation("org.mockito:mockito-junit-jupiter")
+    // MockK
+    testImplementation("io.mockk:mockk:$mockkVersion")
 
     // Kotest
     testImplementation("io.kotest:kotest-runner-junit5:${kotestVersion}")
