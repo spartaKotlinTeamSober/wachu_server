@@ -24,10 +24,17 @@ class WineController(
 
     @GetMapping()
     fun getWineList(
-        @RequestParam(value = "query", required = false) query: String?,
-        @PageableDefault(size = 10, sort = ["name"]) pageable: Pageable
+        @RequestParam(value = "query", defaultValue = "") query: String,
+        @RequestParam("page", defaultValue = "0") page: Int,
+        @RequestParam("size", defaultValue = "10") size: Int,
+        @RequestParam("sort_by", defaultValue = "id") sortBy: String,
+        @RequestParam("sort_direction", defaultValue = "desc") direction: String,
     ): ResponseEntity<List<WineResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(wineService.getWineList(query = query, pageable = pageable))
+        return ResponseEntity.status(HttpStatus.OK).body(
+            wineService.getWineList(
+                query = query, page = page, size = size, sortBy = sortBy, direction = direction
+            )
+        )
     }
 
     @GetMapping("/{wineId}")

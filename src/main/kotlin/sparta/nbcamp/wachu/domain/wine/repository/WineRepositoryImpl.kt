@@ -36,9 +36,11 @@ class WineRepositoryImpl(
     override fun searchWines(query: String, pageable: Pageable): Page<Wine> {
         val whereClause = BooleanBuilder()
 
-        if (query.isNotEmpty()) {
-            whereClause.and(wine.name.containsIgnoreCase(query))
-        }
+        whereClause.and(
+            wine.name.containsIgnoreCase(query)
+                .or(wine.country.containsIgnoreCase(query))
+                .or(wine.region.containsIgnoreCase(query))
+        )
 
         val totalCount = queryFactory.select(wine.count())
             .from(wine)
