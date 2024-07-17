@@ -36,7 +36,13 @@ class WineServiceImpl @Autowired constructor(
     }
 
     override fun compareWine(wineIds: List<Long>): List<WineResponse> {
-        TODO("Not yet implemented")
+
+        val firstWine =
+            wineRepository.findByIdOrNull(wineIds[0]) ?: throw ModelNotFoundException("wineRepository", id = wineIds[0])
+        val secondWine =
+            wineRepository.findByIdOrNull(wineIds[1]) ?: throw ModelNotFoundException("wineRepository", id = wineIds[1])
+        val wines: List<Wine> = listOf(firstWine, secondWine)
+        return wines.map { WineResponse.from(it) }
     }
 
     override fun getPopularWineList(pageable: Pageable): List<WineResponse> {
