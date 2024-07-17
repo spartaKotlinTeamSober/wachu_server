@@ -9,5 +9,4 @@ interface WineService {
     fun compareWine(wineIds: List<Long>): List<WineResponse>
     fun getPopularWineList(query: String, page: Int, size: Int, sortBy: String, direction: String): List<WineResponse>
     fun recommendWine(request: RecommendWineRequest): List<WineResponse>
-    fun postWineForTest(request: WineResponse)
 }

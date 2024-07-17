@@ -9,14 +9,12 @@ import org.springframework.stereotype.Service
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
-import sparta.nbcamp.wachu.domain.wine.repository.WineJpaRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 
 @Service
 class WineServiceImpl @Autowired constructor(
     private val wineRepository: WineRepository,
-    private val wineJpaRepository: WineJpaRepository // TODO() 해당 라인은 테스트 후에 필히 삭제할것
 ) : WineService {
     override fun getWineList(
         query: String,
@@ -64,27 +62,6 @@ class WineServiceImpl @Autowired constructor(
 
     override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {
         TODO("Not yet implemented")
-    }
-
-    override fun postWineForTest(request: WineResponse) { //TODO() 해당 함수도 테스트 후에 필히 삭제할것
-
-        wineJpaRepository.save(
-            Wine(
-                name = request.name,
-                sweetness = request.sweetness,
-                acidity = request.acidity,
-                aroma = request.aroma,
-                body = request.body,
-                tannin = request.tannin,
-                id = request.id,
-                country = request.country,
-                embedding = null,
-                kind = request.kind,
-                price = request.price,
-                region = request.region,
-                style = request.style
-            )
-        )
     }
 
     private fun getDirection(sort: String) = when (sort) {
