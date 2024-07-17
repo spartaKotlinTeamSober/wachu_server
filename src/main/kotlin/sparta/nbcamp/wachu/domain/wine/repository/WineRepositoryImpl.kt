@@ -18,7 +18,7 @@ import sparta.nbcamp.wachu.infra.querydsl.QueryDslSupport
 @Repository
 class WineRepositoryImpl(
     private val wineJpaRepository: WineJpaRepository,
-) : WineRepository, CustomWineRepository, QueryDslSupport() {
+) : WineRepository, QueryDslSupport() {
     private val wine = QWine.wine
 
     override fun findAll(pageable: Pageable): Page<Wine> {
