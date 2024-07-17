@@ -31,7 +31,7 @@ class PairingServiceImpl(
     override fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest): PairingResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        val pairing = PairingRequest.toEntity(member.id, pairingRequest)
+        val pairing = PairingRequest.toEntity(member.id!!, pairingRequest)
         return PairingResponse.from(pairingRepository.save(pairing))
     }
 
@@ -43,7 +43,7 @@ class PairingServiceImpl(
                 userPrincipal.memberId,
                 userPrincipal.role
             )
-        ) { AccessDeniedException("not your pairing") }
+        ) { throw AccessDeniedException("not your pairing") }
         pairingRepository.delete(pairing)
     }
 }
