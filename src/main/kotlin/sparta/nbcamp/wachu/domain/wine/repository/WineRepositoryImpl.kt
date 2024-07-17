@@ -9,6 +9,7 @@ import sparta.nbcamp.wachu.domain.wine.entity.Wine
 @Repository
 class WineRepositoryImpl(
     private val wineJpaRepository: WineJpaRepository,
+    private val wineQueryDslRepository: WineQueryDslRepository
 ) : WineRepository {
 
     override fun findAll(pageable: Pageable): Page<Wine> {
@@ -21,5 +22,9 @@ class WineRepositoryImpl(
 
     override fun findByIdOrNull(id: Long): Wine? {
         return wineJpaRepository.findByIdOrNull(id)
+    }
+
+    override fun searchWines(query: String, pageable: Pageable): Page<Wine> {
+        return wineQueryDslRepository.searchWines(query = query, pageable = pageable)
     }
 }

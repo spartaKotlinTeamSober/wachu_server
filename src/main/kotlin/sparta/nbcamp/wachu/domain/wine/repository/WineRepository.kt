@@ -10,4 +10,6 @@ interface WineRepository {
     fun findByNameContaining(query: String, pageable: Pageable): Page<Wine>
 
     fun findByIdOrNull(id: Long): Wine?
+
+    fun searchWines(query: String, pageable: Pageable): Page<Wine>
 }
