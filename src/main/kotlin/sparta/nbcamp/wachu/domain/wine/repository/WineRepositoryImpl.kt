@@ -38,7 +38,7 @@ class WineRepositoryImpl(
 
         whereClause.and(
             wine.name.containsIgnoreCase(query)
-                .or(wine.country.containsIgnoreCase(query))
+                .or(wine.country.containsIgnoreCase(query)) //혹시 몰라서 이름뿐만아니라 국가 지역 까지 포함시킴, 삭제 가능 예) 이탈리아 검색하면 이탈리아산 와인도 같이 검색되는 식
                 .or(wine.region.containsIgnoreCase(query))
         )
 

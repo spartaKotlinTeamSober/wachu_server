@@ -45,15 +45,28 @@ class WineServiceImpl @Autowired constructor(
         return wines.map { WineResponse.from(it) }
     }
 
-    override fun getPopularWineList(pageable: Pageable): List<WineResponse> {
-        TODO("Not yet implemented")
+    override fun getPopularWineList(
+        query: String,
+        page: Int,
+        size: Int,
+        sortBy: String,
+        direction: String
+    ): List<WineResponse> {
+        TODO("WinePromotion 엔티티를 만들지 않았으므로 주석처리함")
+        // val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy) // WinePromotion 엔티티를 만들지 않았으므로 주석처리함
+        // val winePromotionLIST = mutableListOf<Long>()
+        // winePromotionLIST.add(winePromotionRepository.findAll().map{it.id})
+        // val wineList: List<Wine> = wineRepository.findByIds(ids = winePromotionLIST)
+        //
+        // val wines: Page<Wine> = wineRepository.searchWinesFiltering(pageable = pageable, query = query , filter = wineList) //기존 querydsl 에 프로모션 id만 filter 링하기
+        // return wines.map { WineResponse.from(it) }.toList()
     }
 
     override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {
         TODO("Not yet implemented")
     }
 
-    override fun postWineForTest(request: WineResponse) {
+    override fun postWineForTest(request: WineResponse) { //TODO() 해당 함수도 테스트 후에 필히 삭제할것
 
         wineJpaRepository.save(
             Wine(
