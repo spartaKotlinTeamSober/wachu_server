@@ -26,7 +26,7 @@ class WineServiceTest {
         wineJpaRepository.saveAllAndFlush(DEFAULT_WINE_LIST)
 
         val wine = wineService.getWineList(
-            direction = "asc",
+            direction = "aSc",
             page = 0,
             size = 10,
             sortBy = "price",
@@ -35,7 +35,7 @@ class WineServiceTest {
         wine[0].price shouldBe 2000
 
         val wine2 = wineService.getWineList(
-            direction = "desc",
+            direction = "deSc",
             page = 0,
             size = 10,
             sortBy = "price",

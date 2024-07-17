@@ -64,7 +64,7 @@ class WineServiceImpl @Autowired constructor(
         TODO("Not yet implemented")
     }
 
-    private fun getDirection(sort: String) = when (sort) {
+    private fun getDirection(sort: String) = when (sort.lowercase()) {
         "asc" -> Sort.Direction.ASC
         else -> Sort.Direction.DESC
     }
