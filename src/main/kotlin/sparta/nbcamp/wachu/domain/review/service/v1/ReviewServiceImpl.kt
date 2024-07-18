@@ -6,6 +6,7 @@ import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewRequest
 import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewResponse
 import sparta.nbcamp.wachu.domain.review.repository.v1.ReviewRepository
+import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
@@ -42,7 +43,8 @@ class ReviewServiceImpl(
                 userPrincipal.memberId,
                 userPrincipal.role
             )
-        ) { throw IllegalArgumentException("not your review") }
+        ) { throw AccessDeniedException("not your review") }
+
         reviewRepository.delete(review)
     }
 }

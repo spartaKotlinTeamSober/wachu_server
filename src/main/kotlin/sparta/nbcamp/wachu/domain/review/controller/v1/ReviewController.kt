@@ -37,11 +37,6 @@ class ReviewController(
         @AuthenticationPrincipal userprincipal: UserPrincipal,
         @RequestBody reviewRequest: ReviewRequest,
     ): ResponseEntity<ReviewResponse> {
-
-        require(
-            reviewRequest.hasOKScore(reviewRequest.score)
-        ) { throw IllegalArgumentException("invalid score") }
-
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(reviewService.createReview(userprincipal, reviewRequest))
     }
