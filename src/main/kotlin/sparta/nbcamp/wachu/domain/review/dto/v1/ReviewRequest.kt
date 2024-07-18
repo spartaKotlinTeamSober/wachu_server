@@ -8,6 +8,18 @@ data class ReviewRequest(
     val description: String,
     val score: Double,
 ) {
+    init {
+        validate()
+    }
+
+    private fun validate() {
+        require(isScoreValid()) { "invalid score" }
+    }
+
+    fun hasOKScore(score: Double): Boolean {
+        return this.score in 0.0..5.0 && this.score % 0.5 == 0.0
+    }
+
     companion object {
         fun toEntity(memberId: Long, reviewRequest: ReviewRequest): Review {
             return Review(
@@ -18,9 +30,5 @@ data class ReviewRequest(
                 score = reviewRequest.score,
             )
         }
-    }
-
-    fun hasOKScore(score: Double): Boolean {
-        return this.score in 0.0..5.0 && this.score % 0.5 == 0.0
     }
 }
