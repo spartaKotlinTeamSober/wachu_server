@@ -1,6 +1,7 @@
 package sparta.nbcamp.wachu.domain.review.dto.v1
 
 import sparta.nbcamp.wachu.domain.review.model.v1.Review
+import java.time.LocalDateTime
 
 data class ReviewResponse(
     val id: Long,
@@ -9,7 +10,7 @@ data class ReviewResponse(
     val title: String,
     val description: String,
     val score: Double,
-    val createdAt: String,
+    val createdAt: LocalDateTime,
 ) {
     companion object {
         fun from(review: Review): ReviewResponse {
@@ -20,7 +21,7 @@ data class ReviewResponse(
                 title = review.title,
                 description = review.description,
                 score = review.score,
-                createdAt = review.createdAt.toString(),
+                createdAt = review.createdAt,
             )
         }
     }

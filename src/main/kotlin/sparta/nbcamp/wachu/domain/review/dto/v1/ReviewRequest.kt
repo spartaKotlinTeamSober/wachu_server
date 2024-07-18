@@ -16,7 +16,7 @@ data class ReviewRequest(
         require(isScoreValid()) { "invalid score" }
     }
 
-    fun hasOKScore(score: Double): Boolean {
+    private fun isScoreValid(): Boolean {
         return this.score in 0.0..5.0 && this.score % 0.5 == 0.0
     }
 
