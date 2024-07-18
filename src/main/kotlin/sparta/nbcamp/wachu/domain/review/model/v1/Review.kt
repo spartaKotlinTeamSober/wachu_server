@@ -29,7 +29,7 @@ class Review(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    var id: Long? = null
 
     @CreationTimestamp
     @Column(updatable = false)
