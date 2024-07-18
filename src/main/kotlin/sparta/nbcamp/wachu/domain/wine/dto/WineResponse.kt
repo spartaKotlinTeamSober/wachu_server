@@ -6,6 +6,7 @@ import sparta.nbcamp.wachu.domain.wine.entity.WineType
 data class WineResponse(
 
     val id: Long,
+    val name: String,
     val sweetness: Int,
     val acidity: Int,
     val body: Int,
@@ -23,6 +24,7 @@ data class WineResponse(
         fun from(entity: Wine): WineResponse {
             return WineResponse(
                 id = entity.id,
+                name = entity.name,
                 sweetness = entity.sweetness,
                 acidity = entity.acidity,
                 body = entity.body,

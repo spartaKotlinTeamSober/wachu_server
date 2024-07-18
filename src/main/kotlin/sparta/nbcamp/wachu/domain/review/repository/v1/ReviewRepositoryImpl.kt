@@ -11,4 +11,16 @@ class ReviewRepositoryImpl(
     override fun findById(id: Long): Review? {
         return reviewJpaRepository.findByIdOrNull(id)
     }
+
+    override fun findAll(): List<Review> {
+        return reviewJpaRepository.findAll()
+    }
+
+    override fun save(review: Review): Review {
+        return reviewJpaRepository.save(review)
+    }
+
+    override fun delete(review: Review) {
+        return reviewJpaRepository.delete(review)
+    }
 }

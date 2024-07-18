@@ -1,8 +1,5 @@
 package sparta.nbcamp.wachu.domain.wine.controller
 
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,8 +19,18 @@ class WineController(
 ) {
 
     @GetMapping()
-    fun getWineList(): ResponseEntity<List<WineResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(wineService.getWineList())
+    fun getWineList(
+        @RequestParam(value = "query", defaultValue = "") query: String,
+        @RequestParam(value = "page", defaultValue = "0") page: Int,
+        @RequestParam(value = "size", defaultValue = "10") size: Int,
+        @RequestParam(value = "sort_by", defaultValue = "id") sortBy: String,
+        @RequestParam(value = "sort_direction", defaultValue = "desc") direction: String,
+    ): ResponseEntity<List<WineResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            wineService.getWineList(
+                query = query, page = page, size = size, sortBy = sortBy, direction = direction
+            )
+        )
     }
 
     @GetMapping("/{wineId}")
@@ -38,9 +45,19 @@ class WineController(
 
     @GetMapping("/promotion")
     fun getPopularWineList(
-        @PageableDefault(page = 0, size = 5, sort = ["미정?"], direction = Sort.Direction.DESC) pageable: Pageable
+        @RequestParam(value = "page", defaultValue = "0") page: Int,
+        @RequestParam(value = "size", defaultValue = "10") size: Int,
+        @RequestParam(value = "sort_by", defaultValue = "createdAt") sortBy: String,
+        @RequestParam(value = "sort_direction", defaultValue = "asc") direction: String,
     ): ResponseEntity<List<WineResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(wineService.getPopularWineList(pageable = pageable))
+        return ResponseEntity.status(HttpStatus.OK).body(
+            wineService.getPopularWineList(
+                page = page,
+                size = size,
+                sortBy = sortBy,
+                direction = direction
+            )
+        )
     }
 
     @GetMapping("/recommend")
