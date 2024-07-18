@@ -79,7 +79,7 @@ class WineDBTest {
             sweetness = null,
             type = null,
         )
-        wine.size shouldBe 5
+        wine.size shouldBe 7
 
         //전체 리스트의 수는 5지만 page 의 size 를 2로 설정했으니 wine2의 size 는 2가 되어야함
         val wine2 = wineService.getWineList(
@@ -253,6 +253,23 @@ class WineDBTest {
 
     @Test
     fun `금액을 입력하면 해당 금액 이하의 와인 리스트가 나오는지 테스트 하는 함수`() {
+
+        wineJpaRepository.saveAllAndFlush(DEFAULT_WINE_LIST)
+
+        val wines = wineService.getWineList(
+            direction = "desc",
+            page = 0,
+            size = 10,
+            sortBy = "price",
+            query = "와인",
+            acidity = listOf(1, 130),
+            body = null,
+            price = 10000,
+            tannin = null,
+            sweetness = listOf(1, 1000),
+            type = null,
+        )
+        wines.size shouldBe 2
     }
 
     companion object {
