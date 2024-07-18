@@ -18,13 +18,28 @@ class WineServiceImpl @Autowired constructor(
 ) : WineService {
     override fun getWineList(
         query: String,
+        price: Int?,
+        acidity: List<Int>?,
+        body: List<Int>?,
+        sweetness: List<Int>?,
+        tannin: List<Int>?,
+        type: String?,
         page: Int,
         size: Int,
         sortBy: String,
         direction: String
     ): List<WineResponse> {
         val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy)
-        val wines: Page<Wine> = wineRepository.searchWines(pageable = pageable, query = query)
+        val wines: Page<Wine> = wineRepository.searchWines(
+            query = query,
+            price = price,
+            acidity = acidity,
+            body = body,
+            sweetness = sweetness,
+            tannin = tannin,
+            type = type,
+            pageable = pageable
+        )
         return wines.map { WineResponse.from(it) }.toList()
     }
 
