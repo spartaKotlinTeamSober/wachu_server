@@ -24,7 +24,25 @@ class WineRepositoryImpl(
         return wineJpaRepository.findByIdOrNull(id)
     }
 
-    override fun searchWines(query: String, pageable: Pageable): Page<Wine> {
-        return wineQueryDslRepository.searchWines(query = query, pageable = pageable)
+    override fun searchWines(
+        query: String,
+        price: Int?,
+        acidity: List<Int>?,
+        body: List<Int>?,
+        sweetness: List<Int>?,
+        tannin: List<Int>?,
+        type: String?,
+        pageable: Pageable
+    ): Page<Wine> {
+        return wineQueryDslRepository.searchWines(
+            query = query,
+            price = price,
+            acidity = acidity,
+            body = body,
+            sweetness = sweetness,
+            tannin = tannin,
+            type = type,
+            pageable = pageable
+        )
     }
 }

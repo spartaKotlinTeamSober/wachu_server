@@ -18,7 +18,16 @@ import sparta.nbcamp.wachu.infra.querydsl.QueryDslSupport
 class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
 
     private val wine = QWine.wine
-    override fun searchWines(query: String, pageable: Pageable): Page<Wine> {
+    override fun searchWines(
+        query: String,
+        price: Int?,
+        acidity: List<Int>?,
+        body: List<Int>?,
+        sweetness: List<Int>?,
+        tannin: List<Int>?,
+        type: String?,
+        pageable: Pageable,
+    ): Page<Wine> {
         val whereClause = BooleanBuilder()
 
         whereClause.and(
@@ -26,6 +35,17 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
                 .or(wine.country.containsIgnoreCase(query))
                 .or(wine.region.containsIgnoreCase(query))
         )
+        if (price != null) whereClause.and(wine.price.loe(price))// 입력받은 가격보다 낮게 조회 예) 54000원 입력시 54000원 이하의 와인 조회
+
+        if (acidity != null) whereClause.and(wine.acidity.between(acidity[0], acidity[1]))
+
+        if (body != null) whereClause.and(wine.body.between(body[0], body[1]))
+
+        if (sweetness != null) whereClause.and(wine.sweetness.between(sweetness[0], sweetness[1]))
+
+        if (tannin != null) whereClause.and(wine.tannin.between(tannin[0], tannin[1]))
+
+        if (!type.isNullOrBlank()) whereClause.and(wine.style.eq(type))
 
         val totalCount = queryFactory.select(wine.count())
             .from(wine)

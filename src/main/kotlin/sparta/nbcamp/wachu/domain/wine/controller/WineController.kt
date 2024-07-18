@@ -21,6 +21,13 @@ class WineController(
     @GetMapping()
     fun getWineList(
         @RequestParam(value = "query", defaultValue = "") query: String,
+        @RequestParam(value = "price") price: Int?,
+        @RequestParam(value = "acidity") acidity: List<Int>?,
+        @RequestParam(value = "body") body: List<Int>?,
+        @RequestParam(value = "sweetness") sweetness: List<Int>?,
+        @RequestParam(value = "tannin") tannin: List<Int>?,
+        @RequestParam(value = "type") type: String?,
+
         @RequestParam(value = "page", defaultValue = "0") page: Int,
         @RequestParam(value = "size", defaultValue = "10") size: Int,
         @RequestParam(value = "sort_by", defaultValue = "id") sortBy: String,
@@ -28,7 +35,12 @@ class WineController(
     ): ResponseEntity<List<WineResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(
             wineService.getWineList(
-                query = query, page = page, size = size, sortBy = sortBy, direction = direction
+                query = query, price = price,
+                acidity = acidity,
+                body = body,
+                sweetness = sweetness,
+                tannin = tannin,
+                type = type, page = page, size = size, sortBy = sortBy, direction = direction,
             )
         )
     }

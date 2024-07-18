@@ -9,6 +9,7 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
+import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineJpaRepository
 import sparta.nbcamp.wachu.domain.wine.service.WineService
 
@@ -34,7 +35,13 @@ class WineDBTest {
             page = 0,
             size = 10,
             sortBy = "price",
-            query = ""
+            query = "",
+            acidity = null,
+            body = null,
+            price = null,
+            tannin = null,
+            sweetness = null,
+            type = null,
         )
         wine[0].price shouldBe 2000
 
@@ -43,7 +50,13 @@ class WineDBTest {
             page = 0,
             size = 10,
             sortBy = "price",
-            query = ""
+            query = "",
+            acidity = null,
+            body = null,
+            price = null,
+            tannin = null,
+            sweetness = null,
+            type = null,
         )
         wine2[0].price shouldBe 77700
     }
@@ -58,7 +71,13 @@ class WineDBTest {
             page = 0,
             size = 10,
             sortBy = "price",
-            query = ""
+            query = "",
+            acidity = null,
+            body = null,
+            price = null,
+            tannin = null,
+            sweetness = null,
+            type = null,
         )
         wine.size shouldBe 5
 
@@ -68,7 +87,13 @@ class WineDBTest {
             page = 0,
             size = 2,
             sortBy = "price",
-            query = ""
+            query = "",
+            acidity = null,
+            body = null,
+            price = null,
+            tannin = null,
+            sweetness = null,
+            type = null,
         )
         wine2.size shouldBe 2
     }
@@ -83,12 +108,39 @@ class WineDBTest {
             page = 0,
             size = 10,
             sortBy = "price",
-            query = "편의점"
+            query = "편의점",
+            acidity = null,
+            body = null,
+            price = null,
+            tannin = null,
+            sweetness = null,
+            type = null,
         )
 
         wine.size shouldBe 1
         wine[0].name shouldBe "편의점에서 산 와인"
         wine[0].id shouldBe 3
+    }
+
+    @Test
+    fun `와인 종류를 넣으면 해당 종류에 해당하는 와인이 나오는지 테스트 하는 함수`() {
+
+        wineJpaRepository.saveAllAndFlush(DEFAULT_WINE_LIST)
+
+        val wines = wineService.getWineList(
+            direction = "desc",
+            page = 0,
+            size = 10,
+            sortBy = "price",
+            query = "",
+            acidity = null,
+            body = null,
+            price = null,
+            tannin = null,
+            sweetness = null,
+            type = "RED",
+        )
+        wines.size shouldBe 2
     }
 
     @Test
@@ -112,6 +164,97 @@ class WineDBTest {
         wine.price shouldBe 77700
     }
 
+    @Test
+    fun `당도에 값을 넣으면 해당 값에 해당하는 와인이 나오는지 테스트 하는 함수`() {
+
+        wineJpaRepository.saveAllAndFlush(DEFAULT_WINE_LIST)
+
+        val wines = wineService.getWineList(
+            direction = "desc",
+            page = 0,
+            size = 10,
+            sortBy = "price",
+            query = "",
+            acidity = null,
+            body = listOf(0, 999),
+            price = null,
+            tannin = null,
+            sweetness = listOf(300, 777),
+            type = null,
+        )
+        wines[0].price shouldBe 77700
+        wines[0].name shouldBe "777"
+    }
+
+    @Test
+    fun `한가지의 조건이 틀렸을때 아무것도 안나오는지 테스트 하는 함수`() {
+
+        wineJpaRepository.saveAllAndFlush(DEFAULT_WINE_LIST)
+
+        val wines = wineService.getWineList(
+            direction = "desc",
+            page = 0,
+            size = 10,
+            sortBy = "price",
+            query = "",
+            acidity = null,
+            body = listOf(700, 999),
+            price = null,
+            tannin = null,
+            sweetness = listOf(300, 777),
+            type = "UNDEFINED",
+        )
+        wines.size shouldBe 0
+    }
+
+    @Test
+    fun `당도나 price에  값을 넣고 query를 검색했을때  해당 값에 해당하는 와인이 나오는지 테스트 하는 함수`() {
+
+        wineJpaRepository.saveAllAndFlush(DEFAULT_WINE_LIST)
+
+        val wines = wineService.getWineList(
+            direction = "desc",
+            page = 0,
+            size = 10,
+            sortBy = "price",
+            query = "",
+            acidity = null,
+            body = listOf(1, 1000),
+            price = null,
+            tannin = null,
+            sweetness = listOf(1, 1000),
+            type = null,
+        )
+        wines[0].price shouldBe 77700
+        wines[0].name shouldBe "777"
+    }
+
+    @Test
+    fun `검색어와 조건을 같이 넣었을때 제대로 올바른 리스트를 반환하는지 테스트 하는 함수`() {
+
+        wineJpaRepository.saveAllAndFlush(DEFAULT_WINE_LIST)
+
+        val wines = wineService.getWineList(
+            direction = "desc",
+            page = 0,
+            size = 10,
+            sortBy = "price",
+            query = "와인",
+            acidity = listOf(1, 130),
+            body = null,
+            price = null,
+            tannin = null,
+            sweetness = listOf(1, 1000),
+            type = null,
+        )
+        println("Filtered Wines: ${wines.map { it.name }}")
+        wines.size shouldBe 3
+    }
+
+    @Test
+    fun `금액을 입력하면 해당 금액 이하의 와인 리스트가 나오는지 테스트 하는 함수`() {
+    }
+
     companion object {
 
         // 현재 테스트에서는 DEFAULT_MEMBER_LIST 를 사용하지 않지만 남겨놓음
@@ -125,7 +268,8 @@ class WineDBTest {
                 body = 3,
                 sweetness = 10,
                 tannin = 5,
-                style = "RED",
+                wineType = WineType.WHITE,
+                style = "",
                 aroma = "",
                 kind = "",
                 price = 10000,
@@ -139,7 +283,8 @@ class WineDBTest {
                 body = 300,
                 sweetness = 1000,
                 tannin = 500,
-                style = "WHITE",
+                wineType = WineType.RED,
+                style = "",
                 aroma = "",
                 kind = "",
                 price = 10000,
@@ -153,6 +298,7 @@ class WineDBTest {
                 body = 1300,
                 sweetness = 11000,
                 tannin = 1500,
+                wineType = WineType.ROSE,
                 style = "RED",
                 aroma = "",
                 kind = "",
@@ -167,6 +313,7 @@ class WineDBTest {
                 body = 132,
                 sweetness = 21000,
                 tannin = 1200,
+                wineType = WineType.SPARKLING,
                 style = "RED",
                 aroma = "",
                 kind = "",
@@ -181,12 +328,43 @@ class WineDBTest {
                 body = 777,
                 sweetness = 777,
                 tannin = 777,
-                style = "RED",
+                wineType = WineType.RED,
+                style = "",
                 aroma = "",
                 kind = "",
                 price = 77700,
                 country = "UK",
                 region = "LONDON",
+                embedding = null,
+            ),
+            Wine(
+                name = "부산 사나이 와인",
+                acidity = 10000,
+                body = 0,
+                sweetness = 0,
+                tannin = 10000,
+                wineType = WineType.FORTIFIED,
+                style = "",
+                aroma = "",
+                kind = "",
+                price = 2000,
+                country = "KOREA",
+                region = "BUSAN",
+                embedding = null,
+            ),
+            Wine(
+                name = "농심 와인",
+                acidity = 3,
+                body = 3,
+                sweetness = 2,
+                tannin = 7,
+                wineType = WineType.WHITE,
+                style = "",
+                aroma = "",
+                kind = "",
+                price = 77700,
+                country = "KOREA",
+                region = "SEOUL",
                 embedding = null,
             )
         )
