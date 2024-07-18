@@ -78,7 +78,7 @@ class PairingServiceTest {
             photo = "newTest"
         )
 
-        val testUserPrincipal = UserPrincipal(memberId = 1L, memberRole = setOf("ROLE_MEMBER"))
+        val testUserPrincipal = UserPrincipal(memberId = 1L, memberRole = setOf("MEMBER"))
         every { memberRepository.findById(any()) } returns Member(
             "test", "test", "test", "test"
         ).apply { id = testUserPrincipal.memberId }
