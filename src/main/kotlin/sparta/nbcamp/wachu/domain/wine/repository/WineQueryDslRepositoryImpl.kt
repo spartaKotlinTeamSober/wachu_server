@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import sparta.nbcamp.wachu.domain.wine.entity.QWine
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
+import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.infra.querydsl.QueryDslSupport
 
 @Repository
@@ -45,7 +46,12 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
 
         if (tannin != null) whereClause.and(wine.tannin.between(tannin[0], tannin[1]))
 
-        if (!type.isNullOrBlank()) whereClause.and(wine.style.eq(type))
+        if (!type.isNullOrBlank()) {
+            val wineTypeEnum = WineType.values().find { it.name.equals(type, ignoreCase = true) }
+            if (wineTypeEnum != null) {
+                whereClause.and(wine.wineType.eq(wineTypeEnum))
+            }
+        }
 
         val totalCount = queryFactory.select(wine.count())
             .from(wine)

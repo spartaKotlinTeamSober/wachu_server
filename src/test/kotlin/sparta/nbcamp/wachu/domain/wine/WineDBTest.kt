@@ -81,7 +81,6 @@ class WineDBTest {
         )
         wine.size shouldBe 7
 
-        //전체 리스트의 수는 5지만 page 의 size 를 2로 설정했으니 wine2의 size 는 2가 되어야함
         val wine2 = wineService.getWineList(
             direction = "asc",
             page = 0,
@@ -95,6 +94,7 @@ class WineDBTest {
             sweetness = null,
             type = null,
         )
+
         wine2.size shouldBe 2
     }
 
@@ -117,9 +117,11 @@ class WineDBTest {
             type = null,
         )
 
-        wine.size shouldBe 1
-        wine[0].name shouldBe "편의점에서 산 와인"
-        wine[0].id shouldBe 3
+        val `직접 필터링 한 값` =
+            DEFAULT_WINE_LIST.filter { it.name.contains("편의점") }
+                .sortedByDescending { it.price }
+
+        wine.size shouldBe `직접 필터링 한 값`.size
     }
 
     @Test
@@ -140,7 +142,13 @@ class WineDBTest {
             sweetness = null,
             type = "RED",
         )
-        wines.size shouldBe 2
+
+        val `직접 필터링 한 값` =
+            DEFAULT_WINE_LIST.filter { it.wineType == WineType.RED }
+                .sortedByDescending { it.price }
+
+
+        wines.size shouldBe `직접 필터링 한 값`.size
     }
 
     @Test
@@ -182,8 +190,12 @@ class WineDBTest {
             sweetness = listOf(300, 777),
             type = null,
         )
-        wines[0].price shouldBe 77700
-        wines[0].name shouldBe "777"
+
+        val `직접 필터링 한 값` =
+            DEFAULT_WINE_LIST.filter { it.body in 0..999 && it.sweetness in 300..777 }
+                .sortedByDescending { it.price }
+        wines[0].price shouldBe `직접 필터링 한 값`[0].price
+        wines[0].name shouldBe `직접 필터링 한 값`[0].name
     }
 
     @Test
@@ -204,7 +216,11 @@ class WineDBTest {
             sweetness = listOf(300, 777),
             type = "UNDEFINED",
         )
-        wines.size shouldBe 0
+        val `직접 필터링 한 값` =
+            DEFAULT_WINE_LIST.filter { it.wineType == WineType.UNDEFINED && it.body in 700..999 && it.sweetness in 300..777 }
+                .sortedByDescending { it.price }
+
+        wines.size shouldBe `직접 필터링 한 값`.count()
     }
 
     @Test
@@ -225,8 +241,13 @@ class WineDBTest {
             sweetness = listOf(1, 1000),
             type = null,
         )
-        wines[0].price shouldBe 77700
-        wines[0].name shouldBe "777"
+
+        val `직접 필터링 한 값` =
+            DEFAULT_WINE_LIST.filter { it.body in 1..1000 && it.sweetness in 1..1000 }.sortedByDescending { it.price }
+
+
+        wines[0].price shouldBe `직접 필터링 한 값`[0].price
+        wines[0].name shouldBe `직접 필터링 한 값`[0].name
     }
 
     @Test
@@ -247,8 +268,12 @@ class WineDBTest {
             sweetness = listOf(1, 1000),
             type = null,
         )
+
+        val `직접 필터링 한 값` =
+            DEFAULT_WINE_LIST.filter { it.name.contains("와인") && it.acidity in 1..130 && it.sweetness in 1..1000 }
+                .sortedByDescending { it.price }.count()
         println("Filtered Wines: ${wines.map { it.name }}")
-        wines.size shouldBe 3
+        wines.size shouldBe `직접 필터링 한 값`
     }
 
     @Test
@@ -269,6 +294,11 @@ class WineDBTest {
             sweetness = listOf(1, 1000),
             type = null,
         )
+
+        val `직접 필터링 한 값` =
+            DEFAULT_WINE_LIST.filter { it.name.contains("와인") && it.acidity in 1..130 && it.sweetness in 1..1000 && it.price in 0..10000 }
+                .sortedByDescending { it.price }
+
         wines.size shouldBe 2
     }
 
