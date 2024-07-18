@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
@@ -58,20 +59,15 @@ class WineServiceImpl @Autowired constructor(
         return wines.map { WineResponse.from(it) }
     }
 
-    override fun getPopularWineList(
+    override fun getPromotionWineList(
         page: Int,
         size: Int,
         sortBy: String,
         direction: String
-    ): List<WineResponse> {
-        TODO("WinePromotion 엔티티를 만들지 않았으므로 주석처리함")
-        // val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy) // WinePromotion 엔티티를 만들지 않았으므로 주석처리함
-        // val winePromotionLIST = mutableListOf<Long>()
-        // winePromotionLIST.add(winePromotionRepository.findAll().map{it.id})
-        // val wineList: List<Wine> = wineRepository.findByIds(ids = winePromotionLIST)
-        //
-        // val wines: Page<Wine> = wineRepository.searchWinesFiltering(pageable = pageable, query = query , filter = wineList) //기존 querydsl 에 프로모션 id만 filter 링하기
-        // return wines.map { WineResponse.from(it) }.toList()
+    ): List<PromotionWineResponse> {
+
+        val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy)
+        return wineRepository.findPromotionWineList(pageable).content
     }
 
     override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.service.WineService
@@ -56,14 +57,14 @@ class WineController(
     }
 
     @GetMapping("/promotion")
-    fun getPopularWineList(
+    fun getPromotionWineList(
         @RequestParam(value = "page", defaultValue = "0") page: Int,
         @RequestParam(value = "size", defaultValue = "10") size: Int,
         @RequestParam(value = "sort_by", defaultValue = "createdAt") sortBy: String,
         @RequestParam(value = "sort_direction", defaultValue = "asc") direction: String,
-    ): ResponseEntity<List<WineResponse>> {
+    ): ResponseEntity<List<PromotionWineResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(
-            wineService.getPopularWineList(
+            wineService.getPromotionWineList(
                 page = page,
                 size = size,
                 sortBy = sortBy,

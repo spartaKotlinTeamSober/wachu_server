@@ -10,7 +10,9 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
+import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.QWine
+import sparta.nbcamp.wachu.domain.wine.entity.QWinePromotion
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.infra.querydsl.QueryDslSupport
@@ -80,5 +82,40 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
                 pathBuilder.get(order.property) as Expression<Comparable<*>>
             )
         }.toTypedArray()
+    }
+
+    override fun findPromotionWineList(pageable: Pageable): Page<PromotionWineResponse> {
+        val winePromotion = QWinePromotion.winePromotion
+        val wine = QWine.wine
+
+        val baseQuery = queryFactory.select(
+            com.querydsl.core.types.Projections.constructor(
+                PromotionWineResponse::class.java,
+                wine.id,
+                wine.name,
+                winePromotion.status,
+                winePromotion.createdAt,
+                winePromotion.openedAt,
+                winePromotion.closedAt
+            )
+        )
+            .from(winePromotion)
+            .leftJoin(winePromotion.wine, wine).fetchJoin()
+
+        // 페이징된 결과 조회
+        val results = baseQuery
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .orderBy(*getOrderSpecifier(pageable, winePromotion))
+            .fetch()
+
+        // 전체 카운트 조회
+        val countQuery = queryFactory.select(winePromotion.count())
+            .from(winePromotion)
+            .leftJoin(winePromotion.wine, wine)
+
+        val total = countQuery.fetchOne()
+
+        return PageImpl(results, pageable, total ?: 0)
     }
 }
