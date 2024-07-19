@@ -38,7 +38,7 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
                 .or(wine.country.containsIgnoreCase(query))
                 .or(wine.region.containsIgnoreCase(query))
         )
-        if (price != null) whereClause.and(wine.price.loe(price))// 입력받은 가격보다 낮게 조회 예) 54000원 입력시 54000원 이하의 와인 조회
+        if (price != null) whereClause.and(wine.price.loe(price))
 
         if (acidity != null) whereClause.and(wine.acidity.between(acidity[0], acidity[1]))
 
@@ -85,7 +85,7 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
     }
 
     override fun findPromotionWineList(pageable: Pageable): Page<WinePromotion> {
-        // val startTime = System.currentTimeMillis()
+
         val winePromotion = QWinePromotion.winePromotion
         val wine = QWine.wine
 
@@ -100,15 +100,11 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
 
         val countQuery = queryFactory.select(winePromotion.count()).from(winePromotion).fetchOne()
 
-        // val endTime = System.currentTimeMillis()
-
-        // println("걸린 시간 = ${endTime - startTime}. ")
         return PageImpl(results, pageable, countQuery!!)
     }
 
     override fun findAllWithoutFetchJoinForTest(pageable: Pageable): Page<WinePromotion> {
 
-        // val startTime = System.currentTimeMillis()
         val winePromotion = QWinePromotion.winePromotion
         val wine = QWine.wine
 
@@ -123,9 +119,6 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
 
         val countQuery = queryFactory.select(winePromotion.count()).from(winePromotion).fetchOne()
 
-        // val endTime = System.currentTimeMillis()
-        //
-        // println("걸린 시간 = ${endTime - startTime}. ")
         return PageImpl(results, pageable, countQuery!!)
     }
 }
