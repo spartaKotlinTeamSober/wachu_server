@@ -5,7 +5,7 @@ import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingResponse
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 interface PairingService {
-    fun getPairingList(): List<PairingResponse>
+    fun getPairingList(page: Int, size: Int): List<PairingResponse>
     fun getPairing(id: Long): PairingResponse
     fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest): PairingResponse
     fun deletePairing(userPrincipal: UserPrincipal, id: Long)

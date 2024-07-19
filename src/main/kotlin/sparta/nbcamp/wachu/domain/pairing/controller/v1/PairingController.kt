@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingResponse
@@ -21,8 +22,16 @@ class PairingController(
     private val pairingService: PairingService,
 ) {
     @GetMapping
-    fun getPairingList(): ResponseEntity<List<PairingResponse>> {
-        return ResponseEntity.ok(pairingService.getPairingList())
+    fun getPairingList(
+        @RequestParam(value = "page", defaultValue = "0") page: Int,
+        @RequestParam(value = "size", defaultValue = "10") size: Int
+    ): ResponseEntity<List<PairingResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            pairingService.getPairingList(
+                page = page,
+                size = size
+            )
+        )
     }
 
     @GetMapping("/{pairingId}")
