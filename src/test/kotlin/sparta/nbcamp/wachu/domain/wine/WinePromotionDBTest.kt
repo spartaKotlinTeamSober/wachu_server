@@ -3,14 +3,16 @@ package sparta.nbcamp.wachu.domain.wine
 import io.kotest.matchers.longs.shouldBeLessThan
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Test
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.test.context.ActiveProfiles
+import sparta.nbcamp.wachu.domain.wine.repository.WinePromotionRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineQueryDslRepository
-import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 
 @Transactional
 @SpringBootTest
@@ -21,7 +23,9 @@ class WinePromotionDBTest {
     private lateinit var wineQueryDslRepository: WineQueryDslRepository
 
     @Autowired
-    private lateinit var wineRepository: WineRepository
+    private lateinit var winePromotionRepository: WinePromotionRepository
+
+    private val logger: Logger = LoggerFactory.getLogger(WinePromotionDBTest::class.java)
 
     @Test
     fun `fetch join 전 후 시간이 빨라졌는지 확인하는  테스트`() {
@@ -40,13 +44,13 @@ class WinePromotionDBTest {
         val noFetchJoinResult = endTime - startTime
 
         val startTime2 = System.currentTimeMillis()
-        wineRepository.findPromotionWineList(pageable = pageable)
+        winePromotionRepository.findPromotionWineList(pageable = pageable)
         val endTime2 = System.currentTimeMillis()
 
         val fetchJoinResult = endTime2 - startTime2
 
-        println("fetch join 을 하지 않고 걸린시간: $noFetchJoinResult")
-        println("fetch join 을 하고 걸린시간: $fetchJoinResult")
+        logger.info("fetch join 을 하지 않고 걸린시간: $noFetchJoinResult")
+        logger.info("fetch join 을 하고 걸린시간: $fetchJoinResult")
 
         (fetchJoinResult - noFetchJoinResult) shouldBeLessThan 0
     }

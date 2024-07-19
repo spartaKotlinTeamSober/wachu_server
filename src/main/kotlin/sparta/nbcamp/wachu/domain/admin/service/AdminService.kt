@@ -15,7 +15,7 @@ class AdminService(
 ) {
     fun designatePromotion(request: DesignatePromotionRequest): PromotionWineResponse {
         val wine = wineRepository.findByIdOrNull(request.wineId) ?: throw ModelNotFoundException(
-            modelName = "글쎄",
+            modelName = "Wine",
             id = request.wineId
         )
 

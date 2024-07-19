@@ -18,9 +18,11 @@ import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.infra.querydsl.QueryDslSupport
 
 @Repository
-class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
+class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport(), WinePromotionRepository {
 
     private val wine = QWine.wine
+    private val winePromotion = QWinePromotion.winePromotion
+
     override fun searchWines(
         query: String,
         price: Int?,
@@ -31,6 +33,7 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
         type: String?,
         pageable: Pageable,
     ): Page<Wine> {
+
         val whereClause = BooleanBuilder()
 
         whereClause.and(
@@ -86,13 +89,8 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
 
     override fun findPromotionWineList(pageable: Pageable): Page<WinePromotion> {
 
-        val winePromotion = QWinePromotion.winePromotion
-        val wine = QWine.wine
-
-        val baseQuery = queryFactory.selectFrom(winePromotion)
+        val results = queryFactory.selectFrom(winePromotion)
             .leftJoin(winePromotion.wine, wine).fetchJoin()
-
-        val results = baseQuery
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .orderBy(*getOrderSpecifier(pageable, winePromotion))
@@ -104,9 +102,6 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
     }
 
     override fun findAllWithoutFetchJoinForTest(pageable: Pageable): Page<WinePromotion> {
-
-        val winePromotion = QWinePromotion.winePromotion
-        val wine = QWine.wine
 
         val baseQuery = queryFactory.selectFrom(winePromotion)
             .leftJoin(winePromotion.wine, wine)

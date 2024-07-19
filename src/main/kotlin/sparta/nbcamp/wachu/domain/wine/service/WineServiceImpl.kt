@@ -10,12 +10,14 @@ import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
+import sparta.nbcamp.wachu.domain.wine.repository.WinePromotionRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 
 @Service
 class WineServiceImpl @Autowired constructor(
     private val wineRepository: WineRepository,
+    private val winePromotionRepository: WinePromotionRepository,
 ) : WineService {
     override fun getWineList(
         query: String,
@@ -67,7 +69,7 @@ class WineServiceImpl @Autowired constructor(
     ): Page<WinePromotion> {
 
         val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy)
-        return wineRepository.findPromotionWineList(pageable)
+        return winePromotionRepository.findPromotionWineList(pageable)
     }
 
     override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {

@@ -3,7 +3,6 @@ package sparta.nbcamp.wachu.domain.wine.repository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
-import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 
 interface WineRepository {
     fun findAll(pageable: Pageable): Page<Wine>
@@ -23,5 +22,5 @@ interface WineRepository {
         pageable: Pageable,
     ): Page<Wine>
 
-    fun findPromotionWineList(pageable: Pageable): Page<WinePromotion>
+//    fun findPromotionWineList(pageable: Pageable): Page<WinePromotion>
 }
