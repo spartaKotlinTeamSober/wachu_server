@@ -49,7 +49,7 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
         if (tannin != null) whereClause.and(wine.tannin.between(tannin[0], tannin[1]))
 
         if (!type.isNullOrBlank()) {
-            val wineTypeEnum = WineType.values().find { it.name.equals(type, ignoreCase = true) }
+            val wineTypeEnum = WineType.entries.find { it.name.equals(type, ignoreCase = true) }
             if (wineTypeEnum != null) {
                 whereClause.and(wine.wineType.eq(wineTypeEnum))
             }
@@ -85,7 +85,7 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
     }
 
     override fun findPromotionWineList(pageable: Pageable): Page<WinePromotion> {
-        val startTime = System.currentTimeMillis()
+        // val startTime = System.currentTimeMillis()
         val winePromotion = QWinePromotion.winePromotion
         val wine = QWine.wine
 
@@ -100,11 +100,32 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
 
         val countQuery = queryFactory.select(winePromotion.count()).from(winePromotion).fetchOne()
 
-        val content = results //TODO() DTO대신 ENTITY에서 가져오기
+        // val endTime = System.currentTimeMillis()
 
-        val endTime = System.currentTimeMillis()
+        // println("걸린 시간 = ${endTime - startTime}. ")
+        return PageImpl(results, pageable, countQuery!!)
+    }
 
-        println("걸린 시간 = ${endTime - startTime}. ")
-        return PageImpl(content, pageable, countQuery!!)
+    override fun findAllWithoutFetchJoinForTest(pageable: Pageable): Page<WinePromotion> {
+
+        // val startTime = System.currentTimeMillis()
+        val winePromotion = QWinePromotion.winePromotion
+        val wine = QWine.wine
+
+        val baseQuery = queryFactory.selectFrom(winePromotion)
+            .leftJoin(winePromotion.wine, wine)
+
+        val results = baseQuery
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .orderBy(*getOrderSpecifier(pageable, winePromotion))
+            .fetch()
+
+        val countQuery = queryFactory.select(winePromotion.count()).from(winePromotion).fetchOne()
+
+        // val endTime = System.currentTimeMillis()
+        //
+        // println("걸린 시간 = ${endTime - startTime}. ")
+        return PageImpl(results, pageable, countQuery!!)
     }
 }

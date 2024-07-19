@@ -18,4 +18,6 @@ interface WineQueryDslRepository {
     ): Page<Wine>
 
     fun findPromotionWineList(pageable: Pageable): Page<WinePromotion>
+
+    fun findAllWithoutFetchJoinForTest(pageable: Pageable): Page<WinePromotion>
 }

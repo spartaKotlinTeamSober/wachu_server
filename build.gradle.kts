@@ -64,9 +64,7 @@ dependencies {
     // QUERY DSL
     implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
     kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
-
-    // JSON 직렬화 머시기
-    implementation("org.springframework.boot:spring-boot-starter-hateoas")
+    
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
