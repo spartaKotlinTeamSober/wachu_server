@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.domain.wine.controller
 
+import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -8,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
+import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 import sparta.nbcamp.wachu.domain.wine.service.WineService
 
 @RequestMapping("/api/v1/wines")
@@ -33,7 +34,7 @@ class WineController(
         @RequestParam(value = "size", defaultValue = "10") size: Int,
         @RequestParam(value = "sort_by", defaultValue = "id") sortBy: String,
         @RequestParam(value = "sort_direction", defaultValue = "desc") direction: String,
-    ): ResponseEntity<List<WineResponse>> {
+    ): ResponseEntity<Page<WineResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(
             wineService.getWineList(
                 query = query, price = price,
@@ -62,7 +63,7 @@ class WineController(
         @RequestParam(value = "size", defaultValue = "10") size: Int,
         @RequestParam(value = "sort_by", defaultValue = "createdAt") sortBy: String,
         @RequestParam(value = "sort_direction", defaultValue = "asc") direction: String,
-    ): ResponseEntity<List<PromotionWineResponse>> {
+    ): ResponseEntity<Page<WinePromotion>> {
         return ResponseEntity.status(HttpStatus.OK).body(
             wineService.getPromotionWineList(
                 page = page,

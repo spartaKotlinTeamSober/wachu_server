@@ -6,10 +6,10 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
+import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 
@@ -29,7 +29,7 @@ class WineServiceImpl @Autowired constructor(
         size: Int,
         sortBy: String,
         direction: String
-    ): List<WineResponse> {
+    ): Page<WineResponse> {
         val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy)
         val wines: Page<Wine> = wineRepository.searchWines(
             query = query,
@@ -41,7 +41,7 @@ class WineServiceImpl @Autowired constructor(
             type = type,
             pageable = pageable
         )
-        return wines.map { WineResponse.from(it) }.toList()
+        return wines.map { WineResponse.from(it) }
     }
 
     override fun getWineById(wineId: Long): WineResponse {
@@ -64,10 +64,10 @@ class WineServiceImpl @Autowired constructor(
         size: Int,
         sortBy: String,
         direction: String
-    ): List<PromotionWineResponse> {
+    ): Page<WinePromotion> {
 
         val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy)
-        return wineRepository.findPromotionWineList(pageable).content
+        return wineRepository.findPromotionWineList(pageable)
     }
 
     override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {

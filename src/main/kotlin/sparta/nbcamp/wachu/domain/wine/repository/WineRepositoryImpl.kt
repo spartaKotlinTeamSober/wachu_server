@@ -4,8 +4,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
-import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
+import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 
 @Repository
 class WineRepositoryImpl(
@@ -47,7 +47,7 @@ class WineRepositoryImpl(
         )
     }
 
-    override fun findPromotionWineList(pageable: Pageable): Page<PromotionWineResponse> {
+    override fun findPromotionWineList(pageable: Pageable): Page<WinePromotion> {
         return wineQueryDslRepository.findPromotionWineList(pageable = pageable)
     }
 }
