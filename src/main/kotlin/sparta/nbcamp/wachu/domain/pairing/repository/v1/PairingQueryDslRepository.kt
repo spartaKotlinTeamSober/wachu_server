@@ -24,6 +24,7 @@ class PairingQueryDslRepository : QueryDslSupport() {
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
         val content = query.fetch()
+
         val page = PageImpl(content, pageable, total)
         return page
     }
