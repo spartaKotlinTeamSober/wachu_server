@@ -1,5 +1,7 @@
 package sparta.nbcamp.wachu.domain.pairing.controller.v1
 
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -9,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingResponse
@@ -23,15 +24,10 @@ class PairingController(
 ) {
     @GetMapping
     fun getPairingList(
-        @RequestParam(value = "page", defaultValue = "0") page: Int,
-        @RequestParam(value = "size", defaultValue = "10") size: Int
+        @PageableDefault(page = 0, size = 10)
+        pageable: Pageable
     ): ResponseEntity<List<PairingResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(
-            pairingService.getPairingList(
-                page = page,
-                size = size
-            )
-        )
+        return ResponseEntity.ok(pairingService.getPairingList(pageable))
     }
 
     @GetMapping("/{pairingId}")

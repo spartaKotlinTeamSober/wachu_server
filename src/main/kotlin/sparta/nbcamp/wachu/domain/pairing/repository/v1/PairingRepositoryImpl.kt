@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.domain.pairing.repository.v1
 
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import sparta.nbcamp.wachu.domain.pairing.model.v1.Pairing
@@ -13,8 +14,8 @@ class PairingRepositoryImpl(
         return pairingJpaRepository.findByIdOrNull(id)
     }
 
-    override fun findAll(): List<Pairing> {
-        return pairingJpaRepository.findAll()
+    override fun findAll(pageable: Pageable): List<Pairing> {
+        return pairingQueryDslRepository.findPage(pageable)
     }
 
     override fun save(pairing: Pairing): Pairing {
@@ -23,9 +24,5 @@ class PairingRepositoryImpl(
 
     override fun delete(pairing: Pairing) {
         return pairingJpaRepository.delete(pairing)
-    }
-
-    override fun findList(page: Int, size: Int): List<Pairing> {
-        return pairingQueryDslRepository.findList(page, size)
     }
 }
