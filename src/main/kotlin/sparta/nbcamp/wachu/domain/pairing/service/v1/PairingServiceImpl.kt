@@ -20,7 +20,7 @@ class PairingServiceImpl(
     @Transactional(readOnly = true)
     override fun getPairingList(pageable: Pageable): List<PairingResponse> {
         val pairingList = pairingRepository.findAll(pageable)
-        return pairingList.map { PairingResponse.from(it) }
+        return pairingList.map { PairingResponse.from(it) }.toList()
     }
 
     @Transactional(readOnly = true)
