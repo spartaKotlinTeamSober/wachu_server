@@ -7,6 +7,7 @@ import sparta.nbcamp.wachu.domain.pairing.model.v1.Pairing
 @Repository
 class PairingRepositoryImpl(
     private val pairingJpaRepository: PairingJpaRepository,
+    private val pairingQueryDslRepository: PairingQueryDslRepository
 ) : PairingRepository {
     override fun findById(id: Long): Pairing? {
         return pairingJpaRepository.findByIdOrNull(id)
@@ -22,5 +23,9 @@ class PairingRepositoryImpl(
 
     override fun delete(pairing: Pairing) {
         return pairingJpaRepository.delete(pairing)
+    }
+
+    override fun findList(page: Int, size: Int): List<Pairing> {
+        return pairingQueryDslRepository.findList(page, size)
     }
 }

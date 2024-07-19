@@ -7,4 +7,5 @@ interface PairingRepository {
     fun findAll(): List<Pairing>
     fun save(pairing: Pairing): Pairing
     fun delete(pairing: Pairing)
+    fun findList(page: Int, size: Int): List<Pairing>
 }

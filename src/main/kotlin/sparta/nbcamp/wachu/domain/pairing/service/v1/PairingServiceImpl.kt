@@ -15,8 +15,10 @@ class PairingServiceImpl(
     private val memberRepository: MemberRepository,
     private val pairingRepository: PairingRepository,
 ) : PairingService {
-    override fun getPairingList(): List<PairingResponse> {
-        val pairingList = pairingRepository.findAll()
+
+    @Transactional(readOnly = true)
+    override fun getPairingList(page: Int, size: Int): List<PairingResponse> {
+        val pairingList = pairingRepository.findList(page, size)
         return pairingList.map { PairingResponse.from(it) }
     }
 
