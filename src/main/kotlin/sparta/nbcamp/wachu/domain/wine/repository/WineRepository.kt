@@ -21,6 +21,4 @@ interface WineRepository {
         type: String?,
         pageable: Pageable,
     ): Page<Wine>
-
-//    fun findPromotionWineList(pageable: Pageable): Page<WinePromotion>
 }

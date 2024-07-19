@@ -11,17 +11,14 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import sparta.nbcamp.wachu.domain.wine.entity.QWine
-import sparta.nbcamp.wachu.domain.wine.entity.QWinePromotion
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
-import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.infra.querydsl.QueryDslSupport
 
 @Repository
-class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport(), WinePromotionRepository {
+class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
 
     private val wine = QWine.wine
-    private val winePromotion = QWinePromotion.winePromotion
 
     override fun searchWines(
         query: String,
@@ -85,35 +82,5 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport(), Wi
                 pathBuilder.get(order.property) as Expression<Comparable<*>>
             )
         }.toTypedArray()
-    }
-
-    override fun findPromotionWineList(pageable: Pageable): Page<WinePromotion> {
-
-        val results = queryFactory.selectFrom(winePromotion)
-            .leftJoin(winePromotion.wine, wine).fetchJoin()
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-            .orderBy(*getOrderSpecifier(pageable, winePromotion))
-            .fetch()
-
-        val countQuery = queryFactory.select(winePromotion.count()).from(winePromotion).fetchOne()
-
-        return PageImpl(results, pageable, countQuery!!)
-    }
-
-    override fun findAllWithoutFetchJoinForTest(pageable: Pageable): Page<WinePromotion> {
-
-        val baseQuery = queryFactory.selectFrom(winePromotion)
-            .leftJoin(winePromotion.wine, wine)
-
-        val results = baseQuery
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-            .orderBy(*getOrderSpecifier(pageable, winePromotion))
-            .fetch()
-
-        val countQuery = queryFactory.select(winePromotion.count()).from(winePromotion).fetchOne()
-
-        return PageImpl(results, pageable, countQuery!!)
     }
 }

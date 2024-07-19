@@ -6,4 +6,6 @@ import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 
 interface WinePromotionRepository {
     fun findPromotionWineList(pageable: Pageable): Page<WinePromotion>
+
+    fun findAllWithoutFetchJoinForTest(pageable: Pageable): Page<WinePromotion>
 }
