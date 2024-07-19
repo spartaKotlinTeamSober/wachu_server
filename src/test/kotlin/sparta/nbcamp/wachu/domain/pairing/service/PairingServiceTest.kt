@@ -5,6 +5,8 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
@@ -34,8 +36,11 @@ class PairingServiceTest {
         ).apply { id = index.toLong() }
     }
 
+    val defaultPageable = PageRequest.of(0, 10)
+    val defaultParingPage = PageImpl(defaultPairingList)
+
     val memberRepository: MemberRepository = mockk()
-    val pairingRepository = PairingTestRepositoryImpl(defaultPairing, defaultPairingList)
+    val pairingRepository = PairingTestRepositoryImpl(defaultPairing, defaultParingPage)
 
     val pairingService = PairingServiceImpl(memberRepository, pairingRepository)
 
@@ -61,8 +66,7 @@ class PairingServiceTest {
 
     @Test
     fun `getPairingList 하면 pairing 목록을 반환한다`() {
-        val result = pairingService.getPairingList()
-
+        val result = pairingService.getPairingList(defaultPageable)
         result.size shouldBe defaultPairingList.size
         result.forEachIndexed { index, response ->
             response.title shouldBe defaultPairingList[index].title
