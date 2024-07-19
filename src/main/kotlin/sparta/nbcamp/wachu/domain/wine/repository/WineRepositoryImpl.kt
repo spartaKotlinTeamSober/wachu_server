@@ -45,4 +45,8 @@ class WineRepositoryImpl(
             pageable = pageable
         )
     }
+
+    // override fun findPromotionWineList(pageable: Pageable): Page<WinePromotion> {
+    //     return wineQueryDslRepository.findPromotionWineList(pageable = pageable)
+    // }
 }

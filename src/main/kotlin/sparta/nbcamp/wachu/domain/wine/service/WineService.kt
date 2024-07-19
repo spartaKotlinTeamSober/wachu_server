@@ -1,7 +1,9 @@
 package sparta.nbcamp.wachu.domain.wine.service
 
+import org.springframework.data.domain.Page
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
+import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 
 interface WineService {
     fun getWineList(
@@ -16,10 +18,10 @@ interface WineService {
         size: Int,
         sortBy: String,
         direction: String
-    ): List<WineResponse>
+    ): Page<WineResponse>
 
     fun getWineById(wineId: Long): WineResponse
     fun compareWine(wineIds: List<Long>): List<WineResponse>
-    fun getPopularWineList(page: Int, size: Int, sortBy: String, direction: String): List<WineResponse>
+    fun getPromotionWineList(page: Int, size: Int, sortBy: String, direction: String): Page<WinePromotion>
     fun recommendWine(request: RecommendWineRequest): List<WineResponse>
 }
