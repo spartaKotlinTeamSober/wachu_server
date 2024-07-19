@@ -1,5 +1,7 @@
 package sparta.nbcamp.wachu.domain.pairing.repository.v1
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import sparta.nbcamp.wachu.domain.pairing.model.v1.Pairing
@@ -10,12 +12,13 @@ import sparta.nbcamp.wachu.infra.querydsl.QueryDslSupport
 class PairingQueryDslRepository : QueryDslSupport() {
     private val pairing = QPairing.pairing
 
-    fun findPage(pageable: Pageable): List<Pairing> {
+    fun findPage(pageable: Pageable): Page<Pairing> {
         val query = queryFactory
             .selectFrom(pairing)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
-        val page = query.fetch()
+        val content = query.fetch()
+        val page = PageImpl(content, pageable, content.count().toLong())
         return page
     }
 }
