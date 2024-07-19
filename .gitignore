@@ -290,4 +290,3 @@ gradle-app.setting
 /.jqwik-database
 application.properties
 application.yml
-/json
