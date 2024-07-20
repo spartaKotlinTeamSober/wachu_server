@@ -9,7 +9,7 @@ import java.util.logging.Logger
 
 class PairingTestRepositoryImpl(
     private val pairing: Pairing,
-    private val pairingList: Page<Pairing>
+    private val pairingPage: Page<Pairing>
 ) : PairingRepository {
     override fun findById(id: Long): Pairing? {
         if (id !in 1..10) return null
@@ -17,7 +17,7 @@ class PairingTestRepositoryImpl(
     }
 
     override fun findAll(pageable: Pageable): Page<Pairing> {
-        return pairingList
+        return pairingPage
     }
 
     override fun save(pairing: Pairing): Pairing {
