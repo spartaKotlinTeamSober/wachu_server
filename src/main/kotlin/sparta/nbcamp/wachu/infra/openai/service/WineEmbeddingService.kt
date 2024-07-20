@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.infra.openai.client.OpenAIEmbeddingClient
 import sparta.nbcamp.wachu.infra.openai.common.utils.WineEmbeddingUtility
-import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingCompareDto
+import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingCompareResponse
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
 
 @Service
@@ -25,12 +25,12 @@ class WineEmbeddingService(
         return openAIEmbeddingClient.convertInputToOpenAiEmbedding(input)
     }
 
-    fun compareEmbedding(target: String, compare: String): WineEmbeddingCompareDto {
+    fun compareEmbedding(target: String, compare: String): WineEmbeddingCompareResponse {
         val targetEmbedding = convertInputToJson(target)
         val compareEmbedding = convertInputToJson(compare)
         val similarity = embeddingUtility.cosineSimilarity(targetEmbedding, compareEmbedding)
 
-        return WineEmbeddingCompareDto(
+        return WineEmbeddingCompareResponse(
             similarity = similarity,
             target = targetEmbedding,
             compare = compareEmbedding,

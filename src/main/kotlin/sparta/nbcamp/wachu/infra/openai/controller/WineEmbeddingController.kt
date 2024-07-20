@@ -3,7 +3,7 @@ package sparta.nbcamp.wachu.infra.openai.controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
-import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingCompareDto
+import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingCompareResponse
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
 import sparta.nbcamp.wachu.infra.openai.service.WineEmbeddingService
 
@@ -17,7 +17,7 @@ class WineEmbeddingController(
     }
 
     @GetMapping("/admin/openai/embeddings/compare")
-    fun createEmbedding(input1: String, input2: String): WineEmbeddingCompareDto {
+    fun createEmbedding(input1: String, input2: String): WineEmbeddingCompareResponse {
         return openAIService.compareEmbedding(input1, input2)
     }
 }
