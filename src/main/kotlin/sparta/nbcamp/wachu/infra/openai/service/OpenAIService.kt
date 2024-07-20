@@ -4,7 +4,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.infra.openai.client.OpenAIEmbeddingClient
-import sparta.nbcamp.wachu.infra.openai.common.utils.WineEmbeddingUtils
+import sparta.nbcamp.wachu.infra.openai.common.utils.WineEmbeddingUtility
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingCompareDto
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
 
@@ -12,12 +12,13 @@ import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
 class OpenAIService(
     private val openAIEmbeddingClient: OpenAIEmbeddingClient,
     private val wineRepository: WineRepository,
+    private val embeddingUtility: WineEmbeddingUtility,
 ) {
     fun convertJsonToEmbeddingJson(): List<WineEmbeddingData> {
         return wineRepository.findAll(PageRequest.of(0, 3))
             .content
-            .map { WineEmbeddingUtils.embeddingInputFromWine(it) }
-            .map { openAIEmbeddingClient.inputListToEmbeddingData(it) }
+            .map { embeddingUtility.embeddingInputFromWine(it) }
+            .map { embeddingUtility.inputListToEmbeddingData(openAIEmbeddingClient, it) }
             .map { WineEmbeddingData.fromMap(it) }
     }
 
@@ -28,7 +29,7 @@ class OpenAIService(
     fun compareEmbedding(target: String, compare: String): WineEmbeddingCompareDto {
         val targetEmbedding = convertInputToJson(target)
         val compareEmbedding = convertInputToJson(compare)
-        val similarity = WineEmbeddingUtils.cosineSimilarity(targetEmbedding, compareEmbedding)
+        val similarity = embeddingUtility.cosineSimilarity(targetEmbedding, compareEmbedding)
 
         return WineEmbeddingCompareDto(
             similarity = similarity,

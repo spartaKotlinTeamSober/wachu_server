@@ -1,10 +1,17 @@
 package sparta.nbcamp.wachu.infra.openai.common.utils
 
+import org.springframework.stereotype.Component
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
+import sparta.nbcamp.wachu.infra.openai.client.OpenAIEmbeddingClient
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
 import kotlin.math.sqrt
 
-object WineEmbeddingUtils {
+@Component
+class WineEmbeddingUtility(
+    private val jsonFileHandler: EmbeddingJsonHandler
+) {
+    private val embeddingCache = jsonFileHandler.readData().toMutableMap()
+
     fun cosineSimilarity(vec1: List<Double>, vec2: List<Double>): Double {
         val dotProduct = vec1.zip(vec2) { a, b -> a * b }.sum()
         val magnitude1 = sqrt(vec1.sumOf { it * it })
@@ -56,5 +63,31 @@ object WineEmbeddingUtils {
         }
 
         return aromaList
+    }
+
+    fun inputListToEmbeddingData(client: OpenAIEmbeddingClient, inputList: List<String>): Map<String, List<Double>> {
+        val dataMap = mutableMapOf<String, List<Double>>()
+
+        inputList.forEach { input ->
+            val property = input.trim()
+            val embedding = embeddingCache[property]
+                ?: run {
+                    val data =
+                        if (property.contains("price")) {
+                            TODO("price의 확인 필요")
+                            listOf()
+                        } else {
+                            client.convertInputToOpenAiEmbedding(property)
+                        }
+
+                    embeddingCache[property] = data
+                    jsonFileHandler.writeData(embeddingCache)
+                    data
+                }
+
+            dataMap[property] = embedding
+        }
+
+        return dataMap
     }
 }
