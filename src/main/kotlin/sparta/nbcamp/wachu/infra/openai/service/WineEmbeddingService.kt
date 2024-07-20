@@ -9,7 +9,7 @@ import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingCompareDto
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
 
 @Service
-class OpenAIService(
+class WineEmbeddingService(
     private val openAIEmbeddingClient: OpenAIEmbeddingClient,
     private val wineRepository: WineRepository,
     private val embeddingUtility: WineEmbeddingUtility,

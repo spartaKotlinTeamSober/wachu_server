@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingCompareDto
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
-import sparta.nbcamp.wachu.infra.openai.service.OpenAIService
+import sparta.nbcamp.wachu.infra.openai.service.WineEmbeddingService
 
 @RestController
-class OpenAIController(
-    private val openAIService: OpenAIService
+class WineEmbeddingController(
+    private val openAIService: WineEmbeddingService
 ) {
     @PostMapping("/admin/openai/embeddings")
     fun createEmbedding(): List<WineEmbeddingData> {
