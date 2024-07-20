@@ -69,6 +69,7 @@ dependencies {
     // QUERY DSL
     implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
     kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
+    
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

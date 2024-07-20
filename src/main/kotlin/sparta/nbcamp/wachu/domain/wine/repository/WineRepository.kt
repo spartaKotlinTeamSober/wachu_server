@@ -11,5 +11,14 @@ interface WineRepository {
 
     fun findByIdOrNull(id: Long): Wine?
 
-    fun searchWines(query: String, pageable: Pageable): Page<Wine>
+    fun searchWines(
+        query: String,
+        price: Int?,
+        acidity: List<Int>?,
+        body: List<Int>?,
+        sweetness: List<Int>?,
+        tannin: List<Int>?,
+        type: String?,
+        pageable: Pageable,
+    ): Page<Wine>
 }
