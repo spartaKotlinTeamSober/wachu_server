@@ -15,8 +15,7 @@ class WineEmbeddingService(
     private val embeddingUtility: WineEmbeddingUtility,
 ) {
     fun convertJsonToEmbeddingJson(): List<WineEmbeddingData> {
-        return wineRepository.findAll(PageRequest.of(0, 3))
-            .content
+        return wineRepository.findAll(PageRequest.of(0, 3)).content
             .map { embeddingUtility.embeddingInputFromWine(it) }
             .map { embeddingUtility.inputListToEmbeddingData(openAIEmbeddingClient, it) }
             .map { WineEmbeddingData.fromMap(it) }
