@@ -1,5 +1,7 @@
 package sparta.nbcamp.wachu.domain.wine.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
@@ -7,8 +9,10 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.web.PagedResourcesAssembler
 import org.springframework.hateoas.PagedModel
+import org.springframework.hateoas.mediatype.hal.Jackson2HalModule
 import org.springframework.stereotype.Service
 import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
@@ -20,6 +24,7 @@ import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.hateoas.WinePromotionAssembler
 import sparta.nbcamp.wachu.infra.hateoas.WinePromotionModel
+import java.io.IOException
 
 @Service
 class WineServiceImpl @Autowired constructor(
@@ -27,7 +32,17 @@ class WineServiceImpl @Autowired constructor(
     private val winePromotionRepository: WinePromotionRepository,
     private val winePromotionAssembler: WinePromotionAssembler,
     private val pagedResourcesAssembler: PagedResourcesAssembler<WinePromotion>,
+    // private val redisTemplate: RedisTemplate<String, Any>
 ) : WineService {
+
+    // private val objectMapper: ObjectMapper = ObjectMapper().apply {
+    //     registerModule(JavaTimeModule())
+    //     registerModule(Jackson2HalModule())
+    //     configure(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+    // }
+
+
+    @Cacheable(value = ["wineCache"], key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction")
     override fun getWineList(
         query: String,
         price: Int?,
@@ -55,11 +70,13 @@ class WineServiceImpl @Autowired constructor(
         return wines.map { WineResponse.from(it) }
     }
 
+    @Cacheable(value = ["wineCacheById"], key = "#wineId")
     override fun getWineById(wineId: Long): WineResponse {
         val wine = wineRepository.findByIdOrNull(wineId) ?: throw ModelNotFoundException("wineRepository", id = wineId)
         return WineResponse.from(wine)
     }
 
+    @Cacheable(value = ["compareWineCache"], key = "#wineIds[0] + '-' + #wineIds[1] ")
     override fun compareWine(wineIds: List<Long>): List<WineResponse> {
 
         val firstWine =
@@ -83,6 +100,40 @@ class WineServiceImpl @Autowired constructor(
 
         return pagedResourcesAssembler.toModel(promotionsPage, winePromotionAssembler)
     }
+
+    // fun savePromotionWineListToCache(
+    //     page: Int,
+    //     size: Int,
+    //     sortBy: String,
+    //     direction: String,
+    //     data: PagedModel<WinePromotionModel>
+    // ) {
+    //     val key = "$page-$size-$sortBy-$direction"
+    //     val jsonData = try {
+    //         objectMapper.writeValueAsString(data)
+    //     } catch (e: IOException) {
+    //         throw RuntimeException("Failed to serialize data", e)
+    //     }
+    //     redisTemplate.opsForValue().set(key, jsonData)
+    // }
+    //
+    // fun getPromotionWineListFromCache(
+    //     page: Int,
+    //     size: Int,
+    //     sortBy: String,
+    //     direction: String
+    // ): PagedModel<WinePromotionModel>? {
+    //     val key = "$page-$size-$sortBy-$direction"
+    //     val jsonData = redisTemplate.opsForValue().get(key) as String?
+    //     return jsonData?.let {
+    //         try {
+    //             objectMapper.readValue(it, PagedModel::class.java) as PagedModel<WinePromotionModel>
+    //         } catch (e: IOException) {
+    //             throw RuntimeException("Failed to deserialize data", e)
+    //         }
+    //     }
+    // }
+
 
 
     override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {
