@@ -40,6 +40,14 @@ dependencies {
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
+    // Redis
+    implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
+    implementation ("org.springframework.boot:spring-boot-starter-cache")
+
+    // 잭슨 머시기
+    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
     // JJWT
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
