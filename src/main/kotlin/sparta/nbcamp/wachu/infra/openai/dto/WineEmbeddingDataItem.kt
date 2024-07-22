@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 
 data class WineEmbeddingDataItem(
     val property: String,
-    val embedding: List<Double>
+    var embedding: List<Double>
 ) {
     @JsonIgnore
     fun isAroma(): Boolean {

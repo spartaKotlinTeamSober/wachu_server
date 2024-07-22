@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.infra.openai.client.OpenAIEmbeddingClient
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
+import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingDataItem
+import kotlin.math.abs
 import kotlin.math.sqrt
 
 @Component
@@ -21,53 +23,63 @@ class WineEmbeddingUtility(
     }
 
     fun recommendWineList(
-        targetEmbedding: List<Double>,
-        embeddings: List<List<Double>>,
-        top: Int = 5
-    ): List<Pair<Int, Double>> {
-        return embeddings.mapIndexed { index, embedding ->
-            index + 1 to cosineSimilarity(targetEmbedding, embedding)
-        }
+        targetWine: Wine,
+        everyWineList: List<Wine>,
+        top: Int = 10
+    ): List<Pair<Wine, Double>> {
+        val targetEmbeddingData = WineEmbeddingData.fromWine(targetWine)
+            .apply { data.forEach { it.embedding = retrieveEmbedding(it.property) } }
+
+        return everyWineList
+            .map { compareWine ->
+                val compareEmbeddingData = WineEmbeddingData.fromWine(compareWine)
+                    .apply { data.forEach { it.embedding = retrieveEmbedding(it.property) } }
+
+                val similarity = compareWineEmbeddingData(targetEmbeddingData, compareEmbeddingData)
+
+                compareWine to similarity
+            }
             .sortedByDescending { it.second }
             .take(top)
     }
 
-    fun embeddingInputFromWine(wine: Wine): List<String> {
-        return mutableListOf(
-            "sweetness:${wine.sweetness}",
-            "acidity:${wine.acidity}",
-            "body:${wine.body}",
-            "tannin:${wine.tannin}",
-            "type:${wine.wineType}",
-            "price:${wine.price}"
-        ).apply {
-            addAll(parseAromaToList(wine.aroma))
-        }
+    fun compareEmbedding(target: List<Double>, compare: List<Double>): Double {
+        return cosineSimilarity(target, compare)
     }
 
-    private fun parseAromaToList(aroma: String): List<String> {
-        val aromaList = mutableListOf<String>()
+    fun compareWineEmbeddingData(targetData: WineEmbeddingData, compareData: WineEmbeddingData): Double {
+        val similarityList = mutableListOf<Double>()
 
-        // (\w+) 단어 문자를 포함하는 첫 번째 캡처 그룹
-        // = 는 key와 value를 구분하는 구분자로 그냥 텍스트
-        // \[ 대괄호의 시작점 찾기
-        // ([^]]+) 대괄호 ]을 제외한 문자를 포함하는 두 번째 캡처 그룹, 대괄호 빼고 매칭됨
-        // \] 대괄호의 종료점 찾기
-        val aromaPairs = Regex("""(\w+)=\[([^]]+)]""").findAll(aroma)
-
-        aromaPairs.forEach { matchResult ->
-            val key = matchResult.groupValues[1]
-            val values = matchResult.groupValues[2]
-            values.split(", ").forEach { value ->
-                aromaList.add("${WineEmbeddingData.AROMA_PREFIX}${key.trim()}:${value.trim()}")
+        targetData.data.forEach { targetItem ->
+            val key = targetItem.property.split(":")[0]
+            val compareItem = compareData.data.find { it.property.contains(key) }
+            if (compareItem != null) {
+                if (key == WineEmbeddingData.PRICE_KEY) {
+                    similarityList.add(1 - abs(targetItem.embedding[0] - compareItem.embedding[0]))
+                } else if (!key.contains(WineEmbeddingData.AROMA_PREFIX)) {
+                    similarityList.add(cosineSimilarity(targetItem.embedding, compareItem.embedding))
+                }
             }
         }
 
-        return aromaList
+        val targetAromaList = targetData.aromaFilteredList().data
+        val compareAromaList = compareData.aromaFilteredList().data
+
+        val targetAromaEmbeddingSum = sumVector(
+            targetAromaList.map { it.embedding }
+        ).map { it / targetAromaList.size }
+
+        val compareAromaEmbeddingSum = sumVector(
+            compareAromaList.map { it.embedding }
+        ).map { it / compareAromaList.size }
+
+        similarityList.add(compareEmbedding(targetAromaEmbeddingSum, compareAromaEmbeddingSum))
+
+        return similarityList.average()
     }
 
-    private fun priceMinMaxScaling(price: Int, minPrice: Int = 1, maxPrice: Int = 10000000): Double {
-        return (price - minPrice).toDouble() / (maxPrice - minPrice)
+    fun retrieveEmbedding(property: String): List<Double> {
+        return embeddingCache[property] ?: listOf()
     }
 
     fun retrieveEmbeddingsIfAbsent(minPrice: Int, maxPrice: Int, property: String): List<Double> {
@@ -75,7 +87,8 @@ class WineEmbeddingUtility(
             ?: run {
                 val data =
                     if (property.contains("price")) {
-                        listOf(priceMinMaxScaling(property.split(":")[1].toInt(), minPrice, maxPrice))
+                        val price = property.split(":")[1].toInt()
+                        listOf(priceMinMaxScaling(price, minPrice, maxPrice))
                     } else {
                         openAIEmbeddingClient.convertInputToOpenAiEmbedding(property)
                     }
@@ -86,7 +99,7 @@ class WineEmbeddingUtility(
             }
     }
 
-    fun inputListToEmbeddingData(minPrice: Int, maxPrice: Int, inputList: List<String>): Map<String, List<Double>> {
+    fun inputListToEmbeddingData(minPrice: Int, maxPrice: Int, inputList: List<String>): List<WineEmbeddingDataItem> {
         val dataMap = mutableMapOf<String, List<Double>>()
 
         inputList.forEach { input ->
@@ -96,6 +109,25 @@ class WineEmbeddingUtility(
             dataMap[property] = embedding
         }
 
-        return dataMap
+        return WineEmbeddingData.fromMap(dataMap)
+    }
+
+    private fun sumVector(vectorList: List<List<Double>>): List<Double> {
+        if (vectorList.isEmpty()) return emptyList()
+
+        val numElements = vectorList[0].size
+        val sums = MutableList(numElements) { 0.0 }
+
+        vectorList.forEach { vector ->
+            for (i in vector.indices) {
+                sums[i] += vector[i]
+            }
+        }
+
+        return sums
+    }
+
+    private fun priceMinMaxScaling(price: Int, minPrice: Int = 1, maxPrice: Int = 10000000): Double {
+        return (price - minPrice).toDouble() / (maxPrice - minPrice)
     }
 }
