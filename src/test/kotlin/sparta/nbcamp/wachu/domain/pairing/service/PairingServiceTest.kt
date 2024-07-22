@@ -37,10 +37,10 @@ class PairingServiceTest {
     }
 
     val defaultPageable = PageRequest.of(0, 10)
-    val defaultParingPage = PageImpl(defaultPairingList)
+    val defaultPairingPage = PageImpl(defaultPairingList, defaultPageable, defaultPairingList.size.toLong())
 
     val memberRepository: MemberRepository = mockk()
-    val pairingRepository = PairingTestRepositoryImpl(defaultPairing, defaultParingPage)
+    val pairingRepository = PairingTestRepositoryImpl(defaultPairing, defaultPairingPage)
 
     val pairingService = PairingServiceImpl(memberRepository, pairingRepository)
 
@@ -65,11 +65,11 @@ class PairingServiceTest {
     }
 
     @Test
-    fun `getPairingList 하면 pairing 목록을 반환한다`() {
-        val result = pairingService.getPairingList(defaultPageable)
-        result.size shouldBe defaultPairingList.size
+    fun `getPairingPage 하면 pairing 페이지를 반환한다`() {
+        val result = pairingService.getPairingPage(defaultPageable)
+        result.size shouldBe defaultPairingPage.size
         result.forEachIndexed { index, response ->
-            response.title shouldBe defaultPairingList[index].title
+            response.title shouldBe defaultPairingPage.content[index].title
         }
     }
 
