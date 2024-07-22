@@ -25,6 +25,6 @@ interface WineService {
 
     fun getWineById(wineId: Long): WineResponse
     fun compareWine(wineIds: List<Long>): List<WineResponse>
-    fun getPromotionWineList(page: Int, size: Int, sortBy: String, direction: String): PagedModel<WinePromotionModel>
+    fun getPromotionWineList(page: Int, size: Int, sortBy: String, direction: String): Page<WinePromotion>
     fun recommendWine(request: RecommendWineRequest): List<WineResponse>
 }

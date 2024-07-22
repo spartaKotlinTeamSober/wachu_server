@@ -32,7 +32,8 @@ class WineServiceImpl @Autowired constructor(
     private val winePromotionRepository: WinePromotionRepository,
     private val winePromotionAssembler: WinePromotionAssembler,
     private val pagedResourcesAssembler: PagedResourcesAssembler<WinePromotion>,
-    // private val redisTemplate: RedisTemplate<String, Any>
+    // private val redisTemplate: RedisTemplate<String, Any>,
+    // private val objectMapper: ObjectMapper
 ) : WineService {
 
     // private val objectMapper: ObjectMapper = ObjectMapper().apply {
@@ -93,12 +94,13 @@ class WineServiceImpl @Autowired constructor(
         size: Int,
         sortBy: String,
         direction: String
-    ): PagedModel<WinePromotionModel> {
+    ): Page<WinePromotion> {
 
         val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy)
         val promotionsPage: Page<WinePromotion> = winePromotionRepository.findPromotionWineList(pageable)
 
-        return pagedResourcesAssembler.toModel(promotionsPage, winePromotionAssembler)
+        return promotionsPage
+//        return pagedResourcesAssembler.toModel(promotionsPage, winePromotionAssembler)
     }
 
     // fun savePromotionWineListToCache(

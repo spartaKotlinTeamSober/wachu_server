@@ -66,7 +66,7 @@ class WineController(
         @RequestParam(value = "size", defaultValue = "10") size: Int,
         @RequestParam(value = "sort_by", defaultValue = "createdAt") sortBy: String,
         @RequestParam(value = "sort_direction", defaultValue = "asc") direction: String,
-    ): ResponseEntity<PagedModel<WinePromotionModel>> {
+    ): ResponseEntity<Page<WinePromotion>> {
         return ResponseEntity.status(HttpStatus.OK).body(
             wineService.getPromotionWineList(
                 page = page,
