@@ -31,6 +31,7 @@ class WineEmbeddingUtility(
             .apply { data.forEach { it.embedding = retrieveEmbedding(it.property) } }
 
         return everyWineList
+            .filter { it.id != targetWine.id }
             .map { compareWine ->
                 val compareEmbeddingData = WineEmbeddingData.fromWine(compareWine)
                     .apply { data.forEach { it.embedding = retrieveEmbedding(it.property) } }
