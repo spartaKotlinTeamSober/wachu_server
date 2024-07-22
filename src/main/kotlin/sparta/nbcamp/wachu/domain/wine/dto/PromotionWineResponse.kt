@@ -21,8 +21,7 @@ data class PromotionWineResponse(
                 promotionStatus = entity.status,
                 openedAt = entity.openedAt,
                 closedAt = entity.closedAt,
-
-                )
+            )
         }
     }
 }

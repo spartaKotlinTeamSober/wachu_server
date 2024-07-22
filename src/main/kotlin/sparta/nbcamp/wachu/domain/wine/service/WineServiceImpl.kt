@@ -3,12 +3,14 @@ package sparta.nbcamp.wachu.domain.wine.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PagedResourcesAssembler
 import org.springframework.hateoas.PagedModel
 import org.springframework.stereotype.Service
+import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
@@ -68,7 +70,7 @@ class WineServiceImpl @Autowired constructor(
         return wines.map { WineResponse.from(it) }
     }
 
-//    @Cacheable(value = ["promotionCache"], key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction")
+    @Cacheable(value = ["promotionCache"], key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction")
     override fun getPromotionWineList(
         page: Int,
         size: Int,
@@ -78,8 +80,10 @@ class WineServiceImpl @Autowired constructor(
 
         val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy)
         val promotionsPage: Page<WinePromotion> = winePromotionRepository.findPromotionWineList(pageable)
+
         return pagedResourcesAssembler.toModel(promotionsPage, winePromotionAssembler)
     }
+
 
     override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {
         TODO("Not yet implemented")
