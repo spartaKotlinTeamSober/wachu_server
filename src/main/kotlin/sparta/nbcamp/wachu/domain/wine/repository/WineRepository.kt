@@ -21,4 +21,8 @@ interface WineRepository {
         type: String?,
         pageable: Pageable,
     ): Page<Wine>
+
+    fun getMinPrice(): Int
+
+    fun getMaxPrice(): Int
 }
