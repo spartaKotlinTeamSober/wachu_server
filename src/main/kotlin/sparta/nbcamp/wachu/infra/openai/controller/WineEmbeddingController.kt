@@ -19,7 +19,7 @@ class WineEmbeddingController(
         return embeddingService.createEveryWineEmbedding()
     }
 
-    @GetMapping("/admin/openai/embeddings/{wineId}")
+    @PostMapping("/admin/openai/embeddings/{wineId}")
     fun createWineEmbedding(@PathVariable wineId: Long): WineEmbeddingData {
         return embeddingService.createWineEmbedding(wineId)
     }
