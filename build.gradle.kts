@@ -45,6 +45,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation ("org.springframework.boot:spring-boot-starter-cache")
 
+    // pagedModel
+    implementation("org.springframework.boot:spring-boot-starter-hateoas")
+
+
     // 잭슨 머시기
     implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
