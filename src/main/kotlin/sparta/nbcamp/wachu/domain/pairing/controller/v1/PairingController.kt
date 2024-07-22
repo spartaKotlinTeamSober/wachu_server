@@ -1,15 +1,14 @@
 package sparta.nbcamp.wachu.domain.pairing.controller.v1
 
+import com.fasterxml.jackson.databind.util.JSONPObject
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingResponse
 import sparta.nbcamp.wachu.domain.pairing.service.v1.PairingService
@@ -32,14 +31,15 @@ class PairingController(
         return ResponseEntity.ok(pairingService.getPairing(pairingId))
     }
 
-    @PostMapping
-    fun createPairing(
-        @AuthenticationPrincipal userprincipal: UserPrincipal,
-        @RequestBody pairingRequest: PairingRequest
-    ): ResponseEntity<PairingResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(pairingService.createPairing(userprincipal, pairingRequest))
-    }
+//    @PostMapping
+//    fun createPairing(
+//        @AuthenticationPrincipal userprincipal: UserPrincipal,
+//        @RequestPart pairingRequest: PairingRequest,
+//        @RequestPart("image") multipartFile: MultipartFile?
+//    ): ResponseEntity<PairingResponse> {
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//            .body(pairingService.createPairing(userprincipal, pairingRequest,multipartFile))
+//    }
 
     @DeleteMapping("/{pairingId}")
     fun deletePairing(
@@ -48,5 +48,12 @@ class PairingController(
     ): ResponseEntity<Unit> {
         pairingService.deletePairing(userprincipal, pairingId)
         return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun uploadImage(  @RequestPart("image") multipartFile: MultipartFile?): ResponseEntity<String> {
+        return ResponseEntity
+            .ok(pairingService.upload(multipartFile))
+
     }
 }

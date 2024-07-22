@@ -64,8 +64,10 @@ dependencies {
     // QUERY DSL
     implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
     kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
-    
 
+    //aws
+    implementation("software.amazon.awssdk:s3:2.20.0")
+    implementation("org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
