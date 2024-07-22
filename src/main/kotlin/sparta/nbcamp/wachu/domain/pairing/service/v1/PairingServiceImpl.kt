@@ -34,8 +34,11 @@ class PairingServiceImpl(
     override fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest,multipartFile: MultipartFile?): PairingResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        val pairing = PairingRequest.toEntity(member.id!!, pairingRequest)
-        if(multipartFile != null) {s3Service.upload2(multipartFile)}
+
+        var imageUrl:String=""
+        if(multipartFile != null) {imageUrl= s3Service.upload2(multipartFile)}
+        val pairing = PairingRequest.toEntity(member.id!!, pairingRequest, imageUrl)
+
         return PairingResponse.from(pairingRepository.save(pairing))
     }
 
@@ -49,8 +52,5 @@ class PairingServiceImpl(
             )
         ) { throw AccessDeniedException("not your pairing") }
         pairingRepository.delete(pairing)
-    }
-    override fun upload(file: MultipartFile?) :String{
-       return if(file != null) {s3Service.upload2(file)} else "file Empty"
     }
 }

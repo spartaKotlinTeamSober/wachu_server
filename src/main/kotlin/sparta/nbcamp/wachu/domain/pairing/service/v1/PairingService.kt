@@ -10,5 +10,4 @@ interface PairingService {
     fun getPairing(id: Long): PairingResponse
     fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest,multipartFile: MultipartFile?): PairingResponse
     fun deletePairing(userPrincipal: UserPrincipal, id: Long)
-    fun upload(file: MultipartFile?):String
 }

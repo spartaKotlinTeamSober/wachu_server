@@ -31,15 +31,15 @@ class PairingController(
         return ResponseEntity.ok(pairingService.getPairing(pairingId))
     }
 
-//    @PostMapping
-//    fun createPairing(
-//        @AuthenticationPrincipal userprincipal: UserPrincipal,
-//        @RequestPart pairingRequest: PairingRequest,
-//        @RequestPart("image") multipartFile: MultipartFile?
-//    ): ResponseEntity<PairingResponse> {
-//        return ResponseEntity.status(HttpStatus.CREATED)
-//            .body(pairingService.createPairing(userprincipal, pairingRequest,multipartFile))
-//    }
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun createPairing(
+        @AuthenticationPrincipal userprincipal: UserPrincipal,
+        @RequestPart pairingRequest: PairingRequest,
+        @RequestPart("image") multipartFile: MultipartFile?
+    ): ResponseEntity<PairingResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(pairingService.createPairing(userprincipal, pairingRequest,multipartFile))
+    }
 
     @DeleteMapping("/{pairingId}")
     fun deletePairing(
@@ -48,12 +48,5 @@ class PairingController(
     ): ResponseEntity<Unit> {
         pairingService.deletePairing(userprincipal, pairingId)
         return ResponseEntity.noContent().build()
-    }
-
-    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun uploadImage(  @RequestPart("image") multipartFile: MultipartFile?): ResponseEntity<String> {
-        return ResponseEntity
-            .ok(pairingService.upload(multipartFile))
-
     }
 }
