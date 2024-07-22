@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
-import sparta.nbcamp.wachu.infra.openai.dto.SimilarityRequest
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
+import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingSimilarityRequest
 import sparta.nbcamp.wachu.infra.openai.service.WineEmbeddingService
 
 @RestController
@@ -25,7 +25,7 @@ class WineEmbeddingController(
     }
 
     @GetMapping("/admin/openai/embeddings/similarity")
-    fun getSimilarity(request: SimilarityRequest): Double {
+    fun getSimilarity(request: WineEmbeddingSimilarityRequest): Double {
         return embeddingService.getSimilarity(request.input1, request.input2)
     }
 }
