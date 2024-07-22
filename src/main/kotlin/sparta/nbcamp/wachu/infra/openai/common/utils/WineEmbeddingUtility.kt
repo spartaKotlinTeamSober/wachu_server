@@ -26,7 +26,7 @@ class WineEmbeddingUtility(
         targetWine: Wine,
         everyWineList: List<Wine>,
         top: Int = 10
-    ): List<Pair<Wine, Double>> {
+    ): List<Pair<WineEmbeddingData, Double>> {
         val targetEmbeddingData = WineEmbeddingData.fromWine(targetWine)
             .apply { data.forEach { it.embedding = retrieveEmbedding(it.property) } }
 
@@ -37,7 +37,7 @@ class WineEmbeddingUtility(
 
                 val similarity = compareWineEmbeddingData(targetEmbeddingData, compareEmbeddingData)
 
-                compareWine to similarity
+                compareEmbeddingData to similarity
             }
             .sortedByDescending { it.second }
             .take(top)

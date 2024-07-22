@@ -46,13 +46,11 @@ class WineEmbeddingService(
         return wineEmbeddingData.copy(data = transformedData)
     }
 
-    fun recommendWine(wineId: Long) {
-        embeddingUtility.recommendWineList(
+    fun recommendWine(wineId: Long): List<Pair<WineEmbeddingData, Double>> {
+        return embeddingUtility.recommendWineList(
             targetWine = wineRepository.findByIdOrNull(wineId) ?: throw ModelNotFoundException("wine", wineId),
             everyWineList = wineRepository.findAll(Pageable.unpaged()).content
-        ).map {
-            println("${it.first.name} : ${it.second}")
-        }
+        )
     }
 
     fun getSimilarity(input1: List<Double>, input2: List<Double>): Double {
