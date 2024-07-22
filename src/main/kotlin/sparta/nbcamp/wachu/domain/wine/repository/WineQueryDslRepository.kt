@@ -16,7 +16,7 @@ interface WineQueryDslRepository {
         pageable: Pageable,
     ): Page<Wine>
 
-    fun getMinPrice(): Int
+    fun findMinPrice(): Int
 
-    fun getMaxPrice(): Int
+    fun findMaxPrice(): Int
 }

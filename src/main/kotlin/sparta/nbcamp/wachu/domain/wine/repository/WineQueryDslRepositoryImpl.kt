@@ -70,13 +70,13 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
         return PageImpl(contents, pageable, totalCount)
     }
 
-    override fun getMinPrice(): Int {
+    override fun findMinPrice(): Int {
         return queryFactory.select(wine.price.min())
             .from(wine)
             .fetchOne() ?: Int.MIN_VALUE
     }
 
-    override fun getMaxPrice(): Int {
+    override fun findMaxPrice(): Int {
         return queryFactory.select(wine.price.max())
             .from(wine)
             .fetchOne() ?: Int.MAX_VALUE

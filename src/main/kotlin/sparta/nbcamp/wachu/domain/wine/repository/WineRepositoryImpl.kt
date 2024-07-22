@@ -46,12 +46,12 @@ class WineRepositoryImpl(
         )
     }
 
-    override fun getMinPrice(): Int {
-        return wineQueryDslRepository.getMinPrice()
+    override fun findMinPrice(): Int {
+        return wineQueryDslRepository.findMinPrice()
     }
 
-    override fun getMaxPrice(): Int {
-        return wineQueryDslRepository.getMaxPrice()
+    override fun findMaxPrice(): Int {
+        return wineQueryDslRepository.findMaxPrice()
     }
 
     // override fun findPromotionWineList(pageable: Pageable): Page<WinePromotion> {
