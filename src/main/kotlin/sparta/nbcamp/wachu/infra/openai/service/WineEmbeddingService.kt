@@ -50,4 +50,14 @@ class WineEmbeddingService(
             compare = compareEmbedding,
         )
     }
+
+    fun retrieveEmbedding(property: String): WineEmbeddingData {
+        return WineEmbeddingData.fromMap(
+            embeddingUtility.inputListToEmbeddingData(
+                minPrice = minPrice,
+                maxPrice = maxPrice,
+                inputList = listOf(property)
+            )
+        )
+    }
 }

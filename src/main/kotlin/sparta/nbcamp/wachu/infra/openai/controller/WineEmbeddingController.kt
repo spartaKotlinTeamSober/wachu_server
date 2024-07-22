@@ -9,15 +9,20 @@ import sparta.nbcamp.wachu.infra.openai.service.WineEmbeddingService
 
 @RestController
 class WineEmbeddingController(
-    private val openAIService: WineEmbeddingService
+    private val embeddingService: WineEmbeddingService
 ) {
     @PostMapping("/admin/openai/embeddings")
     fun createEmbedding(): List<WineEmbeddingData> {
-        return openAIService.convertJsonToEmbeddingJson()
+        return embeddingService.convertJsonToEmbeddingJson()
     }
 
     @GetMapping("/admin/openai/embeddings/compare")
     fun createEmbedding(input1: String, input2: String): WineEmbeddingCompareResponse {
-        return openAIService.compareEmbedding(input1, input2)
+        return embeddingService.compareEmbedding(input1, input2)
+    }
+
+    @GetMapping("/admin/openai/embeddings")
+    fun getEmbedding(property: String): WineEmbeddingData {
+        return embeddingService.retrieveEmbedding(property)
     }
 }
