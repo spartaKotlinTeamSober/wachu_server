@@ -35,6 +35,7 @@ class WineEmbeddingService(
     }
 
     fun createWineEmbedding(wineId: Long): WineEmbeddingData {
+        // TODO: 와인 추가시 minPrice, maxPrice가 바뀔 경우 모든 Price의 벡터 데이터가 바뀌어야함
         val wine = wineRepository.findByIdOrNull(wineId) ?: throw ModelNotFoundException("wine", wineId)
         val wineEmbeddingData = WineEmbeddingData.fromWine(wine)
         val transformedData = embeddingUtility.inputListToEmbeddingData(
