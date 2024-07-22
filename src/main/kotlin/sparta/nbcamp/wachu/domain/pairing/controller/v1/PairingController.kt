@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.domain.pairing.controller.v1
 
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
@@ -23,11 +24,11 @@ class PairingController(
     private val pairingService: PairingService,
 ) {
     @GetMapping
-    fun getPairingList(
+    fun getPairingPage(
         @PageableDefault(page = 0, size = 10)
         pageable: Pageable
-    ): ResponseEntity<List<PairingResponse>> {
-        return ResponseEntity.ok(pairingService.getPairingList(pageable))
+    ): ResponseEntity<Page<PairingResponse>> {
+        return ResponseEntity.ok(pairingService.getPairingPage(pageable))
     }
 
     @GetMapping("/{pairingId}")
