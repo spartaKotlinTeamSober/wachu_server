@@ -3,6 +3,7 @@ package sparta.nbcamp.wachu.infra.security
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -32,6 +33,7 @@ class SecurityConfig(
                     "/error",
                     "/admin/**"
                 ).permitAll()
+                    .requestMatchers(HttpMethod.GET, "/**").permitAll()
                     .requestMatchers(PathRequest.toH2Console()).permitAll()
                     .anyRequest().authenticated()
             }
