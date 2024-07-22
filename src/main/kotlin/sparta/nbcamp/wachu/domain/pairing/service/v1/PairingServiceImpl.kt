@@ -1,5 +1,7 @@
 package sparta.nbcamp.wachu.domain.pairing.service.v1
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
@@ -15,9 +17,10 @@ class PairingServiceImpl(
     private val memberRepository: MemberRepository,
     private val pairingRepository: PairingRepository,
 ) : PairingService {
-    override fun getPairingList(): List<PairingResponse> {
-        val pairingList = pairingRepository.findAll()
-        return pairingList.map { PairingResponse.from(it) }
+
+    @Transactional(readOnly = true)
+    override fun getPairingPage(pageable: Pageable): Page<PairingResponse> {
+        return pairingRepository.findAll(pageable).map { PairingResponse.from(it) }
     }
 
     @Transactional(readOnly = true)
