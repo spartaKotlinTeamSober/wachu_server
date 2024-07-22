@@ -23,7 +23,7 @@ class Member(
     val nickname: String,
 
     @Column(name = "profile_image_url")
-    val profileImageUrl: String?,
+    var profileImageUrl: String?,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")

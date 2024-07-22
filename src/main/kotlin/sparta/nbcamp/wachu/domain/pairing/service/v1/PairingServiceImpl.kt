@@ -35,8 +35,8 @@ class PairingServiceImpl(
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
 
-        var imageUrl:String=""
-        if(multipartFile != null) {imageUrl= s3Service.upload2(multipartFile)}
+        var imageUrl:String?=null
+        if(multipartFile != null) {imageUrl= s3Service.upload(multipartFile)}
         val pairing = PairingRequest.toEntity(member.id!!, pairingRequest, imageUrl)
 
         return PairingResponse.from(pairingRepository.save(pairing))

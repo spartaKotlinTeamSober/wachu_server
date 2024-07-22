@@ -2,6 +2,7 @@ package sparta.nbcamp.wachu.infra.aws
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cglib.proxy.Dispatcher
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
@@ -23,7 +24,7 @@ class S3Service @Autowired constructor(
     lateinit var dir: String
 
     @Throws(IOException::class)
-    fun upload2(file: MultipartFile): String {
+    fun upload(file: MultipartFile): String {
 
         val s3 = S3Client.builder()
             .region(Region.AP_NORTHEAST_2) // 원하는 지역으로 설정
