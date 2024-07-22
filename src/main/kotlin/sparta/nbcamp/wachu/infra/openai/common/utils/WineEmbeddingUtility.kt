@@ -8,7 +8,8 @@ import kotlin.math.sqrt
 
 @Component
 class WineEmbeddingUtility(
-    private val jsonFileHandler: EmbeddingJsonHandler
+    private val jsonFileHandler: EmbeddingJsonHandler,
+    private val openAIEmbeddingClient: OpenAIEmbeddingClient
 ) {
     private val embeddingCache = jsonFileHandler.readData().toMutableMap()
 
@@ -65,7 +66,11 @@ class WineEmbeddingUtility(
         return aromaList
     }
 
-    fun inputListToEmbeddingData(client: OpenAIEmbeddingClient, inputList: List<String>): Map<String, List<Double>> {
+    private fun priceMinMaxScaling(price: Int, minPrice: Int = 1, maxPrice: Int = 10000000): Double {
+        return (price - minPrice).toDouble() / (maxPrice - minPrice)
+    }
+
+    fun inputListToEmbeddingData(minPrice: Int, maxPrice: Int, inputList: List<String>): Map<String, List<Double>> {
         val dataMap = mutableMapOf<String, List<Double>>()
 
         inputList.forEach { input ->
@@ -74,10 +79,9 @@ class WineEmbeddingUtility(
                 ?: run {
                     val data =
                         if (property.contains("price")) {
-                            TODO("price의 확인 필요")
-                            listOf()
+                            listOf(priceMinMaxScaling(property.split(":")[1].toInt(), minPrice, maxPrice))
                         } else {
-                            client.convertInputToOpenAiEmbedding(property)
+                            openAIEmbeddingClient.convertInputToOpenAiEmbedding(property)
                         }
 
                     embeddingCache[property] = data
