@@ -70,24 +70,28 @@ class WineEmbeddingUtility(
         return (price - minPrice).toDouble() / (maxPrice - minPrice)
     }
 
+    fun retrieveEmbeddingsIfAbsent(minPrice: Int, maxPrice: Int, property: String): List<Double> {
+        return embeddingCache[property]
+            ?: run {
+                val data =
+                    if (property.contains("price")) {
+                        listOf(priceMinMaxScaling(property.split(":")[1].toInt(), minPrice, maxPrice))
+                    } else {
+                        openAIEmbeddingClient.convertInputToOpenAiEmbedding(property)
+                    }
+
+                embeddingCache[property] = data
+                jsonFileHandler.writeData(embeddingCache)
+                data
+            }
+    }
+
     fun inputListToEmbeddingData(minPrice: Int, maxPrice: Int, inputList: List<String>): Map<String, List<Double>> {
         val dataMap = mutableMapOf<String, List<Double>>()
 
         inputList.forEach { input ->
             val property = input.trim()
-            val embedding = embeddingCache[property]
-                ?: run {
-                    val data =
-                        if (property.contains("price")) {
-                            listOf(priceMinMaxScaling(property.split(":")[1].toInt(), minPrice, maxPrice))
-                        } else {
-                            openAIEmbeddingClient.convertInputToOpenAiEmbedding(property)
-                        }
-
-                    embeddingCache[property] = data
-                    jsonFileHandler.writeData(embeddingCache)
-                    data
-                }
+            val embedding = retrieveEmbeddingsIfAbsent(minPrice, maxPrice, property)
 
             dataMap[property] = embedding
         }
