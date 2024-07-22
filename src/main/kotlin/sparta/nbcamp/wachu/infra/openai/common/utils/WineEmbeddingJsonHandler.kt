@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 import java.io.File
 
 @Component
-class EmbeddingJsonHandler(
+class WineEmbeddingJsonHandler(
     @Value("\${embedding.file.path}") private val filePath: String
 ) {
     private val mapper = jacksonObjectMapper().apply { registerModules(kotlinModule()) }

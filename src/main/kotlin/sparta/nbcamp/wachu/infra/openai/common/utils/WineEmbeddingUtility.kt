@@ -8,7 +8,7 @@ import kotlin.math.sqrt
 
 @Component
 class WineEmbeddingUtility(
-    private val jsonFileHandler: EmbeddingJsonHandler,
+    private val jsonFileHandler: WineEmbeddingJsonHandler,
     private val openAIEmbeddingClient: OpenAIEmbeddingClient
 ) {
     private val embeddingCache = jsonFileHandler.readData().toMutableMap()
