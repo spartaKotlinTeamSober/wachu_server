@@ -8,12 +8,14 @@ import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingResponse
 import sparta.nbcamp.wachu.domain.pairing.repository.v1.PairingRepository
+import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 @Service
 class PairingServiceImpl(
+    private val wineRepository: WineRepository,
     private val memberRepository: MemberRepository,
     private val pairingRepository: PairingRepository,
 ) : PairingService {
@@ -32,9 +34,11 @@ class PairingServiceImpl(
 
     @Transactional
     override fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest): PairingResponse {
+        val wine = wineRepository.findByIdOrNull(pairingRequest.wineId)
+            ?: throw ModelNotFoundException("Wine", pairingRequest.wineId)
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        val pairing = PairingRequest.toEntity(member.id!!, pairingRequest)
+        val pairing = PairingRequest.toEntity(wine, member.id!!, pairingRequest)
         return PairingResponse.from(pairingRepository.save(pairing))
     }
 

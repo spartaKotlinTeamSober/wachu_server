@@ -16,7 +16,7 @@ data class PairingResponse(
         fun from(pairing: Pairing): PairingResponse {
             return PairingResponse(
                 id = pairing.id!!,
-                wineId = pairing.wineId,
+                wineId = pairing.wine.id,
                 memberId = pairing.memberId,
                 title = pairing.title,
                 description = pairing.description,
