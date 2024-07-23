@@ -32,11 +32,11 @@ class PairingServiceImpl(
     }
 
     @Transactional
-    override fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest,multipartFile: MultipartFile?): PairingResponse {
+    override fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest,multipartFile: MultipartFile): PairingResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
 
-        val imageUrl= multipartFile?.let { s3Service.upload(multipartFile,S3FilePath.PAIRING.path) }
+        val imageUrl= multipartFile.let { s3Service.upload(multipartFile,S3FilePath.PAIRING.path) }
         val pairing = PairingRequest.toEntity(member.id!!, pairingRequest, imageUrl)
 
         return PairingResponse.from(pairingRepository.save(pairing))

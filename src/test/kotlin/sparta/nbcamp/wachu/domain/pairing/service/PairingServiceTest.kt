@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
@@ -13,6 +14,7 @@ import sparta.nbcamp.wachu.domain.pairing.repository.PairingTestRepositoryImpl
 import sparta.nbcamp.wachu.domain.pairing.service.v1.PairingServiceImpl
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
+import sparta.nbcamp.wachu.infra.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 class PairingServiceTest {
@@ -36,8 +38,8 @@ class PairingServiceTest {
 
     val memberRepository: MemberRepository = mockk()
     val pairingRepository = PairingTestRepositoryImpl(defaultPairing, defaultPairingList)
-
-    val pairingService = PairingServiceImpl(memberRepository, pairingRepository)
+    val s3Service: S3Service = mockk()
+    val pairingService = PairingServiceImpl(memberRepository, pairingRepository, s3Service)
 
     @Test
     fun `존재하는 아이디로 getPairing하면 PairingResponseDto를 반환한다`() {
@@ -75,7 +77,6 @@ class PairingServiceTest {
             wineId = 1L,
             title = "newTest",
             description = "newTest",
-            photo = "newTest"
         )
 
         val testUserPrincipal = UserPrincipal(memberId = 1L, memberRole = setOf("MEMBER"))
@@ -83,12 +84,15 @@ class PairingServiceTest {
             "test", "test", "test", "test"
         ).apply { id = testUserPrincipal.memberId }
 
-        val response = pairingService.createPairing(testUserPrincipal, pairingCreateRequest)
+        val image=mockk<MultipartFile>()
+        val imageUrl="test"
+        every { s3Service.upload(any(), any()) } returns imageUrl
+        val response = pairingService.createPairing(testUserPrincipal, pairingCreateRequest,image)
 
         response.title shouldBe pairingCreateRequest.title
         response.memberId shouldBe testUserPrincipal.memberId
+        response.photoUrl shouldBe imageUrl
         response.wineId shouldBe pairingCreateRequest.wineId
-        response.photoUrl shouldBe pairingCreateRequest.photo
         response.description shouldBe pairingCreateRequest.description
     }
 

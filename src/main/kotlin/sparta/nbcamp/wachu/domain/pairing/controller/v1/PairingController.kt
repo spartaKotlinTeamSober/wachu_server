@@ -35,7 +35,7 @@ class PairingController(
     fun createPairing(
         @AuthenticationPrincipal userprincipal: UserPrincipal,
         @RequestPart pairingRequest: PairingRequest,
-        @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
+        @RequestPart(name = "image", required = false) multipartFile: MultipartFile
     ): ResponseEntity<PairingResponse> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(pairingService.createPairing(userprincipal, pairingRequest,multipartFile))
