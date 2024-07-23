@@ -14,11 +14,13 @@ import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.repository.WinePromotionRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
+import sparta.nbcamp.wachu.infra.openai.service.WineEmbeddingService
 
 @Service
 class WineServiceImpl @Autowired constructor(
     private val wineRepository: WineRepository,
     private val winePromotionRepository: WinePromotionRepository,
+    private val wineEmbeddingService: WineEmbeddingService
 ) : WineService {
 
 
@@ -76,7 +78,8 @@ class WineServiceImpl @Autowired constructor(
     }
 
     override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {
-        TODO("Not yet implemented")
+        return wineEmbeddingService.recommendWine(request.preferWineId)
+            .map { it.first.wine }
     }
 
     private fun getDirection(sort: String) = when (sort.lowercase()) {
