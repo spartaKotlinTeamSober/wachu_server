@@ -9,7 +9,7 @@ interface MemberService {
 
     fun login(request: LoginRequest): TokenResponse
 
-    fun uploadProfile(userPrincipal: UserPrincipal, multipartFile: MultipartFile):ProfileResponse
+    fun uploadProfile(userPrincipal: UserPrincipal, multipartFile: MultipartFile): ProfileResponse
 
     fun getProfile(userPrincipal: UserPrincipal): ProfileResponse
 }

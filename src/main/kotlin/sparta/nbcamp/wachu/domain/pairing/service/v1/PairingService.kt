@@ -8,6 +8,11 @@ import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 interface PairingService {
     fun getPairingList(): List<PairingResponse>
     fun getPairing(id: Long): PairingResponse
-    fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest,multipartFile: MultipartFile): PairingResponse
+    fun createPairing(
+        userPrincipal: UserPrincipal,
+        pairingRequest: PairingRequest,
+        multipartFile: MultipartFile
+    ): PairingResponse
+
     fun deletePairing(userPrincipal: UserPrincipal, id: Long)
 }

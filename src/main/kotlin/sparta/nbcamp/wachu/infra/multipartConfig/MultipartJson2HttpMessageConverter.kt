@@ -9,7 +9,7 @@ import java.lang.reflect.Type
 @Component
 class MultipartJson2HttpMessageConverter(
     private val objectMapper: ObjectMapper
-): AbstractJackson2HttpMessageConverter(objectMapper,MediaType.APPLICATION_OCTET_STREAM){
+) : AbstractJackson2HttpMessageConverter(objectMapper, MediaType.APPLICATION_OCTET_STREAM) {
 
     @Override
     override fun canWrite(mediaType: MediaType?): Boolean {

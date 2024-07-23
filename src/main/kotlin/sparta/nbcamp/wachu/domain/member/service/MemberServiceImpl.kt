@@ -48,11 +48,11 @@ class MemberServiceImpl @Autowired constructor(
     }
 
     @Transactional
-    override fun uploadProfile(userPrincipal: UserPrincipal, multipartFile: MultipartFile):ProfileResponse {
+    override fun uploadProfile(userPrincipal: UserPrincipal, multipartFile: MultipartFile): ProfileResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        val profileUrl= s3Service.upload(multipartFile, S3FilePath.PROFILE.path)
-        member.profileImageUrl=profileUrl
+        val profileUrl = s3Service.upload(multipartFile, S3FilePath.PROFILE.path)
+        member.profileImageUrl = profileUrl
         return ProfileResponse.from(member)
     }
 

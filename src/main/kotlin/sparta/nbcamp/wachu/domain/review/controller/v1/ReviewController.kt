@@ -47,12 +47,16 @@ class ReviewController(
         return ResponseEntity.noContent().build()
     }
 
-    @PostMapping("/multi-media/{reviewId}",consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(
+        "/multi-media/{reviewId}",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun createReviewMedia(
         @AuthenticationPrincipal userprincipal: UserPrincipal,
         @PathVariable reviewId: Long,
         @RequestPart(name = "image", required = false) multipartFileList: List<MultipartFile>
-    ):ResponseEntity<List<ReviewMultiMediaResponse>> {
+    ): ResponseEntity<List<ReviewMultiMediaResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(reviewService.createReviewMedia(userprincipal, reviewId, multipartFileList))
     }

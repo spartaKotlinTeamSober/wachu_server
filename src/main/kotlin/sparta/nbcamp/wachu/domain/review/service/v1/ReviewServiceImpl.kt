@@ -57,7 +57,11 @@ class ReviewServiceImpl(
     }
 
     @Transactional
-    override fun createReviewMedia(userPrincipal: UserPrincipal, reviewId: Long, multipartFileList: List<MultipartFile>): List<ReviewMultiMediaResponse>{
+    override fun createReviewMedia(
+        userPrincipal: UserPrincipal,
+        reviewId: Long,
+        multipartFileList: List<MultipartFile>
+    ): List<ReviewMultiMediaResponse> {
         val review = reviewRepository.findById(reviewId)
             ?: throw ModelNotFoundException("Review", reviewId)
         check(
@@ -67,16 +71,16 @@ class ReviewServiceImpl(
             )
         ) { throw AccessDeniedException("not your review") }
 
-        val mediaList=mutableListOf<ReviewMultiMedia>()
-        multipartFileList.forEach { file->
+        val mediaList = mutableListOf<ReviewMultiMedia>()
+        multipartFileList.forEach { file ->
             val fileType = file.contentType?.lowercase(Locale.getDefault()) ?: ""
-            val mediaUrl=s3Service.upload(file, S3FilePath.REVIEW.path+"$reviewId/")
-            val mediaType=when {
+            val mediaUrl = s3Service.upload(file, S3FilePath.REVIEW.path + "$reviewId/")
+            val mediaType = when {
                 fileType.startsWith("image/") -> ReviewMediaType.IMAGE
                 fileType.startsWith("video/") -> ReviewMediaType.VIDEO
                 else -> throw IllegalArgumentException("Unsupported media type: $fileType")
             }
-            mediaList.add(ReviewMultiMedia.toEntity(reviewId, mediaUrl,mediaType))
+            mediaList.add(ReviewMultiMedia.toEntity(reviewId, mediaUrl, mediaType))
         }
         return reviewRepository.mediaSave(mediaList).map { ReviewMultiMediaResponse.from(it) }
     }

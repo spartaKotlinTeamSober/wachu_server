@@ -25,12 +25,16 @@ class MemberController(
         return ResponseEntity.status(HttpStatus.OK).body(memberService.login(request))
     }
 
-    @PostMapping("/auth/profile",consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(
+        "/auth/profile",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun uploadProfile(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestPart(name = "image") multipartFile: MultipartFile
-    ): ResponseEntity<ProfileResponse>{
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberService.uploadProfile(userPrincipal,multipartFile))
+    ): ResponseEntity<ProfileResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberService.uploadProfile(userPrincipal, multipartFile))
     }
 
     @GetMapping("/auth/profile/")

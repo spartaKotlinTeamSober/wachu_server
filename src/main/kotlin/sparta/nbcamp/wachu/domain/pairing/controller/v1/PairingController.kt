@@ -38,7 +38,7 @@ class PairingController(
         @RequestPart(name = "image", required = false) multipartFile: MultipartFile
     ): ResponseEntity<PairingResponse> {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(pairingService.createPairing(userprincipal, pairingRequest,multipartFile))
+            .body(pairingService.createPairing(userprincipal, pairingRequest, multipartFile))
     }
 
     @DeleteMapping("/{pairingId}")

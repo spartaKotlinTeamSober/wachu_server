@@ -41,5 +41,4 @@ class S3Service @Autowired constructor(
         // 업로드된 파일의 CDN URL 반환
         return "https://d3i8tzom3e0at0.cloudfront.net/$keyName"
     }
-
 }

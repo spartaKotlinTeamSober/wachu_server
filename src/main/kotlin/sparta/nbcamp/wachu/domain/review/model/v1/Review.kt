@@ -22,7 +22,7 @@ class Review(
     @Column
     val score: Double,
 
-) {
+    ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null

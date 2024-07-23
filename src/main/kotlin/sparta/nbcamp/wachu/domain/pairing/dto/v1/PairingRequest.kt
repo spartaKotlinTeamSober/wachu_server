@@ -9,7 +9,7 @@ data class PairingRequest(
     val description: String,
 ) {
     companion object {
-        fun toEntity(memberId: Long, pairingRequest: PairingRequest,imageUrl:String?): Pairing {
+        fun toEntity(memberId: Long, pairingRequest: PairingRequest, imageUrl: String?): Pairing {
             return Pairing(
                 wineId = pairingRequest.wineId,
                 memberId = memberId,
