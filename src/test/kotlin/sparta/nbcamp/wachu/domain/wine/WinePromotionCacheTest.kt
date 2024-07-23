@@ -1,64 +1,94 @@
 package sparta.nbcamp.wachu.domain.wine
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import jakarta.transaction.Transactional
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
+import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.hateoas.PagedModel
+import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.test.context.ActiveProfiles
 import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
-import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
-import sparta.nbcamp.wachu.domain.wine.entity.PromotionStatus
-import sparta.nbcamp.wachu.domain.wine.entity.WineType
-import java.time.LocalDateTime
+import sparta.nbcamp.wachu.domain.wine.repository.WinePromotionRepository
+import sparta.nbcamp.wachu.domain.wine.service.WineService
+import sparta.nbcamp.wachu.infra.redis.EvictCache
 
 @SpringBootTest
 @ActiveProfiles("test")
- class WinePromotionCacheTest {
+class WinePromotionCacheTest {
 
     @Autowired
-    private lateinit var objectMapper: ObjectMapper
+    private lateinit var wineService: WineService
+
+    @Autowired
+    private lateinit var evictCache: EvictCache
+
+    @SpyBean
+    private lateinit var winePromotionRepository: WinePromotionRepository
+
+    @Autowired
+    private lateinit var redisTemplate: RedisTemplate<String, Any>
 
     @Test
-    fun `test serialization and deserialization of PagedModel`() {
-        val promotionWineResponse = PromotionWineResponse(
-            closedAt = LocalDateTime.now(),
-            openedAt = LocalDateTime.now(),
-            promotionId = 1,
-            promotionStatus = PromotionStatus.PROMOTION,
-            wine = WineResponse(
-                id = 8000,
-                name = "forTest",
-                acidity = 1,
-                body = 1,
-                aroma = "1",
-                tannin = 1,
-                country = null,
-                region = null,
-                kind = null,
-                price = null,
-                style = null,
-                sweetness = 1,
-                wineType = WineType.WHITE,
+    fun `캐시 적용여부 테스트`() {
+
+        evictCache.evictCaches(deleteCache = "promotionCache")
+
+        val firstCall: Page<PromotionWineResponse> = wineService.getPromotionWineList(
+            page = 0,
+            size = 6,
+            sortBy = "createdAt",
+            direction = "asc"
+        )
+        assertNotNull(firstCall)
+
+        verify(winePromotionRepository).findPromotionWineList(
+            PageRequest.of(
+                0,
+                6,
+                Sort.by(Sort.Direction.ASC, "createdAt")
             )
         )
 
-        val pagedModel = PagedModel.of(listOf(promotionWineResponse), PagedModel.PageMetadata(1, 0, 1))
+        val secondCall: Page<PromotionWineResponse> = wineService.getPromotionWineList(
+            page = 0,
+            size = 6,
+            sortBy = "createdAt",
+            direction = "asc"
+        )
+        assertNotNull(secondCall)
 
-        // 직렬화 테스트
-        val json = objectMapper.writeValueAsString(pagedModel)
-        println("Serialized JSON: $json")
+        // 두 번째 호출 시 데이터베이스 쿼리가 발생하지 않는지 확인
+        verify(winePromotionRepository, Mockito.times(1)).findPromotionWineList(
+            PageRequest.of(
+                0,
+                6,
+                Sort.by(Sort.Direction.ASC, "createdAt")
+            )
+        )
+        evictCache.evictCaches(deleteCache = "promotionCache")
+    }
 
-        // 역직렬화 테스트
-        val deserializedObject = objectMapper.readValue(json, object : TypeReference<PagedModel<PromotionWineResponse>>() {})
-        println("Deserialized Object: $deserializedObject")
+    @Test
+    fun `admin이 프로모션 추가할때 캐시 삭제 확인 테스트`() {
 
-        // 객체 비교 (기본적으로 PagedModel 내부 요소를 비교)
-        assertEquals(pagedModel.content, deserializedObject.content)
+        val firstCall: Page<PromotionWineResponse> = wineService.getPromotionWineList(
+            page = 0,
+            size = 6,
+            sortBy = "createdAt",
+            direction = "asc"
+        )
+        assertNotNull(firstCall)
+        // 캐시 삭제
+        evictCache.evictCaches(deleteCache = "promotionCache")
+
+        // 캐시가 삭제되었는지 테스트
+        val keys = redisTemplate.keys("promotionCache*")
+        assertTrue(keys.isEmpty())
     }
 }

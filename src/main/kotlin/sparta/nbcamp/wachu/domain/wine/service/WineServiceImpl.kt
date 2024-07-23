@@ -22,7 +22,6 @@ class WineServiceImpl @Autowired constructor(
 ) : WineService {
 
 
-    @Cacheable(value = ["wineCache"], key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction")
     override fun getWineList(
         query: String,
         price: Int?,
