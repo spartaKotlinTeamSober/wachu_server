@@ -9,6 +9,7 @@ import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingResponse
 import sparta.nbcamp.wachu.domain.pairing.repository.v1.PairingRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
+import sparta.nbcamp.wachu.infra.aws.S3FilePath
 import sparta.nbcamp.wachu.infra.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
@@ -35,8 +36,7 @@ class PairingServiceImpl(
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
 
-        var imageUrl:String?=null
-        if(multipartFile != null) {imageUrl= s3Service.upload(multipartFile)}
+        val imageUrl= multipartFile?.let { s3Service.upload(multipartFile,S3FilePath.PAIRING.path) }
         val pairing = PairingRequest.toEntity(member.id!!, pairingRequest, imageUrl)
 
         return PairingResponse.from(pairingRepository.save(pairing))

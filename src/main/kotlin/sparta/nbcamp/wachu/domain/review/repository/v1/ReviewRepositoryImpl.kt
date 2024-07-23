@@ -3,10 +3,12 @@ package sparta.nbcamp.wachu.domain.review.repository.v1
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import sparta.nbcamp.wachu.domain.review.model.v1.Review
+import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
 
 @Repository
 class ReviewRepositoryImpl(
     val reviewJpaRepository: ReviewJpaRepository,
+    val reviewMultiMediaJpaRepository: ReviewMultiMediaJpaRepository
 ) : ReviewRepository {
     override fun findById(id: Long): Review? {
         return reviewJpaRepository.findByIdOrNull(id)
@@ -22,5 +24,9 @@ class ReviewRepositoryImpl(
 
     override fun delete(review: Review) {
         return reviewJpaRepository.delete(review)
+    }
+
+    override fun mediaSave(media: List<ReviewMultiMedia>): List<ReviewMultiMedia> {
+        return reviewMultiMediaJpaRepository.saveAll(media)
     }
 }

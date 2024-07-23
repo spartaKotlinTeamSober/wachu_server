@@ -9,6 +9,7 @@ import sparta.nbcamp.wachu.domain.member.dto.*
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
+import sparta.nbcamp.wachu.infra.aws.S3FilePath
 import sparta.nbcamp.wachu.infra.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
@@ -48,9 +49,9 @@ class MemberServiceImpl @Autowired constructor(
 
     @Transactional
     override fun uploadProfile(userPrincipal: UserPrincipal, multipartFile: MultipartFile):ProfileResponse {
-        val profileUrl= s3Service.upload(multipartFile)
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
+        val profileUrl= s3Service.upload(multipartFile, S3FilePath.PROFILE.path)
         member.profileImageUrl=profileUrl
         return ProfileResponse.from(profileUrl)
     }
