@@ -11,7 +11,7 @@ import java.util.logging.Logger
 class ReviewTestRepositoryImpl(
     private val review: Review,
     private val reviewList: List<Review>,
-    private val reviewMultiMedia: List<ReviewMultiMedia>
+    private val reviewMultiMedia: List<ReviewMultiMedia>,
     private val reviewPage: Page<Review>
 ) : ReviewRepository {
     override fun findById(id: Long): Review? {

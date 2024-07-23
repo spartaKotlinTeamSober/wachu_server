@@ -42,7 +42,7 @@ class PairingServiceTest {
     val defaultPairingPage = PageImpl(defaultPairingList, defaultPageable, defaultPairingList.size.toLong())
 
     val memberRepository: MemberRepository = mockk()
-    val pairingRepository = PairingTestRepositoryImpl(defaultPairing, defaultPairingList)
+    val pairingRepository = PairingTestRepositoryImpl(defaultPairing, defaultPairingPage)
     val s3Service: S3Service = mockk()
     val pairingService = PairingServiceImpl(memberRepository, pairingRepository, s3Service)
 

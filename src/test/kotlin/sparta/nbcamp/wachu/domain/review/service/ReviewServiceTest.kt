@@ -51,7 +51,7 @@ class ReviewServiceTest {
     val defaultReviewPage = PageImpl(defaultReviewList, defaultPageable, defaultReviewList.size.toLong())
     val memberRepository: MemberRepository = mockk()
     val s3Service: S3Service = mockk()
-    val reviewRepository = ReviewTestRepositoryImpl(defaultReview, defaultReviewList,defaultReviewMultiMediaList)
+    val reviewRepository = ReviewTestRepositoryImpl(defaultReview, defaultReviewList,defaultReviewMultiMediaList,defaultReviewPage)
 
 
     val reviewService = ReviewServiceImpl(memberRepository, reviewRepository,s3Service)
