@@ -1,8 +1,6 @@
 package sparta.nbcamp.wachu.domain.wine.controller
 
 import org.springframework.data.domain.Page
-import org.springframework.hateoas.EntityModel
-import org.springframework.hateoas.PagedModel
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,9 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
-import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 import sparta.nbcamp.wachu.domain.wine.service.WineService
-import sparta.nbcamp.wachu.infra.hateoas.WinePromotionModel
 
 @RequestMapping("/api/v1/wines")
 @RestController

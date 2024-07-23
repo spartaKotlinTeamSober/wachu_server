@@ -1,13 +1,9 @@
 package sparta.nbcamp.wachu.domain.wine.service
 
 import org.springframework.data.domain.Page
-import org.springframework.hateoas.EntityModel
-import org.springframework.hateoas.PagedModel
 import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
-import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
-import sparta.nbcamp.wachu.infra.hateoas.WinePromotionModel
 
 interface WineService {
     fun getWineList(
