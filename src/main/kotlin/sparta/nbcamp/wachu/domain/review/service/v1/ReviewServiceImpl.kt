@@ -56,6 +56,7 @@ class ReviewServiceImpl(
         reviewRepository.delete(review)
     }
 
+    @Transactional
     override fun createReviewMedia(userPrincipal: UserPrincipal, reviewId: Long, multipartFileList: List<MultipartFile>): List<ReviewMultiMediaResponse>{
         val review = reviewRepository.findById(reviewId)
             ?: throw ModelNotFoundException("Review", reviewId)
@@ -78,5 +79,9 @@ class ReviewServiceImpl(
             mediaList.add(ReviewMultiMedia.toEntity(reviewId, mediaUrl,mediaType))
         }
         return reviewRepository.mediaSave(mediaList).map { ReviewMultiMediaResponse.from(it) }
+    }
+
+    override fun getReviewMultiMedia(reviewId: Long): List<ReviewMultiMediaResponse> {
+        return reviewRepository.mediaFindAll(reviewId).map { ReviewMultiMediaResponse.from(it) }
     }
 }

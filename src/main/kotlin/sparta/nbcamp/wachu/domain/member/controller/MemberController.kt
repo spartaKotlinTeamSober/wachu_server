@@ -4,10 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.*
 import sparta.nbcamp.wachu.domain.member.service.MemberService
@@ -35,5 +32,10 @@ class MemberController(
         @RequestPart(name = "image") multipartFile: MultipartFile
     ): ResponseEntity<ProfileResponse>{
         return ResponseEntity.status(HttpStatus.CREATED).body(memberService.uploadProfile(userPrincipal,multipartFile))
+    }
+
+    @GetMapping("/auth/profile/")
+    fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<ProfileResponse> {
+        return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
     }
 }

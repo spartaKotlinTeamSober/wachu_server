@@ -53,6 +53,12 @@ class MemberServiceImpl @Autowired constructor(
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
         val profileUrl= s3Service.upload(multipartFile, S3FilePath.PROFILE.path)
         member.profileImageUrl=profileUrl
-        return ProfileResponse.from(profileUrl)
+        return ProfileResponse.from(member)
+    }
+
+    override fun getProfile(userPrincipal: UserPrincipal): ProfileResponse {
+        val member = memberRepository.findById(userPrincipal.memberId)
+            ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
+        return ProfileResponse.from(member)
     }
 }

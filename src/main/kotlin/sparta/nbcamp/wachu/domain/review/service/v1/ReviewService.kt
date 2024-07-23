@@ -12,4 +12,5 @@ interface ReviewService {
     fun createReview(userPrincipal: UserPrincipal, reviewRequest: ReviewRequest): ReviewResponse
     fun deleteReview(userPrincipal: UserPrincipal, id: Long)
     fun createReviewMedia(userPrincipal: UserPrincipal, reviewId: Long, multipartFileList: List<MultipartFile>):List<ReviewMultiMediaResponse>
+    fun getReviewMultiMedia(reviewId: Long): List<ReviewMultiMediaResponse>
 }

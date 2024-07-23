@@ -9,4 +9,5 @@ interface ReviewRepository {
     fun save(review: Review): Review
     fun delete(review: Review)
     fun mediaSave(media: List<ReviewMultiMedia>): List<ReviewMultiMedia>
+    fun mediaFindAll(reviewId:Long):List<ReviewMultiMedia>
 }

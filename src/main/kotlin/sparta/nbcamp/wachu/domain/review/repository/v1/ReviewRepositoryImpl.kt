@@ -29,4 +29,8 @@ class ReviewRepositoryImpl(
     override fun mediaSave(media: List<ReviewMultiMedia>): List<ReviewMultiMedia> {
         return reviewMultiMediaJpaRepository.saveAll(media)
     }
+
+    override fun mediaFindAll(reviewId: Long): List<ReviewMultiMedia> {
+        return reviewMultiMediaJpaRepository.findAllByReviewId(reviewId)
+    }
 }
