@@ -10,7 +10,7 @@ import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
 @Repository
 class ReviewRepositoryImpl(
     val reviewJpaRepository: ReviewJpaRepository,
-    val reviewMultiMediaJpaRepository: ReviewMultiMediaJpaRepository
+    val reviewMultiMediaJpaRepository: ReviewMultiMediaJpaRepository,
     val reviewQueryDslRepository: ReviewQueryDslRepository,
 ) : ReviewRepository {
     override fun findById(id: Long): Review? {
