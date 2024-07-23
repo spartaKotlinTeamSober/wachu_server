@@ -13,6 +13,7 @@ import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
 import sparta.nbcamp.wachu.domain.pairing.model.v1.Pairing
 import sparta.nbcamp.wachu.domain.pairing.repository.PairingTestRepositoryImpl
 import sparta.nbcamp.wachu.domain.pairing.service.v1.PairingServiceImpl
+import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
@@ -68,12 +69,14 @@ class PairingServiceTest {
 
     @Test
     fun `존재하는 아이디로 getPairing하면 PairingResponseDto를 반환한다`() {
+
         val responseDto = pairingService.getPairing(1L)
+        val wineResponseDto = WineResponse.from(defaultWine)
 
         responseDto.id shouldBe defaultPairing.id
         responseDto.title shouldBe defaultPairing.title
         responseDto.memberId shouldBe defaultPairing.memberId
-        responseDto.wineId shouldBe defaultPairing.wine.id
+        responseDto.wine shouldBe wineResponseDto
         responseDto.photoUrl shouldBe defaultPairing.photoUrl
         responseDto.createdAt shouldBe defaultPairing.createdAt
         responseDto.description shouldBe defaultPairing.description
@@ -105,6 +108,7 @@ class PairingServiceTest {
         )
         val testWine = defaultWine
         every { wineRepository.findByIdOrNull(1L) } returns testWine
+        val testWineResponse = WineResponse.from(testWine)
         val testUserPrincipal = UserPrincipal(memberId = 1L, memberRole = setOf("MEMBER"))
         every { memberRepository.findById(any()) } returns Member(
             "test", "test", "test", "test"
@@ -114,7 +118,7 @@ class PairingServiceTest {
 
         response.title shouldBe pairingCreateRequest.title
         response.memberId shouldBe testUserPrincipal.memberId
-        response.wineId shouldBe testWine.id
+        response.wine shouldBe testWineResponse
         response.photoUrl shouldBe pairingCreateRequest.photo
         response.description shouldBe pairingCreateRequest.description
     }
