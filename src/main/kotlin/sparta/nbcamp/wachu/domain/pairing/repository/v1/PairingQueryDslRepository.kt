@@ -15,8 +15,9 @@ class PairingQueryDslRepository : QueryDslSupport() {
     private val wine = QWine.wine
 
     fun findPage(pageable: Pageable): Page<Pairing> {
-        val basicResults = queryFactory
+        val content = queryFactory
             .selectFrom(pairing)
+            .leftJoin(pairing.wine, wine).fetchJoin()
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .fetch()
@@ -25,14 +26,6 @@ class PairingQueryDslRepository : QueryDslSupport() {
             .select(pairing.count())
             .from(pairing)
             .fetchOne() ?: 0L
-
-        val content = basicResults.mapNotNull { basicPairing ->
-            queryFactory
-                .selectFrom(pairing)
-                .leftJoin(pairing.wine, wine).fetchJoin()
-                .where(pairing.id.eq(basicPairing.id))
-                .fetchOne()
-        }
 
         return PageImpl(content, pageable, total)
     }
