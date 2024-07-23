@@ -13,17 +13,14 @@ class PairingQueryDslRepository : QueryDslSupport() {
     private val pairing = QPairing.pairing
 
     fun findPage(pageable: Pageable): Page<Pairing> {
-        val total = queryFactory
-            .select(pairing.count())
-            .from(pairing)
-            .fetchOne()
-            ?: 0L
-
-        val query = queryFactory
+        val results = queryFactory
             .selectFrom(pairing)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
-        val content = query.fetch()
+            .fetch()
+
+        val content = results.toList()
+        val total = results.count().toLong()
 
         val page = PageImpl(content, pageable, total)
         return page
