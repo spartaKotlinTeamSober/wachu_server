@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.domain.wine.service
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,9 +12,11 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.web.PagedResourcesAssembler
+import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.PagedModel
 import org.springframework.hateoas.mediatype.hal.Jackson2HalModule
 import org.springframework.stereotype.Service
+import sparta.nbcamp.wachu.domain.wine.dto.PagedPromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
@@ -31,16 +34,23 @@ class WineServiceImpl @Autowired constructor(
     private val wineRepository: WineRepository,
     private val winePromotionRepository: WinePromotionRepository,
     private val winePromotionAssembler: WinePromotionAssembler,
-    private val pagedResourcesAssembler: PagedResourcesAssembler<WinePromotion>,
+    private val pagedResourcesAssembler: PagedResourcesAssembler<PromotionWineResponse>,
     // private val redisTemplate: RedisTemplate<String, Any>,
-    // private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper
 ) : WineService {
 
-    // private val objectMapper: ObjectMapper = ObjectMapper().apply {
-    //     registerModule(JavaTimeModule())
-    //     registerModule(Jackson2HalModule())
-    //     configure(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+    @Autowired
+    private lateinit var redisTemplate: RedisTemplate<String, Any>
+
+    // fun createObjectMapper(): ObjectMapper {
+    //     return ObjectMapper().apply {
+    //         registerModule(JavaTimeModule())
+    //         registerModule(Jackson2HalModule())
+    //         configure(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+    //         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    //     }
     // }
+
 
 
     @Cacheable(value = ["wineCache"], key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction")
@@ -88,53 +98,23 @@ class WineServiceImpl @Autowired constructor(
         return wines.map { WineResponse.from(it) }
     }
 
+    init {
+        objectMapper.registerModule(JavaTimeModule())
+        objectMapper.registerModule(Jackson2HalModule())
+        objectMapper.configure(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+    }
+
     @Cacheable(value = ["promotionCache"], key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction")
     override fun getPromotionWineList(
         page: Int,
         size: Int,
         sortBy: String,
         direction: String
-    ): Page<WinePromotion> {
-
+    ): Page<PromotionWineResponse> {
         val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy)
-        val promotionsPage: Page<WinePromotion> = winePromotionRepository.findPromotionWineList(pageable)
-
-        return promotionsPage
-//        return pagedResourcesAssembler.toModel(promotionsPage, winePromotionAssembler)
+        return winePromotionRepository.findPromotionWineList(pageable)
     }
 
-    // fun savePromotionWineListToCache(
-    //     page: Int,
-    //     size: Int,
-    //     sortBy: String,
-    //     direction: String,
-    //     data: PagedModel<WinePromotionModel>
-    // ) {
-    //     val key = "$page-$size-$sortBy-$direction"
-    //     val jsonData = try {
-    //         objectMapper.writeValueAsString(data)
-    //     } catch (e: IOException) {
-    //         throw RuntimeException("Failed to serialize data", e)
-    //     }
-    //     redisTemplate.opsForValue().set(key, jsonData)
-    // }
-    //
-    // fun getPromotionWineListFromCache(
-    //     page: Int,
-    //     size: Int,
-    //     sortBy: String,
-    //     direction: String
-    // ): PagedModel<WinePromotionModel>? {
-    //     val key = "$page-$size-$sortBy-$direction"
-    //     val jsonData = redisTemplate.opsForValue().get(key) as String?
-    //     return jsonData?.let {
-    //         try {
-    //             objectMapper.readValue(it, PagedModel::class.java) as PagedModel<WinePromotionModel>
-    //         } catch (e: IOException) {
-    //             throw RuntimeException("Failed to deserialize data", e)
-    //         }
-    //     }
-    // }
 
 
 

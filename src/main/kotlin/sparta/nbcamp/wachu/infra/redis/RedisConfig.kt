@@ -25,7 +25,7 @@ class RedisConfig {
     private lateinit var redisHost: String
 
     @Value("\${spring.data.redis.port}")
-    private var redisPort: Int =0
+    private var redisPort: Int = 0
 
     @Value("\${spring.data.redis.password}")
     private lateinit var redisPassword: String
@@ -40,6 +40,15 @@ class RedisConfig {
     @Bean
     fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, String> {
         val template = RedisTemplate<String, String>()
+        template.setConnectionFactory(connectionFactory)
+        template.keySerializer = StringRedisSerializer()
+        template.valueSerializer = GenericJackson2JsonRedisSerializer()
+        return template
+    }
+
+    @Bean
+    fun redisTemplateForAny(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Any> {
+        val template = RedisTemplate<String, Any>()
         template.setConnectionFactory(connectionFactory)
         template.keySerializer = StringRedisSerializer()
         template.valueSerializer = GenericJackson2JsonRedisSerializer()

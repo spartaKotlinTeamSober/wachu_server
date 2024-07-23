@@ -1,6 +1,7 @@
 package sparta.nbcamp.wachu.domain.wine.controller
 
 import org.springframework.data.domain.Page
+import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.PagedModel
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -66,7 +67,7 @@ class WineController(
         @RequestParam(value = "size", defaultValue = "10") size: Int,
         @RequestParam(value = "sort_by", defaultValue = "createdAt") sortBy: String,
         @RequestParam(value = "sort_direction", defaultValue = "asc") direction: String,
-    ): ResponseEntity<Page<WinePromotion>> {
+    ): ResponseEntity<Page<PromotionWineResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(
             wineService.getPromotionWineList(
                 page = page,
