@@ -2,6 +2,7 @@ package sparta.nbcamp.wachu.domain.wine.dto
 
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
+import java.io.Serializable
 
 data class WineResponse(
 
@@ -18,7 +19,7 @@ data class WineResponse(
     val style: String?,
     val country: String?,
     val region: String?,
-) {
+): Serializable {
 
     companion object {
         fun from(entity: Wine): WineResponse {

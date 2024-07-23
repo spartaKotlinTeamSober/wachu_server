@@ -2,6 +2,7 @@ package sparta.nbcamp.wachu.domain.wine.dto
 
 import sparta.nbcamp.wachu.domain.wine.entity.PromotionStatus
 import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
+import java.io.Serializable
 import java.time.LocalDateTime
 
 data class PromotionWineResponse(
@@ -12,7 +13,7 @@ data class PromotionWineResponse(
     val openedAt: LocalDateTime,
     val closedAt: LocalDateTime,
 
-    ) {
+    ): Serializable {
     companion object {
         fun from(entity: WinePromotion): PromotionWineResponse {
             return PromotionWineResponse(
@@ -21,8 +22,7 @@ data class PromotionWineResponse(
                 promotionStatus = entity.status,
                 openedAt = entity.openedAt,
                 closedAt = entity.closedAt,
-
-                )
+            )
         }
     }
 }
