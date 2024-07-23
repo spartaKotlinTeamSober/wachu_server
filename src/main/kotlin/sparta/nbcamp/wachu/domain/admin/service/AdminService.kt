@@ -1,7 +1,5 @@
 package sparta.nbcamp.wachu.domain.admin.service
 
-import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import sparta.nbcamp.wachu.domain.admin.dto.DesignatePromotionRequest
 import sparta.nbcamp.wachu.domain.admin.model.WinePromotionJpaRepository
