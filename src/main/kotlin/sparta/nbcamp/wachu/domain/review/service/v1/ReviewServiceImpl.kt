@@ -1,5 +1,7 @@
 package sparta.nbcamp.wachu.domain.review.service.v1
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -23,9 +25,8 @@ class ReviewServiceImpl(
     private val reviewRepository: ReviewRepository,
     private val s3Service: S3Service,
 ) : ReviewService {
-    override fun getReviewList(): List<ReviewResponse> {
-        val reviewList = reviewRepository.findAll()
-        return reviewList.map { ReviewResponse.from(it) }
+    override fun getReviewPage(pageable: Pageable): Page<ReviewResponse> {
+        return reviewRepository.findAll(pageable).map { ReviewResponse.from(it) }
     }
 
     @Transactional(readOnly = true)

@@ -6,6 +6,8 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewRequest
@@ -45,10 +47,12 @@ class ReviewServiceTest {
             mediaType = ReviewMediaType.IMAGE,
         ).apply { id = index.toLong() }
     }
-
+    val defaultPageable = PageRequest.of(0, 10)
+    val defaultReviewPage = PageImpl(defaultReviewList, defaultPageable, defaultReviewList.size.toLong())
     val memberRepository: MemberRepository = mockk()
     val s3Service: S3Service = mockk()
     val reviewRepository = ReviewTestRepositoryImpl(defaultReview, defaultReviewList,defaultReviewMultiMediaList)
+
 
     val reviewService = ReviewServiceImpl(memberRepository, reviewRepository,s3Service)
 
@@ -73,12 +77,11 @@ class ReviewServiceTest {
     }
 
     @Test
-    fun `getReviews 하면 review 목록을 반환한다`() {
-        val result = reviewService.getReviewList()
-
-        result.size shouldBe defaultReviewList.size
+    fun `getReviewPage 하면 review 페이지를 반환한다`() {
+        val result = reviewService.getReviewPage(defaultPageable)
+        result.size shouldBe defaultReviewPage.size
         result.forEachIndexed { index, response ->
-            response.title shouldBe defaultReviewList[index].title
+            response.title shouldBe defaultReviewPage.content[index].title
         }
     }
 

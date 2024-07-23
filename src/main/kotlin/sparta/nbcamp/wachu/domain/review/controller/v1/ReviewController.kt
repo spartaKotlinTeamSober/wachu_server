@@ -1,5 +1,8 @@
 package sparta.nbcamp.wachu.domain.review.controller.v1
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -18,8 +21,11 @@ class ReviewController(
     private val reviewService: ReviewService,
 ) {
     @GetMapping
-    fun getReviewList(): ResponseEntity<List<ReviewResponse>> {
-        return ResponseEntity.ok(reviewService.getReviewList())
+    fun getReviewPage(
+        @PageableDefault(page = 0, size = 10)
+        pageable: Pageable,
+    ): ResponseEntity<Page<ReviewResponse>> {
+        return ResponseEntity.ok(reviewService.getReviewPage(pageable))
     }
 
     @GetMapping("/{reviewId}")
