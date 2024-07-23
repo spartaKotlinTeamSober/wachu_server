@@ -8,11 +8,13 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import java.time.LocalDateTime
 
-@Entity(name = "pairing")
+@Entity
+@Table(name = "pairing")
 class Pairing(
 
     @ManyToOne(fetch = FetchType.LAZY)
