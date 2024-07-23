@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.*
 import sparta.nbcamp.wachu.domain.member.service.MemberService
-import sparta.nbcamp.wachu.infra.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 @RestController
