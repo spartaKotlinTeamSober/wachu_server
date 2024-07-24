@@ -2,6 +2,7 @@ package sparta.nbcamp.wachu.domain.pairing.dto.v1
 
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.pairing.model.v1.Pairing
+import sparta.nbcamp.wachu.domain.wine.entity.Wine
 
 data class PairingRequest(
     val wineId: Long,
@@ -9,9 +10,9 @@ data class PairingRequest(
     val description: String,
 ) {
     companion object {
-        fun toEntity(memberId: Long, pairingRequest: PairingRequest, imageUrl: String?): Pairing {
+        fun toEntity(wine: Wine, memberId: Long, pairingRequest: PairingRequest, imageUrl: String?): Pairing {
             return Pairing(
-                wineId = pairingRequest.wineId,
+                wine = wine,
                 memberId = memberId,
                 title = pairingRequest.title,
                 description = pairingRequest.description,

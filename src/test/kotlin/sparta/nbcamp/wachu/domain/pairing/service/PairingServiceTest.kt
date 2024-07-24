@@ -14,14 +14,36 @@ import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
 import sparta.nbcamp.wachu.domain.pairing.model.v1.Pairing
 import sparta.nbcamp.wachu.domain.pairing.repository.PairingTestRepositoryImpl
 import sparta.nbcamp.wachu.domain.pairing.service.v1.PairingServiceImpl
+import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
+import sparta.nbcamp.wachu.domain.wine.entity.Wine
+import sparta.nbcamp.wachu.domain.wine.entity.WineType
+import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 class PairingServiceTest {
+
+    val defaultWine = Wine(
+        id = 1L,
+        name = "testWine",
+        sweetness = 0,
+        acidity = 0,
+        body = 0,
+        tannin = 0,
+        wineType = WineType.RED,
+        aroma = "test",
+        price = 0,
+        kind = "test",
+        style = "test",
+        country = "test",
+        region = "test",
+        embedding = "test"
+    )
+
     val defaultPairing = Pairing(
-        wineId = 1L,
+        wine = defaultWine,
         memberId = 1L,
         title = "test",
         description = "test",
@@ -30,7 +52,7 @@ class PairingServiceTest {
 
     val defaultPairingList = List(10) { index ->
         Pairing(
-            wineId = index.toLong(),
+            wine = defaultWine,
             memberId = index.toLong(),
             title = "test$index",
             description = "testDescription$index",
@@ -41,19 +63,22 @@ class PairingServiceTest {
     val defaultPageable = PageRequest.of(0, 10)
     val defaultPairingPage = PageImpl(defaultPairingList, defaultPageable, defaultPairingList.size.toLong())
 
+    val wineRepository: WineRepository = mockk()
     val memberRepository: MemberRepository = mockk()
     val pairingRepository = PairingTestRepositoryImpl(defaultPairing, defaultPairingPage)
     val s3Service: S3Service = mockk()
-    val pairingService = PairingServiceImpl(memberRepository, pairingRepository, s3Service)
+    val pairingService = PairingServiceImpl(wineRepository,memberRepository, pairingRepository, s3Service)
 
     @Test
     fun `존재하는 아이디로 getPairing하면 PairingResponseDto를 반환한다`() {
+
         val responseDto = pairingService.getPairing(1L)
+        val wineResponseDto = WineResponse.from(defaultWine)
 
         responseDto.id shouldBe defaultPairing.id
         responseDto.title shouldBe defaultPairing.title
         responseDto.memberId shouldBe defaultPairing.memberId
-        responseDto.wineId shouldBe defaultPairing.wineId
+        responseDto.wine shouldBe wineResponseDto
         responseDto.photoUrl shouldBe defaultPairing.photoUrl
         responseDto.createdAt shouldBe defaultPairing.createdAt
         responseDto.description shouldBe defaultPairing.description
@@ -82,7 +107,9 @@ class PairingServiceTest {
             title = "newTest",
             description = "newTest",
         )
-
+        val testWine = defaultWine
+        every { wineRepository.findByIdOrNull(1L) } returns testWine
+        val testWineResponse = WineResponse.from(testWine)
         val testUserPrincipal = UserPrincipal(memberId = 1L, memberRole = setOf("MEMBER"))
         every { memberRepository.findById(any()) } returns Member(
             "test", "test", "test", "test"
@@ -95,8 +122,8 @@ class PairingServiceTest {
 
         response.title shouldBe pairingCreateRequest.title
         response.memberId shouldBe testUserPrincipal.memberId
-        response.photoUrl shouldBe imageUrl
-        response.wineId shouldBe pairingCreateRequest.wineId
+        response.wine shouldBe testWineResponse
+         response.wineId shouldBe pairingCreateRequest.wineId
         response.description shouldBe pairingCreateRequest.description
     }
 
