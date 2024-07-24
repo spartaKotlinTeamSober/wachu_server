@@ -5,16 +5,20 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewRequest
 import sparta.nbcamp.wachu.domain.review.model.v1.Review
+import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMediaType
+import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
 import sparta.nbcamp.wachu.domain.review.repository.ReviewTestRepositoryImpl
 import sparta.nbcamp.wachu.domain.review.service.v1.ReviewServiceImpl
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
+import sparta.nbcamp.wachu.infra.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 class ReviewServiceTest {
@@ -36,13 +40,21 @@ class ReviewServiceTest {
         ).apply { id = index.toLong() }
     }
 
+    val defaultReviewMultiMediaList = List(10) { index ->
+        ReviewMultiMedia(
+            reviewId = index.toLong(),
+            mediaUrl = "test$index",
+            mediaType = ReviewMediaType.IMAGE,
+        ).apply { id = index.toLong() }
+    }
     val defaultPageable = PageRequest.of(0, 10)
     val defaultReviewPage = PageImpl(defaultReviewList, defaultPageable, defaultReviewList.size.toLong())
-
     val memberRepository: MemberRepository = mockk()
-    val reviewRepository = ReviewTestRepositoryImpl(defaultReview, defaultReviewPage)
+    val s3Service: S3Service = mockk()
+    val reviewRepository = ReviewTestRepositoryImpl(defaultReview, defaultReviewList,defaultReviewMultiMediaList,defaultReviewPage)
 
-    val reviewService = ReviewServiceImpl(memberRepository, reviewRepository)
+
+    val reviewService = ReviewServiceImpl(memberRepository, reviewRepository,s3Service)
 
     @Test
     fun `존재하는 아이디로 getReview하면 ReviewResponseDto를 반환한다`() {
@@ -110,5 +122,36 @@ class ReviewServiceTest {
         val testAdminPrincipal = UserPrincipal(memberId = 0L, memberRole = setOf("ADMIN"))
 
         reviewService.deleteReview(testAdminPrincipal, 1L)
+    }
+
+    @Test
+    fun `createReviewMedia를 하면 ReviewMultuMedeia가 생성된다`(){
+        val testUserPrincipal = UserPrincipal(memberId = 1L, memberRole = setOf("MEMBER"))
+        every { memberRepository.findById(any()) } returns Member(
+            "test", "test", "test", "test"
+        ).apply { id = testUserPrincipal.memberId }
+
+        val multiMedia = List(10) {
+            mockk<MultipartFile>(relaxed = true)
+            {
+                every { contentType } returns "image/jpeg"
+            }
+        }
+
+        // Mock the uploadS3 method with exact values
+        val reviewMultiMediaList = multiMedia.mapIndexed { index, file ->
+            ReviewMultiMedia(
+                reviewId = 1L,
+                mediaUrl = "test$index",
+                mediaType = ReviewMediaType.IMAGE
+            ).apply { id = index.toLong() }
+        }
+
+        every { s3Service.upload(any(), any()) } returns ""
+
+        val responseMedia = reviewService.createReviewMedia(testUserPrincipal, 1L, multiMedia)
+
+        responseMedia.size shouldBe 10
+        responseMedia.first().mediaUrl shouldBe "test0"
     }
 }

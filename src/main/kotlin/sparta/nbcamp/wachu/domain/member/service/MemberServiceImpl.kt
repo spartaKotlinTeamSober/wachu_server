@@ -3,19 +3,23 @@ package sparta.nbcamp.wachu.domain.member.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
-import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
-import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
-import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
+import sparta.nbcamp.wachu.domain.member.dto.*
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
+import sparta.nbcamp.wachu.exception.ModelNotFoundException
+import sparta.nbcamp.wachu.infra.aws.S3FilePath
+import sparta.nbcamp.wachu.infra.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
+import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 @Service
 class MemberServiceImpl @Autowired constructor(
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtTokenManager: JwtTokenManager,
+    private val s3Service: S3Service
 ) : MemberService {
 
     override fun signup(request: SignUpRequest): SignUpResponse {
@@ -41,5 +45,20 @@ class MemberServiceImpl @Autowired constructor(
             accessToken = jwtTokenManager.generateToken(memberId = loginMember.id!!, memberRole = MemberRole.MEMBER),
             refreshToken = null
         )
+    }
+
+    @Transactional
+    override fun uploadProfile(userPrincipal: UserPrincipal, multipartFile: MultipartFile): ProfileResponse {
+        val member = memberRepository.findById(userPrincipal.memberId)
+            ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
+        val profileUrl = s3Service.upload(multipartFile, S3FilePath.PROFILE.path)
+        member.profileImageUrl = profileUrl
+        return ProfileResponse.from(member)
+    }
+
+    override fun getProfile(userPrincipal: UserPrincipal): ProfileResponse {
+        val member = memberRepository.findById(userPrincipal.memberId)
+            ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
+        return ProfileResponse.from(member)
     }
 }
