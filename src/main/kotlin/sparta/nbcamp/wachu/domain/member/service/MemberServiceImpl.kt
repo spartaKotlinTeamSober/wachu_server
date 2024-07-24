@@ -9,9 +9,10 @@ import sparta.nbcamp.wachu.domain.member.dto.*
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
-import sparta.nbcamp.wachu.infra.apaheTika.TikaService
-import sparta.nbcamp.wachu.infra.aws.S3FilePath
-import sparta.nbcamp.wachu.infra.aws.S3Service
+import sparta.nbcamp.wachu.infra.media.MediaService
+import sparta.nbcamp.wachu.infra.media.apacheTika.TikaService
+import sparta.nbcamp.wachu.infra.media.aws.S3FilePath
+import sparta.nbcamp.wachu.infra.media.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
@@ -20,8 +21,7 @@ class MemberServiceImpl @Autowired constructor(
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtTokenManager: JwtTokenManager,
-    private val s3Service: S3Service,
-    private val tikaService: TikaService
+    private val mediaService: MediaService
 ) : MemberService {
 
     override fun signup(request: SignUpRequest): SignUpResponse {
@@ -53,9 +53,7 @@ class MemberServiceImpl @Autowired constructor(
     override fun uploadProfile(userPrincipal: UserPrincipal, multipartFile: MultipartFile): ProfileResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        if(!tikaService.validateMediaFile(multipartFile))
-            throw IllegalStateException("content is not support")
-        val profileUrl = s3Service.upload(multipartFile, S3FilePath.PROFILE.path)
+        val profileUrl = mediaService.upload(multipartFile, S3FilePath.PROFILE.path)
         member.profileImageUrl = profileUrl
         return ProfileResponse.from(member)
     }

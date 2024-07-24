@@ -1,4 +1,4 @@
-package sparta.nbcamp.wachu.infra.apaheTika
+package sparta.nbcamp.wachu.infra.media.apacheTika
 
 import org.apache.tika.Tika
 import org.springframework.stereotype.Service

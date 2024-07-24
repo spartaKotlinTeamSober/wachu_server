@@ -18,7 +18,7 @@ import sparta.nbcamp.wachu.domain.review.repository.ReviewTestRepositoryImpl
 import sparta.nbcamp.wachu.domain.review.service.v1.ReviewServiceImpl
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
-import sparta.nbcamp.wachu.infra.aws.S3Service
+import sparta.nbcamp.wachu.infra.media.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 class ReviewServiceTest {

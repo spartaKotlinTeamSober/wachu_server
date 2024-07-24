@@ -14,8 +14,10 @@ import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
 import sparta.nbcamp.wachu.domain.review.repository.v1.ReviewRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
-import sparta.nbcamp.wachu.infra.aws.S3FilePath
-import sparta.nbcamp.wachu.infra.aws.S3Service
+import sparta.nbcamp.wachu.infra.media.MediaService
+import sparta.nbcamp.wachu.infra.media.apacheTika.TikaService
+import sparta.nbcamp.wachu.infra.media.aws.S3FilePath
+import sparta.nbcamp.wachu.infra.media.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 import java.util.*
 
@@ -23,7 +25,7 @@ import java.util.*
 class ReviewServiceImpl(
     private val memberRepository: MemberRepository,
     private val reviewRepository: ReviewRepository,
-    private val s3Service: S3Service,
+    private val mediaService: MediaService
 ) : ReviewService {
     override fun getReviewPage(pageable: Pageable): Page<ReviewResponse> {
         return reviewRepository.findAll(pageable).map { ReviewResponse.from(it) }
@@ -75,7 +77,7 @@ class ReviewServiceImpl(
         val mediaList = mutableListOf<ReviewMultiMedia>()
         multipartFileList.forEach { file ->
             val fileType = file.contentType?.lowercase(Locale.getDefault()) ?: ""
-            val mediaUrl = s3Service.upload(file, S3FilePath.REVIEW.path + "$reviewId/")
+            val mediaUrl = mediaService.upload(file, S3FilePath.REVIEW.path + "$reviewId/")
             val mediaType = when {
                 fileType.startsWith("image/") -> ReviewMediaType.IMAGE
                 fileType.startsWith("video/") -> ReviewMediaType.VIDEO

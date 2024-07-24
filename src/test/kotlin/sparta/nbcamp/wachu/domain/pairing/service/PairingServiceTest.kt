@@ -20,7 +20,7 @@ import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
-import sparta.nbcamp.wachu.infra.aws.S3Service
+import sparta.nbcamp.wachu.infra.media.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 class PairingServiceTest {
