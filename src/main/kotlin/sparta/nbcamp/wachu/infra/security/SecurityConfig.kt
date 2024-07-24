@@ -10,16 +10,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import sparta.nbcamp.wachu.infra.security.oauth.CustomOAuth2UserService
-import sparta.nbcamp.wachu.infra.security.oauth.OAuth2LoginSuccessHandler
+
 import sparta.nbcamp.wachu.security.jwt.JwtAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    private val customOAuth2UserService: CustomOAuth2UserService,
-    private val oAuth2LoginSuccessHandler: OAuth2LoginSuccessHandler,
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -38,19 +35,12 @@ class SecurityConfig(
                     "/webjars/**",
                     "/h2-console/**",
                     "/error",
-                    "/admin/**"
+                    "/admin/**",
+                    "/oauth2/**"
                 ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/**").permitAll()
                     .requestMatchers(PathRequest.toH2Console()).permitAll()
                     .anyRequest().authenticated()
-            }
-            .oauth2Login {
-                it.loginPage("/login")
-                    .defaultSuccessUrl("/auth/oauth2/success", true)
-                    .userInfoEndpoint()
-                    .userService(customOAuth2UserService)
-                    .and()
-                    .successHandler(oAuth2LoginSuccessHandler)
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
