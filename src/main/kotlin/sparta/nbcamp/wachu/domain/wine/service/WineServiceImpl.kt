@@ -1,24 +1,29 @@
 package sparta.nbcamp.wachu.domain.wine.service
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
-import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 import sparta.nbcamp.wachu.domain.wine.repository.WinePromotionRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
+import sparta.nbcamp.wachu.infra.openai.service.WineEmbeddingService
 
 @Service
 class WineServiceImpl @Autowired constructor(
     private val wineRepository: WineRepository,
     private val winePromotionRepository: WinePromotionRepository,
+    private val wineEmbeddingService: WineEmbeddingService
 ) : WineService {
+
+
     override fun getWineList(
         query: String,
         price: Int?,
@@ -61,19 +66,20 @@ class WineServiceImpl @Autowired constructor(
         return wines.map { WineResponse.from(it) }
     }
 
+    @Cacheable(value = ["promotionCache"], key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction")
     override fun getPromotionWineList(
         page: Int,
         size: Int,
         sortBy: String,
         direction: String
-    ): Page<WinePromotion> {
-
+    ): Page<PromotionWineResponse> {
         val pageable: Pageable = PageRequest.of(page, size, getDirection(direction), sortBy)
         return winePromotionRepository.findPromotionWineList(pageable)
     }
 
     override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {
-        TODO("Not yet implemented")
+        return wineEmbeddingService.recommendWine(request.preferWineId)
+            .map { it.first.wine }
     }
 
     private fun getDirection(sort: String) = when (sort.lowercase()) {
