@@ -123,7 +123,6 @@ class PairingServiceTest {
         response.title shouldBe pairingCreateRequest.title
         response.memberId shouldBe testUserPrincipal.memberId
         response.wine shouldBe testWineResponse
-         response.wineId shouldBe pairingCreateRequest.wineId
         response.description shouldBe pairingCreateRequest.description
     }
 

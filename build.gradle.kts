@@ -80,6 +80,10 @@ dependencies {
     implementation("software.amazon.awssdk:s3:2.20.0")
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    //Apache Tika
+    implementation ("org.apache.tika:tika-core:2.4.1")
+    implementation ("org.apache.tika:tika-parsers-standard-package:2.4.1")
 }
 
 kotlin {
