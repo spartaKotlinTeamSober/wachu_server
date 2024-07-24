@@ -6,26 +6,27 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import sparta.nbcamp.wachu.domain.pairing.model.v1.Pairing
 import sparta.nbcamp.wachu.domain.pairing.model.v1.QPairing
+import sparta.nbcamp.wachu.domain.wine.entity.QWine
 import sparta.nbcamp.wachu.infra.querydsl.QueryDslSupport
 
 @Repository
 class PairingQueryDslRepository : QueryDslSupport() {
     private val pairing = QPairing.pairing
+    private val wine = QWine.wine
 
     fun findPage(pageable: Pageable): Page<Pairing> {
+        val content = queryFactory
+            .selectFrom(pairing)
+            .leftJoin(pairing.wine, wine).fetchJoin()
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetch()
+
         val total = queryFactory
             .select(pairing.count())
             .from(pairing)
-            .fetchOne()
-            ?: 0L
+            .fetchOne() ?: 0L
 
-        val query = queryFactory
-            .selectFrom(pairing)
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-        val content = query.fetch()
-
-        val page = PageImpl(content, pageable, total)
-        return page
+        return PageImpl(content, pageable, total)
     }
 }
