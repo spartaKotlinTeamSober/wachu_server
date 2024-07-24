@@ -10,9 +10,8 @@ import java.util.logging.Logger
 
 class ReviewTestRepositoryImpl(
     private val review: Review,
-    private val reviewList: List<Review>,
+    private val reviewPage: Page<Review>,
     private val reviewMultiMedia: List<ReviewMultiMedia>,
-    private val reviewPage: Page<Review>
 ) : ReviewRepository {
     override fun findById(id: Long): Review? {
         if (id !in 1..10) return null
