@@ -1,6 +1,7 @@
 package sparta.nbcamp.wachu.domain.review.dto.v1
 
 import sparta.nbcamp.wachu.domain.review.model.v1.Review
+import sparta.nbcamp.wachu.domain.wine.entity.Wine
 
 data class ReviewRequest(
     val wineId: Long,
@@ -21,9 +22,9 @@ data class ReviewRequest(
     }
 
     companion object {
-        fun toEntity(memberId: Long, reviewRequest: ReviewRequest): Review {
+        fun toEntity(wine: Wine, memberId: Long, reviewRequest: ReviewRequest): Review {
             return Review(
-                wineId = reviewRequest.wineId,
+                wine = wine,
                 memberId = memberId,
                 title = reviewRequest.title,
                 description = reviewRequest.description,
