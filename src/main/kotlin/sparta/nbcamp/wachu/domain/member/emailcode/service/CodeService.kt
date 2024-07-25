@@ -12,21 +12,24 @@ class CodeService(
     private val mailSender: JavaMailSender,
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
-    fun sendCode(email: String) {
+    fun sendCode(email: String): String {
         val code = generateCode()
         saveCode(email, code)
+
+        val codeTimeout = redisTemplate.getExpire(email, TimeUnit.MINUTES)
 
         val message = SimpleMailMessage().apply {
             from = System.getenv("MAIL_USERNAME")
             setTo(email)
             subject = "Your Verification Code"
-            text = "Your verification code is: $code"
+            text = "Your verification code is: $code."
         }
         try {
             mailSender.send(message)
         } catch (e: MailSendException) {
             throw MailSendException("Error : $e", e)
         }
+        return "Verify within $codeTimeout minutes"
     }
 
     fun checkCode(email: String, code: String): Boolean {
