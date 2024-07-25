@@ -13,9 +13,7 @@ import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.media.MediaService
-import sparta.nbcamp.wachu.infra.media.apacheTika.TikaService
 import sparta.nbcamp.wachu.infra.media.aws.S3FilePath
-import sparta.nbcamp.wachu.infra.media.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 @Service
@@ -39,7 +37,11 @@ class PairingServiceImpl(
     }
 
     @Transactional
-    override fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest, multipartFile: MultipartFile): PairingResponse {
+    override fun createPairing(
+        userPrincipal: UserPrincipal,
+        pairingRequest: PairingRequest,
+        multipartFile: MultipartFile
+    ): PairingResponse {
         val wine = wineRepository.findByIdOrNull(pairingRequest.wineId)
             ?: throw ModelNotFoundException("Wine", pairingRequest.wineId)
         val member = memberRepository.findById(userPrincipal.memberId)

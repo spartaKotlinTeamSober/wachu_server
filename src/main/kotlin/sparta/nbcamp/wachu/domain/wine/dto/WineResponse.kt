@@ -19,7 +19,7 @@ data class WineResponse(
     val style: String?,
     val country: String?,
     val region: String?,
-): Serializable {
+) : Serializable {
 
     companion object {
         fun from(entity: Wine): WineResponse {

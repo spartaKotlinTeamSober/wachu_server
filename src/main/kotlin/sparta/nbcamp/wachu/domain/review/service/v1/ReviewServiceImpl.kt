@@ -15,11 +15,8 @@ import sparta.nbcamp.wachu.domain.review.repository.v1.ReviewRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.media.MediaService
-import sparta.nbcamp.wachu.infra.media.apacheTika.TikaService
 import sparta.nbcamp.wachu.infra.media.aws.S3FilePath
-import sparta.nbcamp.wachu.infra.media.aws.S3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
-import java.util.*
 
 @Service
 class ReviewServiceImpl(
@@ -75,7 +72,7 @@ class ReviewServiceImpl(
         ) { throw AccessDeniedException("not your review") }
 
         val mediaList = mediaService.upload(multipartFileList, S3FilePath.REVIEW.path + "$reviewId/")
-            .let { it.map {url-> ReviewMultiMedia.toEntity(reviewId, url, ReviewMediaType.IMAGE) }  }
+            .let { it.map { url -> ReviewMultiMedia.toEntity(reviewId, url, ReviewMediaType.IMAGE) } }
         return reviewRepository.mediaSave(mediaList).map { ReviewMultiMediaResponse.from(it) }
     }
 

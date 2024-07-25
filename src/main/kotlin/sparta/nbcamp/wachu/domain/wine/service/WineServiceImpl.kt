@@ -23,7 +23,6 @@ class WineServiceImpl @Autowired constructor(
     private val wineEmbeddingService: WineEmbeddingService
 ) : WineService {
 
-
     override fun getWineList(
         query: String,
         price: Int?,
