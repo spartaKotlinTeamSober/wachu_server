@@ -24,31 +24,28 @@ class JwtTest {
 
     @Test
     fun `토큰 안에 값이 제대로 들어왔는지 테스트하는 함수`() {
-
         val a = 1
         val b = 2
         a + b shouldBe 3
-        val `토큰 값` =
-            jwtTokenManager.generateToken(
-                memberId = 1,
-                memberRole = MemberRole.MEMBER
-            )
+
+        val `토큰 값` = jwtTokenManager.generateToken(
+            memberId = 1,
+            memberRole = MemberRole.MEMBER
+        )
 
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
-
         val `토큰 꺼내기` = Jwts.parser().verifyWith(key).build().parseSignedClaims(`토큰 값`)
+
         `토큰 꺼내기`.payload.subject shouldBe "1"
         `토큰 꺼내기`.payload.get("memberRole", String::class.java) shouldBe "MEMBER"
     }
 
     @Test
     fun `토큰이 정상적으로 검증이 되는지 테스트하는 함수`() {
-
-        val `토큰 값` =
-            jwtTokenManager.generateToken(
-                memberId = 2,
-                memberRole = MemberRole.ADMIN
-            )
+        val `토큰 값` = jwtTokenManager.generateToken(
+            memberId = 2,
+            memberRole = MemberRole.ADMIN
+        )
 
         val `검증된 토큰` = jwtTokenManager.validateToken(`토큰 값`)
 
