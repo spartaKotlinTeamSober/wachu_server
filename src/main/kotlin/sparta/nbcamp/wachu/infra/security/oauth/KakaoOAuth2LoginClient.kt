@@ -1,21 +1,26 @@
 package sparta.nbcamp.wachu.infra.security.oauth
 
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.body
 import sparta.nbcamp.wachu.infra.security.oauth.dto.KakaoLoginUserInfoResponse
 import sparta.nbcamp.wachu.infra.security.oauth.dto.KakaoTokenResponse
 
 @Component
 class KakaoOAuth2LoginClient(
-    @Value("\${oauth2.kakao.client_id}")  val clientId: String,
-    @Value("\${oauth2.kakao.redirect_url}")  val redirectUrl: String,
-    @Value("\${oauth2.kakao.auth_server_base_url}")  val authServerBaseUrl: String,
-    @Value("\${oauth2.kakao.resource_server_base_url}")  val resourceServerBaseUrl: String,
+    @Value("\${oauth2.kakao.client_id}") val clientId: String,
+    @Value("\${oauth2.kakao.redirect_url}") val redirectUrl: String,
+    @Value("\${oauth2.kakao.auth_server_base_url}") val authServerBaseUrl: String,
+    @Value("\${oauth2.kakao.resource_server_base_url}") val resourceServerBaseUrl: String,
     private val restClient: RestClient
 ) {
     fun generateLoginPageUrl(): String {
@@ -27,31 +32,46 @@ class KakaoOAuth2LoginClient(
             .toString()
     }
 
-    fun getAccessToken(code: String): String{
-        val requestData = mutableMapOf(
-            "grant_type" to "authorization_code",
-            "client_id" to clientId,
-            "code" to code
-        )
-        return restClient.post()
-            .uri("$authServerBaseUrl/ouath/token")
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .body(LinkedMultiValueMap<String,String>().apply{this.setAll(requestData)})
-            .retrieve()
-            .onStatus(HttpStatusCode::isError){ _, _ ->
-                throw RuntimeException("카카오 AccessToken 조회 실패")
+    fun getAccessToken(code: String): String {
+        val requestData = LinkedMultiValueMap<String, String>().apply {
+            add("grant_type", "authorization_code")
+            add("client_id", clientId)
+            add("redirect_uri", redirectUrl)  // 추가: redirect_uri 파라미터
+            add("code", code)
+        }
+
+        val headers = HttpHeaders().apply {
+            contentType = MediaType.APPLICATION_FORM_URLENCODED
+        }
+
+        val request = HttpEntity(requestData, headers)
+
+        return try {
+            val response: ResponseEntity<KakaoTokenResponse> = RestTemplate().exchange(
+                "$authServerBaseUrl/oauth/token",
+                HttpMethod.POST,
+                request,
+                KakaoTokenResponse::class.java
+            )
+
+            if (response.statusCode.is2xxSuccessful) {
+                response.body?.accessToken ?: throw RuntimeException("카카오 AccessToken 조회 실패: 응답 본문이 비어있음")
+            } else {
+                println("Error fetching access token: ${response.statusCode} - ${response.body}")
+                throw RuntimeException("카카오 AccessToken 조회 실패: ${response.statusCode}")
             }
-            .body<KakaoTokenResponse>()
-            ?.accessToken
-            ?:throw RuntimeException("카카오 AccessToken 조회 실패")
+        } catch (e: Exception) {
+            println("Exception occurred while fetching access token: ${e.message}")
+            throw RuntimeException("카카오 AccessToken 조회 실패: ${e.message}", e)
+        }
     }
 
-    fun retrieveUserInfo(accessToken: String): KakaoLoginUserInfoResponse{
+    fun retrieveUserInfo(accessToken: String): KakaoLoginUserInfoResponse {
         return restClient.get()
             .uri("$resourceServerBaseUrl/v2/user/me")
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
-            .onStatus(HttpStatusCode::isError){ _, _ ->
+            .onStatus(HttpStatusCode::isError) { _, _ ->
                 throw RuntimeException("카카오 UserInfo 조회 실패")
             }
             .body<KakaoLoginUserInfoResponse>()

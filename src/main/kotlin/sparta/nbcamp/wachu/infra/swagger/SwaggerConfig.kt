@@ -16,9 +16,6 @@ class SwaggerConfig {
         .addSecurityItem(
             SecurityRequirement().addList("Bearer Authentication")
         )
-        .addSecurityItem(
-            SecurityRequirement().addList("oauth2schema")
-        )
         .components(
             Components()
                 .addSecuritySchemes(
@@ -30,19 +27,6 @@ class SwaggerConfig {
                         .`in`(SecurityScheme.In.HEADER)
                         .name("Authorization")
                 )
-                .addSecuritySchemes(
-                    "oauth2schema",
-                    SecurityScheme()
-                        .type(SecurityScheme.Type.OAUTH2)
-                        .flows(
-                            io.swagger.v3.oas.models.security.OAuthFlows()
-                                .authorizationCode(
-                                    io.swagger.v3.oas.models.security.OAuthFlow()
-                                        .authorizationUrl("https://nid.naver.com/oauth2.0/authorize")
-                                        .tokenUrl("https://nid.naver.com/oauth2.0/token")
-                                )
-                        )
-                )
         )
         .info(
             Info()
@@ -51,3 +35,4 @@ class SwaggerConfig {
                 .version("1.0.0")
         )
 }
+
