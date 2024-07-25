@@ -46,10 +46,9 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
     // Redis
-    implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
-    implementation ("org.springframework.boot:spring-boot-starter-cache")
-
+    implementation("org.springframework.boot:spring-boot-starter-cache")
 
     // JJWT
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
@@ -82,8 +81,11 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     //Apache Tika
-    implementation ("org.apache.tika:tika-core:2.4.1")
-    implementation ("org.apache.tika:tika-parsers-standard-package:2.4.1")
+    implementation("org.apache.tika:tika-core:2.4.1")
+    implementation("org.apache.tika:tika-parsers-standard-package:2.4.1")
+
+    //EmailValidation
+    implementation("org.springframework.boot:spring-boot-starter-mail")
 }
 
 kotlin {
