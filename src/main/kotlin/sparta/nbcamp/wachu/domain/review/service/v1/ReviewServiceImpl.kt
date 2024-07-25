@@ -74,17 +74,8 @@ class ReviewServiceImpl(
             )
         ) { throw AccessDeniedException("not your review") }
 
-        val mediaList = mutableListOf<ReviewMultiMedia>()
-        multipartFileList.forEach { file ->
-            val fileType = file.contentType?.lowercase(Locale.getDefault()) ?: ""
-            val mediaUrl = mediaService.upload(file, S3FilePath.REVIEW.path + "$reviewId/")
-            val mediaType = when {
-                fileType.startsWith("image/") -> ReviewMediaType.IMAGE
-                fileType.startsWith("video/") -> ReviewMediaType.VIDEO
-                else -> throw IllegalArgumentException("Unsupported media type: $fileType")
-            }
-            mediaList.add(ReviewMultiMedia.toEntity(reviewId, mediaUrl, mediaType))
-        }
+        val mediaList = mediaService.upload(multipartFileList, S3FilePath.REVIEW.path + "$reviewId/")
+            .let { it.map {url-> ReviewMultiMedia.toEntity(reviewId, url, ReviewMediaType.IMAGE) }  }
         return reviewRepository.mediaSave(mediaList).map { ReviewMultiMediaResponse.from(it) }
     }
 
