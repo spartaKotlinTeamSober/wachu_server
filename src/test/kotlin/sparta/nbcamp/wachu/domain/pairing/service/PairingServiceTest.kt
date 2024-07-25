@@ -20,7 +20,7 @@ import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
-import sparta.nbcamp.wachu.infra.media.MediaService
+import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 class PairingServiceTest {
@@ -66,7 +66,7 @@ class PairingServiceTest {
     val wineRepository: WineRepository = mockk()
     val memberRepository: MemberRepository = mockk()
     val pairingRepository = PairingTestRepositoryImpl(defaultPairing, defaultPairingPage)
-    val mediaService: MediaService = mockk()
+    val mediaService: MediaS3Service = mockk()
     val pairingService = PairingServiceImpl(wineRepository, memberRepository, pairingRepository, mediaService)
 
     @Test

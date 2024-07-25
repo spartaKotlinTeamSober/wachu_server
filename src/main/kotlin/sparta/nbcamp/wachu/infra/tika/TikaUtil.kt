@@ -1,12 +1,12 @@
-package sparta.nbcamp.wachu.infra.media.apacheTika
+package sparta.nbcamp.wachu.infra.tika
 
 import org.apache.tika.Tika
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.util.Locale
 
-@Service
-class TikaService {
+@Component
+class TikaUtil {
     private fun detectMimeType(file: MultipartFile): String {
         val tika = Tika()
         return file.inputStream.use { tika.detect(it) }
