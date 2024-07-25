@@ -12,14 +12,17 @@ import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewResponse
 import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMediaType
 import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
 import sparta.nbcamp.wachu.domain.review.repository.v1.ReviewRepository
+import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.media.MediaService
 import sparta.nbcamp.wachu.infra.media.aws.S3FilePath
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
+import java.util.Locale
 
 @Service
 class ReviewServiceImpl(
+    private val wineRepository: WineRepository,
     private val memberRepository: MemberRepository,
     private val reviewRepository: ReviewRepository,
     private val mediaService: MediaService
@@ -37,9 +40,11 @@ class ReviewServiceImpl(
 
     @Transactional
     override fun createReview(userPrincipal: UserPrincipal, reviewRequest: ReviewRequest): ReviewResponse {
+        val wine = wineRepository.findByIdOrNull(reviewRequest.wineId)
+            ?: throw ModelNotFoundException("Wine", reviewRequest.wineId)
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        val review = ReviewRequest.toEntity(member.id!!, reviewRequest)
+        val review = ReviewRequest.toEntity(wine, member.id!!, reviewRequest)
         return ReviewResponse.from(reviewRepository.save(review))
     }
 
