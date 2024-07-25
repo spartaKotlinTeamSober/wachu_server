@@ -3,7 +3,7 @@ package sparta.nbcamp.wachu.infra.media
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import sparta.nbcamp.wachu.infra.aws.S3Service
+import sparta.nbcamp.wachu.infra.aws.s3.S3Service
 import sparta.nbcamp.wachu.infra.tika.TikaUtil
 
 @Service

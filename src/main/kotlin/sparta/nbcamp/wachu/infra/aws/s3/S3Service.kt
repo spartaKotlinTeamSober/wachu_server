@@ -1,4 +1,4 @@
-package sparta.nbcamp.wachu.infra.aws
+package sparta.nbcamp.wachu.infra.aws.s3
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value

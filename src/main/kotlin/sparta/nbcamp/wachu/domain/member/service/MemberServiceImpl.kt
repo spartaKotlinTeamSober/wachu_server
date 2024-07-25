@@ -13,7 +13,7 @@ import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
-import sparta.nbcamp.wachu.infra.aws.S3FilePath
+import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
 import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
