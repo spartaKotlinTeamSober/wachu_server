@@ -1,4 +1,4 @@
-package sparta.nbcamp.wachu.infra.multipartConfig
+package sparta.nbcamp.wachu.infra.multipart
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType

@@ -1,6 +1,5 @@
 package sparta.nbcamp.wachu.infra.redis
 
-
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
@@ -40,7 +39,7 @@ class RedisConfig {
     @Bean
     fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, String> {
         val template = RedisTemplate<String, String>()
-        template.setConnectionFactory(connectionFactory)
+        template.connectionFactory = connectionFactory
         template.keySerializer = StringRedisSerializer()
         template.valueSerializer = GenericJackson2JsonRedisSerializer()
         return template
@@ -49,7 +48,7 @@ class RedisConfig {
     @Bean
     fun redisTemplateForAny(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Any> {
         val template = RedisTemplate<String, Any>()
-        template.setConnectionFactory(connectionFactory)
+        template.connectionFactory = connectionFactory
         template.keySerializer = StringRedisSerializer()
         template.valueSerializer = GenericJackson2JsonRedisSerializer()
         return template

@@ -5,9 +5,9 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import org.springframework.web.multipart.MultipartFile
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
@@ -20,7 +20,7 @@ import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
-import sparta.nbcamp.wachu.infra.aws.S3Service
+import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 class PairingServiceTest {
@@ -66,8 +66,8 @@ class PairingServiceTest {
     val wineRepository: WineRepository = mockk()
     val memberRepository: MemberRepository = mockk()
     val pairingRepository = PairingTestRepositoryImpl(defaultPairing, defaultPairingPage)
-    val s3Service: S3Service = mockk()
-    val pairingService = PairingServiceImpl(wineRepository,memberRepository, pairingRepository, s3Service)
+    val mediaService: MediaS3Service = mockk()
+    val pairingService = PairingServiceImpl(wineRepository, memberRepository, pairingRepository, mediaService)
 
     @Test
     fun `존재하는 아이디로 getPairing하면 PairingResponseDto를 반환한다`() {
@@ -115,10 +115,10 @@ class PairingServiceTest {
             "test", "test", "test", "test"
         ).apply { id = testUserPrincipal.memberId }
 
-        val image=mockk<MultipartFile>()
-        val imageUrl="test"
-        every { s3Service.upload(any(), any()) } returns imageUrl
-        val response = pairingService.createPairing(testUserPrincipal, pairingCreateRequest,image)
+        val image = mockk<MultipartFile>()
+        val imageUrl = "test"
+        every { mediaService.upload(image, any()) } returns imageUrl
+        val response = pairingService.createPairing(testUserPrincipal, pairingCreateRequest, image)
 
         response.title shouldBe pairingCreateRequest.title
         response.memberId shouldBe testUserPrincipal.memberId

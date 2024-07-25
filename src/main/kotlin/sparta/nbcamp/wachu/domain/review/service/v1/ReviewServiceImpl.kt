@@ -15,17 +15,16 @@ import sparta.nbcamp.wachu.domain.review.repository.v1.ReviewRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
-import sparta.nbcamp.wachu.infra.aws.S3FilePath
-import sparta.nbcamp.wachu.infra.aws.S3Service
+import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
+import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
-import java.util.Locale
 
 @Service
 class ReviewServiceImpl(
     private val wineRepository: WineRepository,
     private val memberRepository: MemberRepository,
     private val reviewRepository: ReviewRepository,
-    private val s3Service: S3Service,
+    private val mediaS3Service: MediaS3Service
 ) : ReviewService {
     override fun getReviewPage(pageable: Pageable): Page<ReviewResponse> {
         return reviewRepository.findAll(pageable).map { ReviewResponse.from(it) }
@@ -76,17 +75,8 @@ class ReviewServiceImpl(
             )
         ) { throw AccessDeniedException("not your review") }
 
-        val mediaList = mutableListOf<ReviewMultiMedia>()
-        multipartFileList.forEach { file ->
-            val fileType = file.contentType?.lowercase(Locale.getDefault()) ?: ""
-            val mediaUrl = s3Service.upload(file, S3FilePath.REVIEW.path + "$reviewId/")
-            val mediaType = when {
-                fileType.startsWith("image/") -> ReviewMediaType.IMAGE
-                fileType.startsWith("video/") -> ReviewMediaType.VIDEO
-                else -> throw IllegalArgumentException("Unsupported media type: $fileType")
-            }
-            mediaList.add(ReviewMultiMedia.toEntity(reviewId, mediaUrl, mediaType))
-        }
+        val mediaList = mediaS3Service.upload(multipartFileList, S3FilePath.REVIEW.path + "$reviewId/")
+            .let { it.map { url -> ReviewMultiMedia.toEntity(reviewId, url, ReviewMediaType.IMAGE) } }
         return reviewRepository.mediaSave(mediaList).map { ReviewMultiMediaResponse.from(it) }
     }
 

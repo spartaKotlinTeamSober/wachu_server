@@ -12,8 +12,8 @@ import sparta.nbcamp.wachu.domain.pairing.repository.v1.PairingRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
-import sparta.nbcamp.wachu.infra.aws.S3FilePath
-import sparta.nbcamp.wachu.infra.aws.S3Service
+import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
+import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 @Service
@@ -21,7 +21,7 @@ class PairingServiceImpl(
     private val wineRepository: WineRepository,
     private val memberRepository: MemberRepository,
     private val pairingRepository: PairingRepository,
-    private val s3Service: S3Service,
+    private val mediaS3Service: MediaS3Service
 ) : PairingService {
 
     @Transactional(readOnly = true)
@@ -37,13 +37,17 @@ class PairingServiceImpl(
     }
 
     @Transactional
-    override fun createPairing(userPrincipal: UserPrincipal, pairingRequest: PairingRequest, multipartFile: MultipartFile): PairingResponse {
+    override fun createPairing(
+        userPrincipal: UserPrincipal,
+        pairingRequest: PairingRequest,
+        multipartFile: MultipartFile
+    ): PairingResponse {
         val wine = wineRepository.findByIdOrNull(pairingRequest.wineId)
             ?: throw ModelNotFoundException("Wine", pairingRequest.wineId)
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-            
-        val imageUrl = multipartFile.let { s3Service.upload(multipartFile, S3FilePath.PAIRING.path) }
+
+        val imageUrl = multipartFile.let { mediaS3Service.upload(multipartFile, S3FilePath.PAIRING.path) }
         val pairing = PairingRequest.toEntity(wine, member.id!!, pairingRequest, imageUrl)
 
         return PairingResponse.from(pairingRepository.save(pairing))

@@ -22,7 +22,8 @@ import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
-import sparta.nbcamp.wachu.infra.aws.S3Service
+import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
+import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 class ReviewServiceTest {
@@ -74,10 +75,11 @@ class ReviewServiceTest {
 
     val wineRepository: WineRepository = mockk()
     val memberRepository: MemberRepository = mockk()
-    val s3Service: S3Service = mockk()
-    val reviewRepository = ReviewTestRepositoryImpl(defaultReview, defaultReviewPage, defaultReviewMultiMediaList)
+    val mediaService: MediaS3Service = mockk()
+    val reviewRepository =
+        ReviewTestRepositoryImpl(defaultReview, defaultReviewPage, defaultReviewMultiMediaList)
 
-    val reviewService = ReviewServiceImpl(wineRepository, memberRepository, reviewRepository, s3Service)
+    val reviewService = ReviewServiceImpl(wineRepository, memberRepository, reviewRepository, mediaService)
 
     @Test
     fun `존재하는 아이디로 getReview하면 ReviewResponseDto를 반환한다`() {
@@ -165,16 +167,9 @@ class ReviewServiceTest {
             }
         }
 
-        // Mock the uploadS3 method with exact values
-        val reviewMultiMediaList = multiMedia.mapIndexed { index, file ->
-            ReviewMultiMedia(
-                reviewId = 1L,
-                mediaUrl = "test$index",
-                mediaType = ReviewMediaType.IMAGE
-            ).apply { id = index.toLong() }
-        }
+        val mediaUrls = List(10) { "url$it" }
 
-        every { s3Service.upload(any(), any()) } returns ""
+        every { mediaService.upload(eq(multiMedia), eq(S3FilePath.REVIEW.path + "1/")) } returns mediaUrls
 
         val responseMedia = reviewService.createReviewMedia(testUserPrincipal, 1L, multiMedia)
 
