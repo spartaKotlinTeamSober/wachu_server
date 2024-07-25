@@ -3,7 +3,6 @@ package sparta.nbcamp.wachu.domain.security
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import io.kotest.matchers.shouldBe
-import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -23,9 +22,12 @@ class JwtTest {
     @Autowired
     private lateinit var jwtTokenManager: JwtTokenManager
 
-    @Transactional
     @Test
     fun `토큰 안에 값이 제대로 들어왔는지 테스트하는 함수`() {
+
+        val a = 1
+        val b = 2
+        a + b shouldBe 3
         val `토큰 값` =
             jwtTokenManager.generateToken(
                 memberId = 1,
@@ -35,7 +37,7 @@ class JwtTest {
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
 
         val `토큰 꺼내기` = Jwts.parser().verifyWith(key).build().parseSignedClaims(`토큰 값`)
-        `토큰 꺼내기`.payload.get("memberId") shouldBe 1
+        `토큰 꺼내기`.payload.subject shouldBe "1"
         `토큰 꺼내기`.payload.get("memberRole", String::class.java) shouldBe "MEMBER"
     }
 

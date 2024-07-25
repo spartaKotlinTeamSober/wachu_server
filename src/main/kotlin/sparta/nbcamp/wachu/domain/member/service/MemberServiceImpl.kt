@@ -30,7 +30,7 @@ class MemberServiceImpl @Autowired constructor(
 
     override fun login(request: LoginRequest): TokenResponse {
 
-        val loginMember = memberRepository.findByEmail(request.email) ?: throw RuntimeException("잘못된 아이디")
+        val loginMember = memberRepository.findByEmail(request.email) ?: throw IllegalStateException("이메일이 없음")
         check(
             passwordEncoder.matches(
                 request.password,

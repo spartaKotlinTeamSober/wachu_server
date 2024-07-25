@@ -8,6 +8,8 @@ data class SignUpRequest(
     val password: String,
     val nickname: String,
     val confirmPassword: String,
+    val providerName: String? = null,
+    val providerId: String? = null,
 ) {
     companion object {
         fun toEntity(request: SignUpRequest, passwordEncoder: PasswordEncoder): Member {
