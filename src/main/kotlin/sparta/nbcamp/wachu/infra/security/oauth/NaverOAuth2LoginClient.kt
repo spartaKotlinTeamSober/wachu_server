@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.infra.security.oauth
 
+import jakarta.servlet.http.HttpSession
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -14,29 +15,37 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.body
 import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthLoginUserInfoResponse
 import sparta.nbcamp.wachu.infra.security.oauth.dto.TokenResponse
+import java.util.UUID
 
 @Component
 class NaverOAuth2LoginClient(
+    @Value("\${oauth2.naver.clientSecret}") val clientSecret: String,
     @Value("\${oauth2.naver.client_id}") val clientId: String,
     @Value("\${oauth2.naver.redirect_url}") val redirectUrl: String,
     @Value("\${oauth2.naver.auth_server_base_url}") val authServerBaseUrl: String,
     @Value("\${oauth2.naver.resource_server_base_url}") val resourceServerBaseUrl: String,
     private val restClient: RestClient
 ) {
-    fun generateLoginPageUrl(): String {
+    fun generateLoginPageUrl(session: HttpSession): String {
+        val state = UUID.randomUUID().toString()
+        session.setAttribute("oauthState", state)
+
         return StringBuilder(authServerBaseUrl)
+            .append("/oauth2.0/authorize")
             .append("?client_id=").append(clientId)
             .append("&redirect_uri=").append(redirectUrl)
-            .append("&response_type=").append("code")
+            .append("&response_type=code")
+            .append("&state=").append(state)
             .toString()
     }
 
-    fun getAccessToken(code: String): String {
+    fun getAccessToken(code: String, state: String): String {
         val requestData = LinkedMultiValueMap<String, String>().apply {
             add("grant_type", "authorization_code")
             add("client_id", clientId)
-            add("redirect_uri", redirectUrl)
+            add("client_secret", clientSecret) // client_secret 추가
             add("code", code)
+            add("state", state) // state 추가
         }
 
         val headers = HttpHeaders().apply {
@@ -47,7 +56,7 @@ class NaverOAuth2LoginClient(
 
         return try {
             val response: ResponseEntity<TokenResponse> = RestTemplate().exchange(
-                "$authServerBaseUrl/oauth/token",
+                "$authServerBaseUrl/oauth2.0/token",
                 HttpMethod.POST,
                 request,
                 TokenResponse::class.java

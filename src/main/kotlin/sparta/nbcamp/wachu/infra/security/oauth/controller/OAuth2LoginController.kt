@@ -1,6 +1,7 @@
 package sparta.nbcamp.wachu.infra.security.oauth.controller
 
 import jakarta.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpSession
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -25,10 +26,10 @@ class OAuth2LoginController(
     }
 
     @GetMapping("/oauth2/login/naver")
-    fun naverRedirectLoginPage(response: HttpServletResponse) {
-        val loginPageUrl = OAuth2LoginService.naverGenerateLoginPageUrl()
+    fun naverRedirectLoginPage(session: HttpSession): ResponseEntity<String> {
+        val loginPageUrl = OAuth2LoginService.naverGenerateLoginPageUrl(session = session)
         logger.info("Generated login page URL: $loginPageUrl")
-        response.sendRedirect(loginPageUrl)
+        return ResponseEntity.ok(loginPageUrl)
     }
 
     @GetMapping("/oauth2/callback/kakao")
@@ -40,8 +41,9 @@ class OAuth2LoginController(
 
     @GetMapping("/oauth2/callback/naver")
     fun naverCallback(
-        @RequestParam code: String
+        @RequestParam code: String,
+        @RequestParam state: String,
     ): ResponseEntity<OAuthResponse> {
-        return ResponseEntity.ok(OAuth2LoginService.naverRetrieveUserInfo(code))
+        return ResponseEntity.ok(OAuth2LoginService.naverRetrieveUserInfo(code, state))
     }
 }

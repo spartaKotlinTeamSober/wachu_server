@@ -6,5 +6,5 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy::class)
 data class OAuthUserPropertiesResponse(
     val nickname: String,
-    val profileImage: String,
+    val profileImageUrl: String,
 )

@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.infra.security.oauth.service
 
+import jakarta.servlet.http.HttpSession
 import org.springframework.stereotype.Service
 import sparta.nbcamp.wachu.infra.security.oauth.KakaoOAuth2LoginClient
 import sparta.nbcamp.wachu.infra.security.oauth.NaverOAuth2LoginClient
@@ -15,8 +16,8 @@ class OAuth2LoginService(
         return kakaoOAuth2LoginClient.generateLoginPageUrl()
     }
 
-    fun naverGenerateLoginPageUrl(): String {
-        return naverOAuth2LoginClient.generateLoginPageUrl()
+    fun naverGenerateLoginPageUrl(session: HttpSession): String {
+        return naverOAuth2LoginClient.generateLoginPageUrl(session)
     }
 
     fun kakaoRetrieveUserInfo(code: String): OAuthResponse {
@@ -26,20 +27,20 @@ class OAuth2LoginService(
                 OAuthResponse(
                     nickname = it.properties.nickname,
                     providerId = it.id.toString(),
-                    profileImageUrl = it.properties.profileImage,
+                    profileImageUrl = it.properties.profileImageUrl,
                     provider = "KAKAO"
                 )
             }
     }
 
-    fun naverRetrieveUserInfo(code: String): OAuthResponse {
-        return naverOAuth2LoginClient.getAccessToken(code)
+    fun naverRetrieveUserInfo(code: String, state: String): OAuthResponse {
+        return naverOAuth2LoginClient.getAccessToken(code, state)
             .let { naverOAuth2LoginClient.retrieveUserInfo(it) }
             .let {
                 OAuthResponse(
                     nickname = it.properties.nickname,
                     providerId = it.id.toString(),
-                    profileImageUrl = it.properties.profileImage,
+                    profileImageUrl = it.properties.profileImageUrl,
                     provider = "NAVER"
                 )
             }
