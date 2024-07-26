@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy::class)
-data class OAuthLoginUserInfoResponse(
+data class KakaoOAuthLoginUserInfoResponse(
     val id: Long,
-    val properties: OAuthUserPropertiesResponse
+    val properties: KakaoOAuthUserPropertiesResponse
 )

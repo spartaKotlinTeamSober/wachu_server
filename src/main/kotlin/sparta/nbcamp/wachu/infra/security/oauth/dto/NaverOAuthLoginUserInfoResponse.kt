@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy::class)
-data class OAuthUserPropertiesResponse(
-    val nickname: String,
-    val profileImageUrl: String,
+data class NaverOAuthLoginUserInfoResponse(
+    val resultcode: String,
+    val message: String,
+    val response: NaverOAuthUserResponseResponse,
 )

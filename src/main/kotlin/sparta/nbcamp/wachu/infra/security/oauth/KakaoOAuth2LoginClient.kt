@@ -12,7 +12,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.body
-import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthLoginUserInfoResponse
+import sparta.nbcamp.wachu.infra.security.oauth.dto.KakaoOAuthLoginUserInfoResponse
 import sparta.nbcamp.wachu.infra.security.oauth.dto.TokenResponse
 
 @Component
@@ -66,7 +66,7 @@ class KakaoOAuth2LoginClient(
         }
     }
 
-    fun retrieveUserInfo(accessToken: String): OAuthLoginUserInfoResponse {
+    fun retrieveUserInfo(accessToken: String): KakaoOAuthLoginUserInfoResponse {
         return restClient.get()
             .uri("$resourceServerBaseUrl/v2/user/me")
             .header("Authorization", "Bearer $accessToken")
@@ -74,7 +74,7 @@ class KakaoOAuth2LoginClient(
             .onStatus(HttpStatusCode::isError) { _, _ ->
                 throw RuntimeException("카카오 UserInfo 조회 실패")
             }
-            .body<OAuthLoginUserInfoResponse>()
+            .body<KakaoOAuthLoginUserInfoResponse>()
             ?: throw RuntimeException("카카오 UserInfo 조회 실패")
     }
 }

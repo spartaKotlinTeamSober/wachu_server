@@ -8,6 +8,7 @@ import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.redis.EvictCache
+import sparta.nbcamp.wachu.infra.redis.common.RedisKeyConst
 
 @Service
 class AdminService(
@@ -30,7 +31,7 @@ class AdminService(
                 status = request.status,
             )
         )
-        evictCache.evictCaches(deleteCache = "promotionCache")
+        evictCache.evictCaches(deleteCache = RedisKeyConst.PROMOTION_WINE_PREFIX)
         return PromotionWineResponse.from(winePromotion)
     }
 }

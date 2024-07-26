@@ -42,11 +42,6 @@ class SecurityConfig(
                     .requestMatchers(PathRequest.toH2Console()).permitAll()
                     .anyRequest().authenticated()
             }
-            .oauth2Login { oauth2 ->
-                oauth2
-                    .loginPage("/oauth2/authorization/kakao")
-                    .loginPage("/oauth2/authorization/naver")
-            }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
     }

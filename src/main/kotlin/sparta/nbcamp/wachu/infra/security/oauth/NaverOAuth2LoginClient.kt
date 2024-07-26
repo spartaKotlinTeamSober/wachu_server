@@ -13,8 +13,8 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.body
-import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthLoginUserInfoResponse
-import sparta.nbcamp.wachu.infra.security.oauth.dto.TokenResponse
+import sparta.nbcamp.wachu.infra.security.oauth.dto.NaverOAuthLoginUserInfoResponse
+import sparta.nbcamp.wachu.infra.security.oauth.dto.NaverTokenResponse
 import java.util.UUID
 
 @Component
@@ -55,11 +55,11 @@ class NaverOAuth2LoginClient(
         val request = HttpEntity(requestData, headers)
 
         return try {
-            val response: ResponseEntity<TokenResponse> = RestTemplate().exchange(
+            val response: ResponseEntity<NaverTokenResponse> = RestTemplate().exchange(
                 "$authServerBaseUrl/oauth2.0/token",
                 HttpMethod.POST,
                 request,
-                TokenResponse::class.java
+                NaverTokenResponse::class.java
             )
 
             if (response.statusCode.is2xxSuccessful) {
@@ -74,15 +74,15 @@ class NaverOAuth2LoginClient(
         }
     }
 
-    fun retrieveUserInfo(accessToken: String): OAuthLoginUserInfoResponse {
+    fun retrieveUserInfo(accessToken: String): NaverOAuthLoginUserInfoResponse {
         return restClient.get()
-            .uri("$resourceServerBaseUrl/v2/user/me")
+            .uri("$resourceServerBaseUrl/v1/nid/me")
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
             .onStatus(HttpStatusCode::isError) { _, _ ->
                 throw RuntimeException("네이버 UserInfo 조회 실패")
             }
-            .body<OAuthLoginUserInfoResponse>()
+            .body<NaverOAuthLoginUserInfoResponse>()
             ?: throw RuntimeException("네이버 UserInfo 조회 실패")
     }
 }
