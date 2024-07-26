@@ -31,7 +31,7 @@ class Pairing(
     val description: String,
 
     @Column
-    val photoUrl: String,
+    val photoUrl: String?,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

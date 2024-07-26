@@ -52,10 +52,9 @@ dependencies {
 
 
     // Redis
-    implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
-    implementation ("org.springframework.boot:spring-boot-starter-cache")
-
+    implementation("org.springframework.boot:spring-boot-starter-cache")
 
     // JJWT
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
@@ -81,9 +80,18 @@ dependencies {
     // QUERY DSL
     implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
     kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
-    
 
+    //aws
+    implementation("software.amazon.awssdk:s3:2.20.0")
+    implementation("org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    //Apache Tika
+    implementation("org.apache.tika:tika-core:2.4.1")
+    implementation("org.apache.tika:tika-parsers-standard-package:2.4.1")
+
+    //EmailValidation
+    implementation("org.springframework.boot:spring-boot-starter-mail")
 }
 
 kotlin {

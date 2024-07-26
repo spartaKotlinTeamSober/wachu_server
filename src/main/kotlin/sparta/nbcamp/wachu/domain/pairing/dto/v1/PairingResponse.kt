@@ -10,7 +10,7 @@ data class PairingResponse(
     val memberId: Long,
     val title: String,
     val description: String,
-    val photoUrl: String,
+    val photoUrl: String?,
     val createdAt: LocalDateTime,
 ) {
     companion object {

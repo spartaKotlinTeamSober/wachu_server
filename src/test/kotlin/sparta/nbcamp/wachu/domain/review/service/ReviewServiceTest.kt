@@ -7,19 +7,46 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewRequest
 import sparta.nbcamp.wachu.domain.review.model.v1.Review
+import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMediaType
+import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
 import sparta.nbcamp.wachu.domain.review.repository.ReviewTestRepositoryImpl
 import sparta.nbcamp.wachu.domain.review.service.v1.ReviewServiceImpl
+import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
+import sparta.nbcamp.wachu.domain.wine.entity.Wine
+import sparta.nbcamp.wachu.domain.wine.entity.WineType
+import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
+import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
+import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 
 class ReviewServiceTest {
+
+    val defaultWine = Wine(
+        id = 1L,
+        name = "testWine",
+        sweetness = 0,
+        acidity = 0,
+        body = 0,
+        tannin = 0,
+        wineType = WineType.RED,
+        aroma = "test",
+        price = 0,
+        kind = "test",
+        style = "test",
+        country = "test",
+        region = "test",
+        embedding = "test"
+    )
+
     val defaultReview = Review(
-        wineId = 1L,
+        wine = defaultWine,
         memberId = 1L,
         title = "test",
         description = "test",
@@ -28,7 +55,7 @@ class ReviewServiceTest {
 
     val defaultReviewList = List(10) { index ->
         Review(
-            wineId = index.toLong(),
+            wine = defaultWine,
             memberId = index.toLong(),
             title = "test$index",
             description = "testDescription$index",
@@ -36,22 +63,33 @@ class ReviewServiceTest {
         ).apply { id = index.toLong() }
     }
 
+    val defaultReviewMultiMediaList = List(10) { index ->
+        ReviewMultiMedia(
+            reviewId = index.toLong(),
+            mediaUrl = "test$index",
+            mediaType = ReviewMediaType.IMAGE,
+        ).apply { id = index.toLong() }
+    }
     val defaultPageable = PageRequest.of(0, 10)
     val defaultReviewPage = PageImpl(defaultReviewList, defaultPageable, defaultReviewList.size.toLong())
 
+    val wineRepository: WineRepository = mockk()
     val memberRepository: MemberRepository = mockk()
-    val reviewRepository = ReviewTestRepositoryImpl(defaultReview, defaultReviewPage)
+    val mediaService: MediaS3Service = mockk()
+    val reviewRepository =
+        ReviewTestRepositoryImpl(defaultReview, defaultReviewPage, defaultReviewMultiMediaList)
 
-    val reviewService = ReviewServiceImpl(memberRepository, reviewRepository)
+    val reviewService = ReviewServiceImpl(wineRepository, memberRepository, reviewRepository, mediaService)
 
     @Test
     fun `존재하는 아이디로 getReview하면 ReviewResponseDto를 반환한다`() {
         val responseDto = reviewService.getReview(1L)
+        val wineResponseDto = WineResponse.from(defaultWine)
 
         responseDto.id shouldBe defaultReview.id
         responseDto.title shouldBe defaultReview.title
         responseDto.memberId shouldBe defaultReview.memberId
-        responseDto.wineId shouldBe defaultReview.wineId
+        responseDto.wine shouldBe wineResponseDto
         responseDto.score shouldBe defaultReview.score
         responseDto.createdAt shouldBe defaultReview.createdAt
         responseDto.description shouldBe defaultReview.description
@@ -81,6 +119,9 @@ class ReviewServiceTest {
             description = "newtest",
             score = 1.5
         )
+        val testWine = defaultWine
+        every { wineRepository.findByIdOrNull(1L) } returns testWine
+        val testWineResponse = WineResponse.from(testWine)
 
         val testUserPrincipal = UserPrincipal(memberId = 1L, memberRole = setOf("MEMBER"))
         every { memberRepository.findById(any()) } returns Member(
@@ -91,7 +132,7 @@ class ReviewServiceTest {
 
         response.title shouldBe reviewCreateRequest.title
         response.memberId shouldBe testUserPrincipal.memberId
-        response.wineId shouldBe reviewCreateRequest.wineId
+        response.wine shouldBe testWineResponse
         response.score shouldBe reviewCreateRequest.score
         response.description shouldBe reviewCreateRequest.description
     }
@@ -110,5 +151,29 @@ class ReviewServiceTest {
         val testAdminPrincipal = UserPrincipal(memberId = 0L, memberRole = setOf("ADMIN"))
 
         reviewService.deleteReview(testAdminPrincipal, 1L)
+    }
+
+    @Test
+    fun `createReviewMedia를 하면 ReviewMultuMedeia가 생성된다`() {
+        val testUserPrincipal = UserPrincipal(memberId = 1L, memberRole = setOf("MEMBER"))
+        every { memberRepository.findById(any()) } returns Member(
+            "test", "test", "test", "test"
+        ).apply { id = testUserPrincipal.memberId }
+
+        val multiMedia = List(10) {
+            mockk<MultipartFile>(relaxed = true)
+            {
+                every { contentType } returns "image/jpeg"
+            }
+        }
+
+        val mediaUrls = List(10) { "url$it" }
+
+        every { mediaService.upload(eq(multiMedia), eq(S3FilePath.REVIEW.path + "1/")) } returns mediaUrls
+
+        val responseMedia = reviewService.createReviewMedia(testUserPrincipal, 1L, multiMedia)
+
+        responseMedia.size shouldBe 10
+        responseMedia.first().mediaUrl shouldBe "test0"
     }
 }

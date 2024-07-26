@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository
 import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.QWine
 import sparta.nbcamp.wachu.domain.wine.entity.QWinePromotion
-import sparta.nbcamp.wachu.domain.wine.entity.WinePromotion
 import sparta.nbcamp.wachu.infra.querydsl.QueryDslSupport
 
 @Repository
@@ -48,7 +47,7 @@ class WinePromotionRepositoryImpl : WinePromotionRepository, QueryDslSupport() {
             .limit(pageable.pageSize.toLong())
             .orderBy(*getOrderSpecifier(pageable, winePromotion))
             .fetch()
-            .map{ PromotionWineResponse.from(it)}
+            .map { PromotionWineResponse.from(it) }
 
         val countQuery = queryFactory.select(winePromotion.count()).from(winePromotion).fetchOne()
 

@@ -13,7 +13,7 @@ data class PromotionWineResponse(
     val openedAt: LocalDateTime,
     val closedAt: LocalDateTime,
 
-    ): Serializable {
+    ) : Serializable {
     companion object {
         fun from(entity: WinePromotion): PromotionWineResponse {
             return PromotionWineResponse(

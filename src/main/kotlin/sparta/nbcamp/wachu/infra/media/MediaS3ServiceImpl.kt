@@ -1,0 +1,31 @@
+package sparta.nbcamp.wachu.infra.media
+
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
+import sparta.nbcamp.wachu.infra.aws.s3.S3Service
+import sparta.nbcamp.wachu.infra.tika.TikaUtil
+
+@Service
+class MediaS3ServiceImpl(
+    private val s3Service: S3Service,
+    private val tikaUtil: TikaUtil
+) : MediaS3Service {
+    private val logger = LoggerFactory.getLogger(MediaS3Service::class.java)
+    override fun upload(file: MultipartFile, filePath: String): String {
+        if (!tikaUtil.validateMediaFile(file)) {
+            throw IllegalArgumentException("Invalid file format")
+        }
+        logger.info("upload file: $filePath")
+        return s3Service.upload(file, filePath)
+    }
+
+    override fun upload(fileList: List<MultipartFile>, filePath: String): List<String> {
+        if (!fileList.all { tikaUtil.validateMediaFile(it) }) {
+            throw IllegalArgumentException("Invalid file format")
+        }//하나라도 이상하면 전체 취소
+        //없으면 전체 upload
+        logger.info("upload files: $filePath")
+        return fileList.map { s3Service.upload(it, filePath) }
+    }
+}
