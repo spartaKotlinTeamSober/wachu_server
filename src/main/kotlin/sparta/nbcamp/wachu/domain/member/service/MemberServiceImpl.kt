@@ -25,7 +25,7 @@ class MemberServiceImpl @Autowired constructor(
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtTokenManager: JwtTokenManager,
-    private val mediaS3Service: MediaS3Service
+    private val mediaS3Service: MediaS3Service,
     private val codeService: CodeService,
 ) : MemberService {
 
