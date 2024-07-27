@@ -24,9 +24,6 @@ class JwtTest {
 
     @Test
     fun `토큰 안에 값이 제대로 들어왔는지 테스트하는 함수`() {
-        val a = 1
-        val b = 2
-        a + b shouldBe 3
 
         val `토큰 값` = jwtTokenManager.generateToken(
             memberId = 1,
