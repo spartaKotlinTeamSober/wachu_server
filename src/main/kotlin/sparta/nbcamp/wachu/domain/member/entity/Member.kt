@@ -1,6 +1,13 @@
 package sparta.nbcamp.wachu.domain.member.entity
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "member")
@@ -21,6 +28,12 @@ class Member(
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     val memberRole: MemberRole = MemberRole.MEMBER,
+
+    @Column(name = "provider")
+    val provider: String?,
+
+    @Column(name = "providerId")
+    val providerId: String?,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

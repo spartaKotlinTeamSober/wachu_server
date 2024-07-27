@@ -1,8 +1,6 @@
 package sparta.nbcamp.wachu.infra.security.oauth.service
 
 import jakarta.servlet.http.HttpSession
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import sparta.nbcamp.wachu.infra.security.oauth.KakaoOAuth2LoginClient
 import sparta.nbcamp.wachu.infra.security.oauth.NaverOAuth2LoginClient
@@ -13,7 +11,6 @@ class OAuth2LoginService(
     private val kakaoOAuth2LoginClient: KakaoOAuth2LoginClient,
     private val naverOAuth2LoginClient: NaverOAuth2LoginClient,
 ) {
-    private val logger: Logger = LoggerFactory.getLogger(OAuth2LoginService::class.java)
 
     fun kakaoGenerateLoginPageUrl(): String {
         return kakaoOAuth2LoginClient.generateLoginPageUrl()

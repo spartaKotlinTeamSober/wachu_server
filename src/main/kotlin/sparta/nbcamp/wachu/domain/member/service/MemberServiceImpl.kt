@@ -9,6 +9,7 @@ import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
+import sparta.nbcamp.wachu.domain.member.dto.SocialSignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
@@ -19,6 +20,7 @@ import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
 import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
+import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthResponse
 
 @Service
 class MemberServiceImpl @Autowired constructor(
@@ -58,6 +60,37 @@ class MemberServiceImpl @Autowired constructor(
             accessToken = jwtTokenManager.generateToken(memberId = loginMember.id!!, memberRole = MemberRole.MEMBER),
             refreshToken = null
         )
+    }
+
+    fun socialLogin(request: OAuthResponse): TokenResponse {
+
+        val loginMember = memberRepository.findByProviderAndProviderId(request.provider, request.providerId)
+            ?: throw IllegalStateException("회원가입이 아직 되지않음") // TODO() 바로 SocailSignUp()으로 넘어가게하기??
+        return TokenResponse(
+            accessToken = jwtTokenManager.generateToken(memberId = loginMember.id!!, memberRole = MemberRole.MEMBER),
+            refreshToken = null
+        )
+    }
+
+    fun socialSignUp(request: SocialSignUpRequest, oAuthRequest: OAuthResponse): SignUpResponse {
+
+        check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
+        check(!memberRepository.existsByNickname(request.nickname)) { "이미 존재하는 닉네임" }
+
+        val member = SignUpRequest.toEntity(
+            SignUpRequest(
+                email = request.email,
+                code = "소셜 로그인",
+                password = "${oAuthRequest.provider}+${oAuthRequest.providerId}", //TODO 추후에 고유 값으로 대체가능
+                confirmPassword = "${oAuthRequest.provider}+${oAuthRequest.providerId}",
+                nickname = request.nickname,
+                providerName = oAuthRequest.provider,
+                providerId = oAuthRequest.providerId,
+            ), passwordEncoder
+        )
+        member.profileImageUrl = oAuthRequest.profileImageUrl
+        memberRepository.addMember(member)
+        return SignUpResponse.from(member)
     }
 
     @Transactional
