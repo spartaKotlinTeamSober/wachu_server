@@ -19,10 +19,10 @@ class OAuth2LoginController(
     private val logger = LoggerFactory.getLogger(OAuth2LoginController::class.java)
 
     @GetMapping("/oauth2/login/kakao")
-    fun kakaoRedirectLoginPage(response: HttpServletResponse) {
+    fun kakaoRedirectLoginPage(response: HttpServletResponse): ResponseEntity<String> {
         val loginPageUrl = OAuth2LoginService.kakaoGenerateLoginPageUrl()
         logger.info("Generated login page URL: $loginPageUrl")
-        response.sendRedirect(loginPageUrl)
+        return ResponseEntity.ok(loginPageUrl)
     }
 
     @GetMapping("/oauth2/login/naver")
