@@ -19,6 +19,7 @@ import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
 import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
+import sparta.nbcamp.wachu.infra.security.oauth.repository.InMemoryRefreshTokenRepository
 
 @Service
 class MemberServiceImpl @Autowired constructor(
@@ -27,6 +28,7 @@ class MemberServiceImpl @Autowired constructor(
     private val jwtTokenManager: JwtTokenManager,
     private val mediaS3Service: MediaS3Service,
     private val codeService: CodeService,
+    private val refreshTokenRepository: InMemoryRefreshTokenRepository,
 ) : MemberService {
 
     override fun sendValidationCode(request: SendCodeRequest) {
@@ -45,18 +47,17 @@ class MemberServiceImpl @Autowired constructor(
     }
 
     override fun login(request: LoginRequest): TokenResponse {
+        val loginMember = memberRepository.findByEmail(request.email)
+            ?: throw IllegalStateException("이메일이 없음")
+        check(passwordEncoder.matches(request.password, loginMember.password)) { "비밀번호가 맞지 않음" }
 
-        val loginMember = memberRepository.findByEmail(request.email) ?: throw IllegalStateException("이메일이 없음")
-        check(
-            passwordEncoder.matches(
-                request.password,
-                loginMember.password
-            )
-        ) { "비밀번호가 맞지 않음" }
-        return TokenResponse(
-            accessToken = jwtTokenManager.generateToken(memberId = loginMember.id!!, memberRole = MemberRole.MEMBER),
-            refreshToken = null
-        )
+        val tokens = jwtTokenManager.generateToken(loginMember.id!!, MemberRole.MEMBER)
+        val accessToken = tokens["accessToken"] ?: throw IllegalStateException("Access token 생성 실패")
+        val refreshToken = tokens["refreshToken"] ?: throw IllegalStateException("Refresh token 생성 실패")
+
+        refreshTokenRepository.save(loginMember.id!!, refreshToken)
+
+        return TokenResponse(accessToken, refreshToken)
     }
 
     @Transactional

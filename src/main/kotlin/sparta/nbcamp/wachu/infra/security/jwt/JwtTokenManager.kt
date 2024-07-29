@@ -17,25 +17,40 @@ class JwtTokenManager(
 
     ) {
 
-    fun generateToken(memberId: Long, memberRole: MemberRole): String {
+    private val accessTokenValidity = 3600 * 1000 // 1 hour
+    private val refreshTokenValidity = 7 * 24 * 3600 * 1000 // 1 week
 
-        val claims: Claims =
-            Jwts.claims()
-                .add(mapOf("memberRole" to memberRole))
-                .build()
+    private val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
 
-        val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
+    fun generateToken(memberId: Long, memberRole: MemberRole): Map<String, String> {
+        val claims: Claims = Jwts.claims().add(mapOf("memberRole" to memberRole)).build()
 
-        return Jwts.builder().subject(memberId.toString()).claims(claims).issuer(issuer)
-            .expiration(Date(System.currentTimeMillis() + 3600 * 1000)).signWith(key).compact()
+        val accessToken = Jwts.builder()
+            .subject(memberId.toString())
+            .claims(claims)
+            .issuer(issuer)
+            .expiration(Date(System.currentTimeMillis() + accessTokenValidity))
+            .signWith(key)
+            .compact()
+
+        val refreshToken = Jwts.builder()
+            .subject(memberId.toString())
+            .issuer(issuer)
+            .expiration(Date(System.currentTimeMillis() + refreshTokenValidity))
+            .signWith(key)
+            .compact()
+
+        return mapOf("accessToken" to accessToken, "refreshToken" to refreshToken)
     }
 
     fun validateToken(token: String): Result<Jws<Claims>> {
 
         return kotlin.runCatching {
-            val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
-
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
         }
+    }
+
+    fun parseClaims(token: String): Claims {
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).body
     }
 }
