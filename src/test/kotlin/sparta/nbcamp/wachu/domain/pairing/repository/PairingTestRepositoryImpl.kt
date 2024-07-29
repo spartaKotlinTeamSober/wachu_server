@@ -27,4 +27,8 @@ class PairingTestRepositoryImpl(
     override fun delete(pairing: Pairing) {
         Logger.getLogger("PairingTestRepositoryImpl").log(Level.INFO, "delete")
     }
+
+    override fun findFetchJoin(wineId: Long, pageable: Pageable): Page<Pairing> {
+        return pairingPage
+    }
 }

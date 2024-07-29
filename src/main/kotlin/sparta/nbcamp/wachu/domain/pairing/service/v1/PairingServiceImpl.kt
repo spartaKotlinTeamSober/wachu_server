@@ -25,8 +25,13 @@ class PairingServiceImpl(
 ) : PairingService {
 
     @Transactional(readOnly = true)
-    override fun getPairingPage(pageable: Pageable): Page<PairingResponse> {
+    override fun getAllPairings(pageable: Pageable): Page<PairingResponse> {
         return pairingRepository.findAll(pageable).map { PairingResponse.from(it) }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getPairingsByWineId(wineId: Long, pageable: Pageable): Page<PairingResponse> {
+        return pairingRepository.findFetchJoin(wineId, pageable).map { PairingResponse.from(it) }
     }
 
     @Transactional(readOnly = true)

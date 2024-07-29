@@ -1,16 +1,20 @@
 package sparta.nbcamp.wachu.domain.pairing.controller.v1
 
-import com.fasterxml.jackson.databind.util.JSONPObject
-import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingRequest
 import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingResponse
@@ -23,11 +27,20 @@ class PairingController(
     private val pairingService: PairingService,
 ) {
     @GetMapping
-    fun getPairingPage(
+    fun getAllPairings(
         @PageableDefault(page = 0, size = 10)
-        pageable: Pageable
+        pageable: Pageable,
     ): ResponseEntity<Page<PairingResponse>> {
-        return ResponseEntity.ok(pairingService.getPairingPage(pageable))
+        return ResponseEntity.ok(pairingService.getAllPairings(pageable))
+    }
+
+    @GetMapping
+    fun getPairingsByWineId(
+        @PageableDefault(page = 0, size = 10)
+        pageable: Pageable,
+        @RequestParam wineId: Long
+    ): ResponseEntity<Page<PairingResponse>> {
+        return ResponseEntity.ok(pairingService.getPairingsByWineId(wineId, pageable))
     }
 
     @GetMapping("/{pairingId}")
