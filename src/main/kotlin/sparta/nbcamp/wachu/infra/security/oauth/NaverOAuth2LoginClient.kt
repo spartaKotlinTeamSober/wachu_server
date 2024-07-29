@@ -43,9 +43,9 @@ class NaverOAuth2LoginClient(
         val requestData = LinkedMultiValueMap<String, String>().apply {
             add("grant_type", "authorization_code")
             add("client_id", clientId)
-            add("client_secret", clientSecret) // client_secret 추가
+            add("client_secret", clientSecret)
             add("code", code)
-            add("state", state) // state 추가
+            add("state", state)
         }
 
         val headers = HttpHeaders().apply {

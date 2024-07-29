@@ -32,7 +32,7 @@ class Member(
     @Column(name = "provider")
     val provider: String?,
 
-    @Column(name = "providerId")
+    @Column(name = "provider_id")
     val providerId: String?,
 
     @Id

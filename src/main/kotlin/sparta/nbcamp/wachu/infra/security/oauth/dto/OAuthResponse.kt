@@ -5,4 +5,5 @@ data class OAuthResponse(
     val profileImageUrl: String,
     val provider: String,
     val providerId: String,
+    val email: String?,
 )

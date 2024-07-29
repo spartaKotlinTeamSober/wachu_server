@@ -28,7 +28,8 @@ class OAuth2LoginService(
                     nickname = it.properties.nickname,
                     providerId = it.id.toString(),
                     profileImageUrl = it.properties.profileImage,
-                    provider = "KAKAO"
+                    provider = "KAKAO",
+                    email = null
                 )
             }
     }
@@ -37,12 +38,12 @@ class OAuth2LoginService(
         return naverOAuth2LoginClient.getAccessToken(code, state)
             .let { naverOAuth2LoginClient.retrieveUserInfo(it) }
             .let {
-                println("User Info: $it")
                 OAuthResponse(
                     nickname = it.response.nickname,
                     providerId = it.response.id,
                     profileImageUrl = it.response.profileImageUrl,
-                    provider = "NAVER"
+                    provider = "NAVER",
+                    email = it.response.email,
                 )
             }
     }
