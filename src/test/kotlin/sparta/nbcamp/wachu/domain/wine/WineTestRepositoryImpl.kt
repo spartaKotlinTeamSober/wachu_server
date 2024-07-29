@@ -42,6 +42,10 @@ class WineTestRepositoryImpl(
         return 0
     }
 
+    fun deleteAllforTest() {
+        wineJpaRepository.deleteAll()
+    }
+
     fun saveAllforTest(wines: List<Wine>): List<Wine> {
         return wineJpaRepository.saveAll(wines)
     }
