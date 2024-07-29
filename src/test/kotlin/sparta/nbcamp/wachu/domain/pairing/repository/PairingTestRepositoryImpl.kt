@@ -30,7 +30,15 @@ class PairingTestRepositoryImpl(
         Logger.getLogger("PairingTestRepositoryImpl").log(Level.INFO, "delete")
     }
 
+    fun deleteAllforTest() {
+        pairingJpaRepository.deleteAll()
+    }
+
     fun saveAllforTest(pairings: List<Pairing>): List<Pairing> {
         return pairingJpaRepository.saveAll(pairings)
+    }
+
+    fun findAllforTest(): List<Pairing> {
+        return pairingJpaRepository.findAll()
     }
 }
