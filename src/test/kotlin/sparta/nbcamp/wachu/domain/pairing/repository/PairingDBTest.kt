@@ -13,13 +13,9 @@ import sparta.nbcamp.wachu.domain.pairing.repository.v1.PairingJpaRepository
 import sparta.nbcamp.wachu.domain.pairing.repository.v1.PairingQueryDslRepository
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
-import sparta.nbcamp.wachu.domain.wine.repository.WineJpaRepository
 
 @SpringBootTest
 class PairingDBTest {
-    @Autowired
-    private lateinit var wineJpaRepository: WineJpaRepository
-
     @Autowired
     private lateinit var pairingJpaRepository: PairingJpaRepository
 
