@@ -9,6 +9,7 @@ import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
+import sparta.nbcamp.wachu.domain.member.dto.SocialSignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
@@ -19,6 +20,7 @@ import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
 import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
+import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthResponse
 
 @Service
 class MemberServiceImpl @Autowired constructor(
@@ -40,6 +42,15 @@ class MemberServiceImpl @Autowired constructor(
         check(request.password == request.confirmPassword) { "처음에 설정한 비밀번호와 다름" }
         check(!memberRepository.existsByNickname(request.nickname)) { "이미 존재하는 닉네임" }
         val member = SignUpRequest.toEntity(request, passwordEncoder)
+        memberRepository.addMember(member)
+        return SignUpResponse.from(member)
+    }
+
+    override fun socialSignup(request: SocialSignUpRequest, oauthRequest: OAuthResponse): SignUpResponse {
+        check(codeService.checkCode(request.email, request.code)) { "인증코드가 맞지 않음" }
+        check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
+        check(!memberRepository.existsByNickname(request.nickname)) { "이미 존재하는 닉네임" }
+        val member = SocialSignUpRequest.toEntity(request, oauthRequest)
         memberRepository.addMember(member)
         return SignUpResponse.from(member)
     }
