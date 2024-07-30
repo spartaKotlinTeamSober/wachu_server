@@ -31,4 +31,8 @@ class PairingTestRepositoryImpl(
     override fun findFetchJoin(wineId: Long, pageable: Pageable): Page<Pairing> {
         return pairingPage
     }
+
+    override fun findByWineId(wineId: Long, pageable: Pageable): Page<Pairing> {
+        return pairingPage
+    }
 }
