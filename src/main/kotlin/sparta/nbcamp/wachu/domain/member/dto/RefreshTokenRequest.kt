@@ -1,4 +1,4 @@
-package sparta.nbcamp.wachu.infra.security.oauth.dto
+package sparta.nbcamp.wachu.domain.member.dto
 
 data class RefreshTokenRequest(
     val refreshToken: String,

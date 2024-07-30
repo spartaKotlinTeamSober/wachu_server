@@ -3,6 +3,7 @@ package sparta.nbcamp.wachu.domain.member.service
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
+import sparta.nbcamp.wachu.domain.member.dto.RefreshTokenRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
@@ -15,6 +16,8 @@ interface MemberService {
     fun signup(request: SignUpRequest): SignUpResponse
 
     fun login(request: LoginRequest): TokenResponse
+
+    fun logout(request: RefreshTokenRequest)
 
     fun uploadProfile(userPrincipal: UserPrincipal, multipartFile: MultipartFile): ProfileResponse
 

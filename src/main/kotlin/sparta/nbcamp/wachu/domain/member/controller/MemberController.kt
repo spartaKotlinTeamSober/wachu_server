@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
+import sparta.nbcamp.wachu.domain.member.dto.RefreshTokenRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
@@ -23,7 +24,7 @@ import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 @RestController
 class MemberController(
     private val memberService: MemberService,
-    private val codeService: CodeService,
+    private val codeService: CodeService,//TODO()
 ) {
 
     @PostMapping("/auth/sign-up/email-validation")
@@ -39,6 +40,11 @@ class MemberController(
     @PostMapping("/auth/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<TokenResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.login(request))
+    }
+
+    @PostMapping("/logout")
+    fun logout(@RequestBody request: RefreshTokenRequest): ResponseEntity<Unit> {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.logout(request))
     }
 
     @PostMapping(

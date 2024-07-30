@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import java.nio.charset.StandardCharsets
 import java.util.Date
@@ -22,7 +23,7 @@ class JwtTokenManager(
 
     private val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
 
-    fun generateToken(memberId: Long, memberRole: MemberRole): Map<String, String> {
+    fun generateToken(memberId: Long, memberRole: MemberRole): TokenResponse {
         val claims: Claims = Jwts.claims().add(mapOf("memberRole" to memberRole)).build()
 
         val accessToken = Jwts.builder()
@@ -34,17 +35,17 @@ class JwtTokenManager(
             .compact()
 
         val refreshToken = Jwts.builder()
+            .claims(claims)
             .subject(memberId.toString())
             .issuer(issuer)
             .expiration(Date(System.currentTimeMillis() + refreshTokenValidity))
             .signWith(key)
             .compact()
 
-        return mapOf("accessToken" to accessToken, "refreshToken" to refreshToken)
+        return TokenResponse(accessToken = accessToken, refreshToken = refreshToken)
     }
 
     fun validateToken(token: String): Result<Jws<Claims>> {
-
         return kotlin.runCatching {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
         }
