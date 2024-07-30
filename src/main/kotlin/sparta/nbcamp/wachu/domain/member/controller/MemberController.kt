@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import sparta.nbcamp.wachu.domain.member.dto.CompleteSocialSignUp
+import sparta.nbcamp.wachu.domain.member.dto.CompleteSignUp
 import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
-import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
@@ -33,16 +32,13 @@ class MemberController(
     }
 
     @PostMapping("/auth/sign-up")
-    fun signUp(@RequestBody request: SignUpRequest): ResponseEntity<SignUpResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request))
-    }
-
-    @PostMapping("/auth/oauth-2.0/sign-up")
-    fun socialSignUp(
-        @RequestBody request: CompleteSocialSignUp
-    ): ResponseEntity<SignUpResponse> {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(memberService.socialSignup(request.socialSignUpRequest, request.oauthRequest))
+    fun signUp(@RequestBody request: CompleteSignUp): ResponseEntity<SignUpResponse> {
+        if (request.signUpRequest != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request.signUpRequest))
+        } else {
+            return ResponseEntity.status(HttpStatus.OK)
+                .body(memberService.socialSignup(request.socialSignUpRequest!!, request.oauthRequest!!))
+        }
     }
 
     @PostMapping("/auth/login")

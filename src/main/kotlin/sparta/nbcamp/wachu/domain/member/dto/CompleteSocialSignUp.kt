@@ -2,7 +2,8 @@ package sparta.nbcamp.wachu.domain.member.dto
 
 import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthResponse
 
-data class CompleteSocialSignUp(
-    val oauthRequest: OAuthResponse,
-    val socialSignUpRequest: SocialSignUpRequest,
+data class CompleteSignUp(
+    val oauthRequest: OAuthResponse?,
+    val signUpRequest: SignUpRequest?,
+    val socialSignUpRequest: SocialSignUpRequest?,
 )
