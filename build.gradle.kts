@@ -38,13 +38,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("javax.servlet:javax.servlet-api:4.0.1")
 
     // OpenAI
     implementation("org.springframework.ai:spring-ai-openai-spring-boot-starter:${springAiVersion}")
 
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
-    
+
     // Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
