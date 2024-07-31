@@ -10,7 +10,7 @@ import sparta.nbcamp.wachu.domain.pairing.model.v1.Pairing
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 
-class PairingDBTest {
+class PairingRepositoryTest {
     val testWines = List(10) { index ->
         Wine(
             name = "testWine$index",
@@ -44,7 +44,7 @@ class PairingDBTest {
 
     val pairingTestRepository = PairingTestRepositoryImpl(testPairing, testPairingsPage)
 
-    private val logger: Logger = LoggerFactory.getLogger(PairingDBTest::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(PairingRepositoryTest::class.java)
 
     @Test
     fun `페치조인 안한다`() {
