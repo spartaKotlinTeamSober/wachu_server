@@ -12,8 +12,8 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.body
+import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.infra.security.oauth.dto.KakaoOAuthLoginUserInfoResponse
-import sparta.nbcamp.wachu.infra.security.oauth.dto.TokenResponse
 
 @Component
 class KakaoOAuth2LoginClient(

@@ -66,13 +66,11 @@ class MemberServiceImpl @Autowired constructor(
                     provider = request.provider,
                     providerId = request.providerId,
                 )
-            )
-            val memberId = memberRepository.findByProviderAndProviderId(
-                provider = request.provider,
-                providerId = request.providerId
-            )!!.id!!
-            val accessToken = jwtTokenManager.generateToken(memberId = memberId, memberRole = MemberRole.MEMBER)
-            return TokenResponse(accessToken, null)
+            ).let {
+                val memberId = it.id!!
+                val accessToken = jwtTokenManager.generateToken(memberId = memberId, memberRole = MemberRole.MEMBER)
+                return TokenResponse(accessToken, null)
+            }
         } else {
             val accessToken =
                 jwtTokenManager.generateToken(memberId = member.id!!, memberRole = MemberRole.MEMBER)
