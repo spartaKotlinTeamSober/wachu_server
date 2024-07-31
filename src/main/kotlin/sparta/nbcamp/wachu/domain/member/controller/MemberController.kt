@@ -38,12 +38,7 @@ class MemberController(
 
     @PostMapping("/auth/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<TokenResponse> {
-        val response = if (request.providerId == null || request.providerName == null) {
-            memberService.login(request)
-        } else {
-            memberService.socialLogin(request)
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(response)
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.login(request))
     }
 
     @PostMapping(

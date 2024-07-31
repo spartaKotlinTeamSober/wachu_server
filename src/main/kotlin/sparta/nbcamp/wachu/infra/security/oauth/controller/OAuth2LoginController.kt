@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthResponse
+import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.infra.security.oauth.service.OAuth2LoginService
 
 @RestController
@@ -35,7 +35,7 @@ class OAuth2LoginController(
     @GetMapping("/oauth2/callback/kakao")
     fun kakaoCallback(
         @RequestParam code: String
-    ): ResponseEntity<OAuthResponse> {
+    ): ResponseEntity<TokenResponse> {
         return ResponseEntity.ok(OAuth2LoginService.kakaoRetrieveUserInfo(code))
     }
 
@@ -43,7 +43,7 @@ class OAuth2LoginController(
     fun naverCallback(
         @RequestParam code: String,
         @RequestParam state: String,
-    ): ResponseEntity<OAuthResponse> {
+    ): ResponseEntity<TokenResponse> {
         return ResponseEntity.ok(OAuth2LoginService.naverRetrieveUserInfo(code, state))
     }
 }
