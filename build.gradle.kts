@@ -55,8 +55,6 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
-    runtimeOnly("com.h2database:h2")
-
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -86,6 +84,9 @@ dependencies {
 
     //EmailValidation
     implementation("org.springframework.boot:spring-boot-starter-mail")
+
+    //mySql
+    implementation("mysql:mysql-connector-java:8.0.30")
 }
 
 kotlin {
