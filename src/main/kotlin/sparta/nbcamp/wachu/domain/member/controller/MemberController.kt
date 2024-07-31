@@ -42,7 +42,7 @@ class MemberController(
         return ResponseEntity.status(HttpStatus.OK).body(memberService.login(request))
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/auth/logout")
     fun logout(@RequestBody request: RefreshTokenRequest): ResponseEntity<Unit> {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.logout(request))
     }
