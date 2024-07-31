@@ -9,8 +9,6 @@ data class SignUpRequest(
     val nickname: String,
     val confirmPassword: String,
     val code: String,
-    val providerName: String? = null,
-    val providerId: String? = null,
 ) {
     companion object {
         fun toEntity(request: SignUpRequest, passwordEncoder: PasswordEncoder): Member {
@@ -20,7 +18,7 @@ data class SignUpRequest(
                 nickname = request.nickname,
                 profileImageUrl = null,
                 provider = null,
-                providerId = null
+                providerId = null,
             )
         }
     }
