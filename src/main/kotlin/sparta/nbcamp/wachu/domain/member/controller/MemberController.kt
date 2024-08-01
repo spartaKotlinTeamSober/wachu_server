@@ -1,12 +1,15 @@
 package sparta.nbcamp.wachu.domain.member.controller
 
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -23,7 +26,7 @@ import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 @RestController
 class MemberController(
     private val memberService: MemberService,
-    private val codeService: CodeService,//TODO()
+    private val codeService: CodeService,
 ) {
 
     @PostMapping("/auth/sign-up/email-validation")
@@ -56,5 +59,26 @@ class MemberController(
     @GetMapping("/auth/profile/")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<ProfileResponse> {
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
+    }
+
+    @PostMapping("/refresh-token")
+    fun refreshAccessToken(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) refreshToken: String
+    ): ResponseEntity<String> {
+        val token = refreshToken.removePrefix("Bearer ")
+
+        val tokenResponse = memberService.refreshAccessToken(token)
+
+        val cookie = ResponseCookie.from("refreshToken", tokenResponse.refreshToken)
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .maxAge(7 * 24 * 60 * 60)
+            .path("/")
+            .build()
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(tokenResponse.accessToken)
     }
 }

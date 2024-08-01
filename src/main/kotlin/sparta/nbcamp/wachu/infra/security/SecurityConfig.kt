@@ -36,7 +36,6 @@ class SecurityConfig(
                     "/error",
                     "/admin/**",
                     "/oauth2/**",
-                    "/refresh-token"
                 ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/**").permitAll()
                     .anyRequest().authenticated()

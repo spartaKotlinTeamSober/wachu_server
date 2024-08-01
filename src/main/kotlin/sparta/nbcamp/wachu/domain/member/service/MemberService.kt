@@ -19,4 +19,6 @@ interface MemberService {
     fun uploadProfile(userPrincipal: UserPrincipal, multipartFile: MultipartFile): ProfileResponse
 
     fun getProfile(userPrincipal: UserPrincipal): ProfileResponse
+
+    fun refreshAccessToken(refreshToken: String): TokenResponse
 }

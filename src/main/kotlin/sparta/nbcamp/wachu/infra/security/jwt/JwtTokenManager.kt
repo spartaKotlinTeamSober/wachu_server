@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
+import sparta.nbcamp.wachu.infra.security.jwt.dto.TokenType
 import java.nio.charset.StandardCharsets
+import java.time.Instant
 import java.util.Date
 
 @Component
@@ -23,26 +25,37 @@ class JwtTokenManager(
 
     private val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
 
-    fun generateToken(memberId: Long, memberRole: MemberRole): TokenResponse {
-        val claims: Claims = Jwts.claims().add(mapOf("memberRole" to memberRole)).build()
+    fun generateTokenResponse(memberId: Long, memberRole: MemberRole): TokenResponse {
+        return TokenResponse(
+            accessToken = generateToken(
+                memberId.toString(),
+                memberRole.name,
+                TokenType.ACCESS_TOKEN_TYPE.toString(),
+                accessTokenValidity
+            ),
+            refreshToken = generateToken(
+                memberId.toString(),
+                memberRole.name,
+                TokenType.REFRESH_TOKEN_TYPE.toString(),
+                refreshTokenValidity
+            )
+        )
+    }
 
-        val accessToken = Jwts.builder()
-            .subject(memberId.toString())
-            .claims(claims)
+    private fun generateToken(subject: String, memberRole: String, type: String, expirationTime: Int): String {
+        val claims: Claims = Jwts.claims().add(mapOf("memberRole" to memberRole, "tokenType" to type)).build()
+
+        val now = Instant.now()
+        val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
+
+        return Jwts.builder()
+            .subject(subject)
             .issuer(issuer)
-            .expiration(Date(System.currentTimeMillis() + accessTokenValidity))
+            .issuedAt(Date.from(now))
+            .expiration(Date(System.currentTimeMillis() + expirationTime))
+            .claims(claims)
             .signWith(key)
             .compact()
-
-        val refreshToken = Jwts.builder()
-            .claims(claims)
-            .subject(memberId.toString())
-            .issuer(issuer)
-            .expiration(Date(System.currentTimeMillis() + refreshTokenValidity))
-            .signWith(key)
-            .compact()
-
-        return TokenResponse(accessToken = accessToken, refreshToken = refreshToken)
     }
 
     fun validateToken(token: String): Result<Jws<Claims>> {
