@@ -20,7 +20,7 @@ import sparta.nbcamp.wachu.infra.openai.service.WineEmbeddingService
 class WineServiceImpl @Autowired constructor(
     private val wineRepository: WineRepository,
     private val winePromotionRepository: WinePromotionRepository,
-    private val wineEmbeddingService: WineEmbeddingService
+    private val wineEmbeddingService: WineEmbeddingService,
 ) : WineService {
 
     override fun getWineList(
