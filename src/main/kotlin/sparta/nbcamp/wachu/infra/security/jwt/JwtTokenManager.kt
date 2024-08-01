@@ -66,7 +66,6 @@ class JwtTokenManager(
             if (tokenType == TokenType.REFRESH_TOKEN_TYPE.toString() && getAccessToken == null) throw IllegalStateException(
                 "토큰 타입이 accessToken이 아님"
             )
-
             claims
         }
     }
