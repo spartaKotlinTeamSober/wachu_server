@@ -32,7 +32,7 @@ class S3Service @Autowired constructor(
         s3client.putObject(putObjectRequest, RequestBody.fromInputStream(file.inputStream, file.size))
 
         // 업로드된 파일의 CDN URL 반환
-        return "https://d3i8tzom3e0at0.cloudfront.net/$keyName"
+        return "https://cdn.sober-wachu.com/$keyName"
     }
 
     fun getImage(filePath: String): List<String> {
@@ -43,7 +43,7 @@ class S3Service @Autowired constructor(
                 .build()
         )
         return imageList.contents().map {
-            "https://d3i8tzom3e0at0.cloudfront.net/${it.key()}"
+            "https://cdn.sober-wachu.com/${it.key()}"
         }
     }
 }
