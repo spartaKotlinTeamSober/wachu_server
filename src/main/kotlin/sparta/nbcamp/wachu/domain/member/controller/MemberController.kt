@@ -61,7 +61,7 @@ class MemberController(
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
     }
 
-    @PostMapping("/refresh-token")
+    @PostMapping("/auth/refresh-token")
     fun refreshAccessToken(
         @RequestHeader(HttpHeaders.AUTHORIZATION) refreshToken: String
     ): ResponseEntity<String> {
