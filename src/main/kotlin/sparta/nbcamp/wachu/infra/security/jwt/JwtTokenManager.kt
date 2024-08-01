@@ -18,8 +18,8 @@ class JwtTokenManager(
 
     ) {
 
-    private val accessTokenValidity = 3600 * 1000 // 1 hour
-    private val refreshTokenValidity = 7 * 24 * 3600 * 1000 // 1 week
+    private val accessTokenValidity = 3600 * 1000
+    private val refreshTokenValidity = 7 * 24 * 3600 * 1000
 
     private val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
 
@@ -49,9 +49,5 @@ class JwtTokenManager(
         return kotlin.runCatching {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
         }
-    }
-
-    fun parseClaims(token: String): Claims {
-        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).body
     }
 }

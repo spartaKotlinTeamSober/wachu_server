@@ -1,14 +1,12 @@
 package sparta.nbcamp.wachu.domain.member.service
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
-import sparta.nbcamp.wachu.domain.member.dto.RefreshTokenRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
@@ -21,7 +19,6 @@ import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
 import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
-import java.util.concurrent.TimeUnit
 
 @Service
 class MemberServiceImpl @Autowired constructor(
@@ -30,7 +27,6 @@ class MemberServiceImpl @Autowired constructor(
     private val jwtTokenManager: JwtTokenManager,
     private val mediaS3Service: MediaS3Service,
     private val codeService: CodeService,
-    private val redisTemplate: RedisTemplate<String, String>,
 ) : MemberService {
 
     override fun sendValidationCode(request: SendCodeRequest) {
@@ -55,14 +51,7 @@ class MemberServiceImpl @Autowired constructor(
 
         val tokens = jwtTokenManager.generateToken(loginMember.id!!, MemberRole.MEMBER)
 
-        redisTemplate.opsForValue().set("refreshToken::${loginMember.id}", tokens.refreshToken, 7, TimeUnit.DAYS) //7일!!
         return tokens
-    }
-
-    override fun logout(request: RefreshTokenRequest) {
-        jwtTokenManager.validateToken(request.refreshToken).map {
-            redisTemplate.delete("refreshToken::${it.payload.subject.toLong()}")
-        }
     }
 
     @Transactional
