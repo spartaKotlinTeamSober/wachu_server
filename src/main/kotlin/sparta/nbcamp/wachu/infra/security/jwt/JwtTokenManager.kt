@@ -58,12 +58,14 @@ class JwtTokenManager(
             .compact()
     }
 
-    fun validateToken(token: String): Result<Jws<Claims>> {
+    fun validateToken(token: String, getAccessToken: Boolean?): Result<Jws<Claims>> {
         return kotlin.runCatching {
             val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
 
             val tokenType = claims.payload.get("tokenType", String::class.java)
-            if (tokenType == TokenType.REFRESH_TOKEN_TYPE.toString()) throw IllegalStateException("토큰 타입이 accessToken이 아님")
+            if (tokenType == TokenType.REFRESH_TOKEN_TYPE.toString() && getAccessToken == null) throw IllegalStateException(
+                "토큰 타입이 accessToken이 아님"
+            )
 
             claims
         }

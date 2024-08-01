@@ -71,7 +71,7 @@ class MemberServiceImpl @Autowired constructor(
 
     override fun refreshAccessToken(refreshToken: String): TokenResponse {
 
-        return jwtTokenManager.validateToken(refreshToken).fold(
+        return jwtTokenManager.validateToken(refreshToken, getAccessToken = true).fold(
             onSuccess = {
                 val tokens = jwtTokenManager.generateTokenResponse(
                     memberId = it.payload.subject.toLong(),
