@@ -12,6 +12,7 @@ import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
+import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
@@ -19,6 +20,8 @@ import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
 import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
+import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthResponse
+import java.util.UUID
 
 @Service
 class MemberServiceImpl @Autowired constructor(
@@ -44,14 +47,50 @@ class MemberServiceImpl @Autowired constructor(
         return SignUpResponse.from(member)
     }
 
+    override fun socialLogin(request: OAuthResponse): TokenResponse {
+        val member =
+            memberRepository.findByProviderAndProviderId(
+                provider = request.provider,
+                providerId = request.providerId
+            )
+        if (member == null) {
+
+            if (request.email != null && memberRepository.existsByEmail(request.email!!)) request.email = null
+            if (memberRepository.existsByNickname(request.nickname!!)) request.nickname = null
+            memberRepository.addMember(
+                Member(
+                    email = request.email,
+                    nickname = request.nickname,
+                    password = passwordEncoder.encode(UUID.randomUUID().toString()),
+                    profileImageUrl = request.profileImageUrl,
+                    provider = request.provider,
+                    providerId = request.providerId,
+                )
+            ).let {
+                val memberId = it.id!!
+                val accessToken = jwtTokenManager.generateToken(memberId = memberId, memberRole = MemberRole.MEMBER)
+                return TokenResponse(accessToken, null)
+            }
+        } else {
+            val accessToken =
+                jwtTokenManager.generateToken(memberId = member.id!!, memberRole = MemberRole.MEMBER)
+            return TokenResponse(accessToken, null)
+        }
+    }
+
     override fun login(request: LoginRequest): TokenResponse {
-        val loginMember = memberRepository.findByEmail(request.email)
-            ?: throw IllegalStateException("이메일이 없음")
-        check(passwordEncoder.matches(request.password, loginMember.password)) { "비밀번호가 맞지 않음" }
 
-        val tokens = jwtTokenManager.generateTokenResponse(loginMember.id!!, MemberRole.MEMBER)
-
-        return tokens
+        val loginMember = memberRepository.findByEmail(request.email) ?: throw IllegalStateException("이메일이 없음")
+        check(
+            passwordEncoder.matches(
+                request.password,
+                loginMember.password
+            )
+        ) { "비밀번호가 맞지 않음" }
+        return TokenResponse(
+            accessToken = jwtTokenManager.generateToken(memberId = loginMember.id!!, memberRole = MemberRole.MEMBER),
+            refreshToken = null
+        )
     }
 
     @Transactional
@@ -67,19 +106,5 @@ class MemberServiceImpl @Autowired constructor(
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
         return ProfileResponse.from(member)
-    }
-
-    override fun refreshAccessToken(refreshToken: String): TokenResponse {
-
-        return jwtTokenManager.validateToken(refreshToken, getAccessToken = true).fold(
-            onSuccess = {
-                val tokens = jwtTokenManager.generateTokenResponse(
-                    memberId = it.payload.subject.toLong(),
-                    memberRole = MemberRole.valueOf(it.payload.get("memberRole", String::class.java))
-                )
-                tokens
-            },
-            onFailure = { throw IllegalStateException(" 토큰이 검증되지않음") }
-        )
     }
 }

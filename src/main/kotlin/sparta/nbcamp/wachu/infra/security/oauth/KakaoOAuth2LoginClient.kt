@@ -12,8 +12,8 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.body
+import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.infra.security.oauth.dto.KakaoOAuthLoginUserInfoResponse
-import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthTokenResponse
 
 @Component
 class KakaoOAuth2LoginClient(
@@ -47,11 +47,11 @@ class KakaoOAuth2LoginClient(
         val request = HttpEntity(requestData, headers)
 
         return try {
-            val response: ResponseEntity<OAuthTokenResponse> = RestTemplate().exchange(
+            val response: ResponseEntity<TokenResponse> = RestTemplate().exchange(
                 "$authServerBaseUrl/oauth/token",
                 HttpMethod.POST,
                 request,
-                OAuthTokenResponse::class.java
+                TokenResponse::class.java
             )
 
             if (response.statusCode.is2xxSuccessful) {

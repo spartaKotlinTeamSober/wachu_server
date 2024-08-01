@@ -35,7 +35,7 @@ class SecurityConfig(
                     "/h2-console/**",
                     "/error",
                     "/admin/**",
-                    "/oauth2/**",
+                    "/oauth2/**"
                 ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/**").permitAll()
                     .anyRequest().authenticated()

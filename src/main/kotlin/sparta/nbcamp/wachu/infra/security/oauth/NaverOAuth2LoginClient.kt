@@ -14,7 +14,7 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.body
 import sparta.nbcamp.wachu.infra.security.oauth.dto.NaverOAuthLoginUserInfoResponse
-import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthTokenResponse
+import sparta.nbcamp.wachu.infra.security.oauth.dto.NaverTokenResponse
 import java.util.UUID
 
 @Component
@@ -55,11 +55,11 @@ class NaverOAuth2LoginClient(
         val request = HttpEntity(requestData, headers)
 
         return try {
-            val response: ResponseEntity<OAuthTokenResponse> = RestTemplate().exchange(
+            val response: ResponseEntity<NaverTokenResponse> = RestTemplate().exchange(
                 "$authServerBaseUrl/oauth2.0/token",
                 HttpMethod.POST,
                 request,
-                OAuthTokenResponse::class.java
+                NaverTokenResponse::class.java
             )
 
             if (response.statusCode.is2xxSuccessful) {

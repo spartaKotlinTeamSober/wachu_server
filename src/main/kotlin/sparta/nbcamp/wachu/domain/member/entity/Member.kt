@@ -14,13 +14,13 @@ import jakarta.persistence.Table
 class Member(
 
     @Column(name = "email", length = 50, unique = true)
-    val email: String,
+    val email: String?,
 
     @Column(name = "password", length = 60)
     val password: String,
 
     @Column(name = "nickname", length = 50, unique = true)
-    val nickname: String,
+    val nickname: String?,
 
     @Column(name = "profile_image_url")
     var profileImageUrl: String?,

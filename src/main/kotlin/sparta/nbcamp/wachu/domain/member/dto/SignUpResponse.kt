@@ -11,8 +11,8 @@ data class SignUpResponse(
         fun from(entity: Member): SignUpResponse {
             return SignUpResponse(
                 id = entity.id!!,
-                email = entity.email,
-                nickname = entity.nickname
+                email = entity.email!!,
+                nickname = entity.nickname!!
             )
         }
     }
