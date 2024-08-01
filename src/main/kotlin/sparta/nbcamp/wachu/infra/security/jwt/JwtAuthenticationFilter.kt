@@ -11,6 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 import sparta.nbcamp.wachu.infra.security.jwt.JwtAuthenticationToken
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
+import sparta.nbcamp.wachu.infra.security.jwt.dto.TokenType
 
 @Component
 class JwtAuthenticationFilter(
@@ -21,12 +22,19 @@ class JwtAuthenticationFilter(
     ) {
         var pureToken: String? = null
 
+
         if (request.getHeader(AUTHORIZATION) != null && request.getHeader(AUTHORIZATION).startsWith("Bearer ")) {
             pureToken = request.getHeader("Authorization").substring(7)
         }
         if (pureToken != null) {
 
             jwtTokenManager.validateToken(pureToken).onSuccess {
+
+                if (it.payload.get(
+                        "refreshToken",
+                        String::class.java
+                    ) == TokenType.REFRESH_TOKEN_TYPE.toString()
+                ) throw IllegalStateException("refreshToken 으로 접근금지")
 
                 val memberRole = it.payload.get("memberRole", String::class.java)
                 val memberId: Long = it.payload.subject.toLong()

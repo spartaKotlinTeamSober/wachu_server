@@ -42,8 +42,8 @@ class JwtTokenManager(
         )
     }
 
-    private fun generateToken(subject: String, memberRole: String, type: String, expirationTime: Int): String {
-        val claims: Claims = Jwts.claims().add(mapOf("memberRole" to memberRole, "tokenType" to type)).build()
+    private fun generateToken(subject: String, memberRole: String, tokenType: String, expirationTime: Int): String {
+        val claims: Claims = Jwts.claims().add(mapOf("memberRole" to memberRole, "tokenType" to tokenType)).build()
 
         val now = Instant.now()
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
