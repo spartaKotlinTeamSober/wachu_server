@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+
 import sparta.nbcamp.wachu.security.jwt.JwtAuthenticationFilter
 
 @Configuration
@@ -28,8 +29,13 @@ class SecurityConfig(
                     "/auth/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
+                    "/swagger-resources/**",
+                    "/swagger-ui.html",
+                    "/webjars/**",
+                    "/h2-console/**",
                     "/error",
-                    "/admin/**"
+                    "/admin/**",
+                    "/oauth2/**"
                 ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/**").permitAll()
                     .anyRequest().authenticated()

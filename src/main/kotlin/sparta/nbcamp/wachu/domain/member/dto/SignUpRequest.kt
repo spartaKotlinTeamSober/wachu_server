@@ -17,6 +17,8 @@ data class SignUpRequest(
                 password = passwordEncoder.encode(request.password),
                 nickname = request.nickname,
                 profileImageUrl = null,
+                provider = null,
+                providerId = null,
             )
         }
     }

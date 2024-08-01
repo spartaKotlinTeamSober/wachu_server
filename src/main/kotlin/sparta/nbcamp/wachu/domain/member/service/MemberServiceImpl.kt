@@ -12,6 +12,7 @@ import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
+import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import sparta.nbcamp.wachu.domain.member.repository.MemberRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
@@ -19,6 +20,8 @@ import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
 import sparta.nbcamp.wachu.infra.media.MediaS3Service
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
+import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthResponse
+import java.util.UUID
 
 @Service
 class MemberServiceImpl @Autowired constructor(
@@ -39,15 +42,45 @@ class MemberServiceImpl @Autowired constructor(
         check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
         check(request.password == request.confirmPassword) { "처음에 설정한 비밀번호와 다름" }
         check(!memberRepository.existsByNickname(request.nickname)) { "이미 존재하는 닉네임" }
-
         val member = SignUpRequest.toEntity(request, passwordEncoder)
         memberRepository.addMember(member)
         return SignUpResponse.from(member)
     }
 
+    override fun socialLogin(request: OAuthResponse): TokenResponse {
+        val member =
+            memberRepository.findByProviderAndProviderId(
+                provider = request.provider,
+                providerId = request.providerId
+            )
+        if (member == null) {
+
+            if (request.email != null && memberRepository.existsByEmail(request.email!!)) request.email = null
+            if (memberRepository.existsByNickname(request.nickname!!)) request.nickname = null
+            memberRepository.addMember(
+                Member(
+                    email = request.email,
+                    nickname = request.nickname,
+                    password = passwordEncoder.encode(UUID.randomUUID().toString()),
+                    profileImageUrl = request.profileImageUrl,
+                    provider = request.provider,
+                    providerId = request.providerId,
+                )
+            ).let {
+                val memberId = it.id!!
+                val accessToken = jwtTokenManager.generateToken(memberId = memberId, memberRole = MemberRole.MEMBER)
+                return TokenResponse(accessToken, null)
+            }
+        } else {
+            val accessToken =
+                jwtTokenManager.generateToken(memberId = member.id!!, memberRole = MemberRole.MEMBER)
+            return TokenResponse(accessToken, null)
+        }
+    }
+
     override fun login(request: LoginRequest): TokenResponse {
 
-        val loginMember = memberRepository.findByEmail(request.email) ?: throw RuntimeException("잘못된 아이디")
+        val loginMember = memberRepository.findByEmail(request.email) ?: throw IllegalStateException("이메일이 없음")
         check(
             passwordEncoder.matches(
                 request.password,

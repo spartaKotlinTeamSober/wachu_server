@@ -9,4 +9,5 @@ interface MemberRepository {
     fun findByEmail(email: String): Member?
     fun addMember(member: Member): Member
     fun findById(id: Long): Member?
+    fun findByProviderAndProviderId(provider: String, providerId: String): Member?
 }

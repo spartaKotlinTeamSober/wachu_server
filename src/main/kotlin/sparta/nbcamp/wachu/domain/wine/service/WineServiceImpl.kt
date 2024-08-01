@@ -15,6 +15,7 @@ import sparta.nbcamp.wachu.domain.wine.repository.WinePromotionRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.openai.service.WineEmbeddingService
+import sparta.nbcamp.wachu.infra.redis.common.RedisKeyConst
 
 @Service
 class WineServiceImpl @Autowired constructor(
@@ -65,7 +66,10 @@ class WineServiceImpl @Autowired constructor(
         return wines.map { WineResponse.from(it) }
     }
 
-    @Cacheable(value = ["promotionCache"], key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction")
+    @Cacheable(
+        value = [RedisKeyConst.PROMOTION_WINE_PREFIX],
+        key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction"
+    )
     override fun getPromotionWineList(
         page: Int,
         size: Int,

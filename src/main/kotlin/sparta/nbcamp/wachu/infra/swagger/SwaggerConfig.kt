@@ -17,15 +17,16 @@ class SwaggerConfig {
             SecurityRequirement().addList("Bearer Authentication")
         )
         .components(
-            Components().addSecuritySchemes(
-                "Bearer Authentication",
-                SecurityScheme()
-                    .type(SecurityScheme.Type.HTTP)
-                    .scheme("Bearer")
-                    .bearerFormat("JWT")
-                    .`in`(SecurityScheme.In.HEADER)
-                    .name("Authorization")
-            )
+            Components()
+                .addSecuritySchemes(
+                    "Bearer Authentication",
+                    SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                        .`in`(SecurityScheme.In.HEADER)
+                        .name("Authorization")
+                )
         )
         .info(
             Info()
@@ -34,3 +35,4 @@ class SwaggerConfig {
                 .version("1.0.0")
         )
 }
+

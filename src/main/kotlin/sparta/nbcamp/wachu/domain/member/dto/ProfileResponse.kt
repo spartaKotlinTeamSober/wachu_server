@@ -3,8 +3,8 @@ package sparta.nbcamp.wachu.domain.member.dto
 import sparta.nbcamp.wachu.domain.member.entity.Member
 
 data class ProfileResponse(
-    val email: String,
-    val nickname: String,
+    val email: String?,
+    val nickname: String?,
     val profileUrl: String?
 ) {
     companion object {
