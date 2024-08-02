@@ -30,10 +30,10 @@ class Member(
     val memberRole: MemberRole = MemberRole.MEMBER,
 
     @Column(name = "provider")
-    val provider: String?,
+    val provider: String? = null,
 
     @Column(name = "provider_id")
-    val providerId: String?,
+    val providerId: String? = null,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
