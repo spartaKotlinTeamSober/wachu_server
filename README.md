@@ -75,23 +75,23 @@
 
 ### System
 
-<img width="700" alt="스크린샷 2024-08-02 165048" src="https://github.com/user-attachments/assets/10b35d8d-8c34-479e-8612-db73acc60e76">
+<img width="700" alt="스크린샷 2024-08-02 165048" src="/articles/images/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202024-08-02%20165048.png">
 
 ### Service
 
-<img width="700" alt="스크린샷 2024-08-02 165137" src="https://github.com/user-attachments/assets/e2231f99-4521-4641-9592-5cdd5636a241">
+<img width="700" alt="스크린샷 2024-08-02 165137" src="/articles/images/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202024-08-02%20165137.png">
 
 ### Wireframe
 
-<img width="700" alt="스크린샷 2024-08-02 165447" src="https://github.com/user-attachments/assets/1f60ef39-7765-4462-8a6b-e2c46c763d36">
+<img width="700" alt="스크린샷 2024-08-02 165447" src="/articles/images/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202024-08-02%20165447.png">
 <p align="left"><a href="https://www.figma.com/board/h50s6bWAHZte9AkqeeFGK9/%EC%B5%9C%EC%A2%85%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-6%EC%A1%B0-%EA%B8%B0%ED%9A%8D?node-id=0-1&t=XWcxQT4yjTgsZPpL-0">Wireframe Details</a></p>
 
 ### ERD
-<img width="700" alt="스크린샷 2024-08-02 165919" src="https://github.com/user-attachments/assets/d0f19d3c-2071-4c0d-aa35-894fb474d8ca">
+<img width="700" alt="스크린샷 2024-08-02 165919" src="/articles/images/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202024-08-02%20165919.png">
 <p align="left"><a href="https://www.erdcloud.com/d/YufkQycpAoqJrQxH8">ERD Details</a></p>
 
 ### API Specification
-<img width="700" alt="스크린샷 2024-08-02 170103" src="https://github.com/user-attachments/assets/22a9835f-0bea-48e2-9243-1f465ecf4a77">
+<img width="700" alt="스크린샷 2024-08-02 170103" src="/articles/images/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202024-08-02%20170103.png">
 <p align="left"><a href="https://www.notion.so/mobzz/5b64388740ca482e94ef66d3c796406e?v=c8969e4be59c4127937e39dc3af7c195">API Details</a></p>
 
 # <p align="right"><a href="#-목차-">🔝</a></p>
@@ -109,8 +109,8 @@
       <td align="center"><a href="https://github.com/npureaun">
           <img src="https://github.com/coupong-wowdeal/coupong-wowdeal/assets/98468118/0232c220-f47d-44ad-8c40-e3f588ab6a7d" width="100px;" height="80px;" alt="스크린샷 2024-07-10 오전 11 44 09"/>
           <br /><sub><b>부리더 : 권지훈</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/ckhcree"><img src="https://github.com/user-attachments/assets/ff4dad6a-9b13-47c1-981e-692b2422a570" width="100px;" height="80px;" alt=""/><br /><sub><b>팀원 : 김보현</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/kotlin2024"><img src="https://github.com/user-attachments/assets/0bfb8112-b3cc-417a-9dd0-555d31578569" width="100px;" height="80px;" alt=""/><br /><sub><b>팀원 : 박형조</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/ckhcree"><img src="/articles/images/image.png" width="100px;" height="80px;" alt=""/><br /><sub><b>팀원 : 김보현</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/kotlin2024"><img src="/articles/images/%EC%82%AC%EC%A7%84.png" width="100px;" height="80px;" alt=""/><br /><sub><b>팀원 : 박형조</b></sub></a><br /></td>
   </tbody>
 
 </table>
