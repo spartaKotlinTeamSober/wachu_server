@@ -1,7 +1,7 @@
 # 테스트 코드를 같이 작성해서 PR을 날릴 것인지? (PR리뷰)
 
 예를 들어
-```ruby
+```kotlin
 // AEntityTest.kt
 @Test
 fun `hasPermission이 정상 작동하는지 확인`() {
