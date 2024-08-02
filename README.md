@@ -110,8 +110,9 @@
           <img src="https://github.com/coupong-wowdeal/coupong-wowdeal/assets/98468118/0232c220-f47d-44ad-8c40-e3f588ab6a7d" width="100px;" height="80px;" alt="스크린샷 2024-07-10 오전 11 44 09"/>
           <br /><sub><b>부리더 : 권지훈</b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/ckhcree"><img src="https://github.com/user-attachments/assets/ff4dad6a-9b13-47c1-981e-692b2422a570" width="100px;" height="80px;" alt=""/><br /><sub><b>팀원 : 김보현</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/seungheyon"><img src="https://github.com/coupong-wowdeal/coupong-wowdeal/assets/11582792/a7f8b38f-00d1-4687-93fc-7ea9a461fb49" width="100px;" height="80px;" alt=""/><br /><sub><b>팀원 : 이승현</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/kotlin2024"><img src="https://github.com/user-attachments/assets/0bfb8112-b3cc-417a-9dd0-555d31578569" width="100px;" height="80px;" alt=""/><br /><sub><b>팀원 : 박형조</b></sub></a><br /></td>
   </tbody>
+
 </table>
 
 # <p align="right"><a href="#-목차-">🔝</a></p>
