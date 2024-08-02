@@ -17,8 +17,11 @@ import java.util.Date
 class JwtTokenManager(
     @Value("\${auth.jwt.issuer}") private val issuer: String,
     @Value("\${auth.jwt.secret}") private val secret: String,
-
-    ) {
+) {
+    companion object {
+        const val TOKEN_TYPE_KEY = "tokenType"
+        const val MEMBER_ROLE_KEY = "memberRole"
+    }
 
     private val accessTokenValidity = 3600 * 1000
     private val refreshTokenValidity = 7 * 24 * 3600 * 1000
@@ -30,20 +33,21 @@ class JwtTokenManager(
             accessToken = generateToken(
                 memberId.toString(),
                 memberRole.name,
-                TokenType.ACCESS_TOKEN_TYPE.toString(),
+                TokenType.ACCESS_TOKEN_TYPE.name,
                 accessTokenValidity
             ),
             refreshToken = generateToken(
                 memberId.toString(),
                 memberRole.name,
-                TokenType.REFRESH_TOKEN_TYPE.toString(),
+                TokenType.REFRESH_TOKEN_TYPE.name,
                 refreshTokenValidity
             )
         )
     }
 
     private fun generateToken(subject: String, memberRole: String, tokenType: String, expirationTime: Int): String {
-        val claims: Claims = Jwts.claims().add(mapOf("memberRole" to memberRole, "tokenType" to tokenType)).build()
+        val claims: Claims =
+            Jwts.claims().add(mapOf(MEMBER_ROLE_KEY to memberRole, TOKEN_TYPE_KEY to tokenType)).build()
 
         val now = Instant.now()
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
@@ -58,15 +62,9 @@ class JwtTokenManager(
             .compact()
     }
 
-    fun validateToken(token: String, getAccessToken: Boolean?): Result<Jws<Claims>> {
+    fun validateToken(token: String): Result<Jws<Claims>> {
         return kotlin.runCatching {
-            val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
-
-            val tokenType = claims.payload.get("tokenType", String::class.java)
-            if (tokenType == TokenType.REFRESH_TOKEN_TYPE.toString() && getAccessToken == null) throw IllegalStateException(
-                "토큰 타입이 accessToken이 아님"
-            )
-            claims
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
         }
     }
 }

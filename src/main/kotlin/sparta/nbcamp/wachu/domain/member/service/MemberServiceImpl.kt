@@ -54,9 +54,9 @@ class MemberServiceImpl @Autowired constructor(
                 providerId = request.providerId
             )
         if (member == null) {
-
             if (request.email != null && memberRepository.existsByEmail(request.email!!)) request.email = null
             if (memberRepository.existsByNickname(request.nickname!!)) request.nickname = null
+
             memberRepository.addMember(
                 Member(
                     email = request.email,
@@ -107,8 +107,7 @@ class MemberServiceImpl @Autowired constructor(
     }
 
     override fun refreshAccessToken(refreshToken: String): TokenResponse {
-
-        return jwtTokenManager.validateToken(refreshToken, getAccessToken = true).fold(
+        return jwtTokenManager.validateToken(refreshToken).fold(
             onSuccess = {
                 val tokens = jwtTokenManager.generateTokenResponse(
                     memberId = it.payload.subject.toLong(),

@@ -25,10 +25,10 @@ class JwtTest {
     @Test
     fun `토큰 안에 값이 제대로 들어왔는지 테스트하는 함수`() {
 
-        val `토큰 값` = jwtTokenManager.generateToken(
+        val `토큰 값` = jwtTokenManager.generateTokenResponse(
             memberId = 1,
             memberRole = MemberRole.MEMBER
-        )
+        ).accessToken
 
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
         val `토큰 꺼내기` = Jwts.parser().verifyWith(key).build().parseSignedClaims(`토큰 값`)
@@ -39,10 +39,10 @@ class JwtTest {
 
     @Test
     fun `토큰이 정상적으로 검증이 되는지 테스트하는 함수`() {
-        val `토큰 값` = jwtTokenManager.generateToken(
+        val `토큰 값` = jwtTokenManager.generateTokenResponse(
             memberId = 2,
             memberRole = MemberRole.ADMIN
-        )
+        ).accessToken
 
         val `검증된 토큰` = jwtTokenManager.validateToken(`토큰 값`)
 
