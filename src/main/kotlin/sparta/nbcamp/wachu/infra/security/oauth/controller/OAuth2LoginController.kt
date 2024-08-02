@@ -3,6 +3,9 @@ package sparta.nbcamp.wachu.infra.security.oauth.controller
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -33,15 +36,38 @@ class OAuth2LoginController(
     @GetMapping("/oauth2/callback/kakao")
     fun kakaoCallback(
         @RequestParam code: String
-    ): ResponseEntity<TokenResponse> {
-        return ResponseEntity.ok(OAuth2LoginService.kakaoRetrieveUserInfo(code))
+    ): ResponseEntity<String> {
+
+        val token: TokenResponse = OAuth2LoginService.kakaoRetrieveUserInfo(code)
+
+        val cookie = ResponseCookie.from("refreshToken", token.refreshToken)
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .maxAge(7 * 24 * 60 * 60)
+            .path("/")
+            .build()
+
+        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(token.accessToken)
     }
 
     @GetMapping("/oauth2/callback/naver")
     fun naverCallback(
         @RequestParam code: String,
         @RequestParam state: String,
-    ): ResponseEntity<TokenResponse> {
-        return ResponseEntity.ok(OAuth2LoginService.naverRetrieveUserInfo(code, state))
+    ): ResponseEntity<String> {
+        val token: TokenResponse = OAuth2LoginService.naverRetrieveUserInfo(code, state)
+
+        val cookie = ResponseCookie.from("refreshToken", token.refreshToken)
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .maxAge(7 * 24 * 60 * 60)
+            .path("/")
+            .build()
+
+        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(token.accessToken)
     }
 }

@@ -26,7 +26,7 @@ class JwtAuthenticationFilter(
         }
         if (pureToken != null) {
 
-            jwtTokenManager.validateToken(pureToken).onSuccess {
+            jwtTokenManager.validateToken(pureToken, getAccessToken = null).onSuccess {
 
                 val memberRole = it.payload.get("memberRole", String::class.java)
                 val memberId: Long = it.payload.subject.toLong()

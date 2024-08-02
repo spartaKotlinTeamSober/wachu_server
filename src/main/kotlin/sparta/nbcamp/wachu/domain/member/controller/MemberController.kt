@@ -1,9 +1,12 @@
 package sparta.nbcamp.wachu.domain.member.controller
 
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -14,7 +17,6 @@ import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
-import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
 import sparta.nbcamp.wachu.domain.member.service.MemberService
@@ -37,8 +39,19 @@ class MemberController(
     }
 
     @PostMapping("/auth/login")
-    fun login(@RequestBody request: LoginRequest): ResponseEntity<TokenResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.login(request))
+    fun login(@RequestBody request: LoginRequest): ResponseEntity<String> {
+        val token = memberService.login(request)
+
+        val cookie = ResponseCookie.from("refreshToken", token.refreshToken)
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .maxAge(7 * 24 * 60 * 60)
+            .path("/")
+            .build()
+
+        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(token.accessToken)
     }
 
     @PostMapping(
@@ -56,5 +69,13 @@ class MemberController(
     @GetMapping("/auth/profile/")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<ProfileResponse> {
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
+    }
+
+    @PostMapping("/auth/refresh-token")
+    fun refreshAccessToken(
+        @CookieValue("refreshToken") refreshToken: String
+    ): ResponseEntity<String> {
+        val tokenResponse = memberService.refreshAccessToken(refreshToken)
+        return ResponseEntity.ok().body(tokenResponse.accessToken)
     }
 }

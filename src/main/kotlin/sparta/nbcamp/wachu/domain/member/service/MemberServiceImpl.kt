@@ -68,13 +68,12 @@ class MemberServiceImpl @Autowired constructor(
                 )
             ).let {
                 val memberId = it.id!!
-                val accessToken = jwtTokenManager.generateToken(memberId = memberId, memberRole = MemberRole.MEMBER)
-                return TokenResponse(accessToken, null)
+                val token = jwtTokenManager.generateTokenResponse(memberId = memberId, memberRole = MemberRole.MEMBER)
+                return token
             }
         } else {
-            val accessToken =
-                jwtTokenManager.generateToken(memberId = member.id!!, memberRole = MemberRole.MEMBER)
-            return TokenResponse(accessToken, null)
+            val tokens = jwtTokenManager.generateTokenResponse(memberId = member.id!!, memberRole = MemberRole.MEMBER)
+            return tokens
         }
     }
 
@@ -87,10 +86,9 @@ class MemberServiceImpl @Autowired constructor(
                 loginMember.password
             )
         ) { "비밀번호가 맞지 않음" }
-        return TokenResponse(
-            accessToken = jwtTokenManager.generateToken(memberId = loginMember.id!!, memberRole = MemberRole.MEMBER),
-            refreshToken = null
-        )
+        val tokens = jwtTokenManager.generateTokenResponse(loginMember.id!!, MemberRole.MEMBER)
+
+        return tokens
     }
 
     @Transactional
@@ -106,5 +104,19 @@ class MemberServiceImpl @Autowired constructor(
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
         return ProfileResponse.from(member)
+    }
+
+    override fun refreshAccessToken(refreshToken: String): TokenResponse {
+
+        return jwtTokenManager.validateToken(refreshToken, getAccessToken = true).fold(
+            onSuccess = {
+                val tokens = jwtTokenManager.generateTokenResponse(
+                    memberId = it.payload.subject.toLong(),
+                    memberRole = MemberRole.valueOf(it.payload.get("memberRole", String::class.java))
+                )
+                tokens
+            },
+            onFailure = { throw IllegalStateException(" 토큰이 검증되지않음") }
+        )
     }
 }

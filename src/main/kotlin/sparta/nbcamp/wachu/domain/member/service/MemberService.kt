@@ -22,4 +22,6 @@ interface MemberService {
     fun getProfile(userPrincipal: UserPrincipal): ProfileResponse
 
     fun socialLogin(request: OAuthResponse): TokenResponse
+
+    fun refreshAccessToken(refreshToken: String): TokenResponse
 }
