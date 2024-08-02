@@ -21,7 +21,7 @@ import sparta.nbcamp.wachu.infra.redis.common.RedisKeyConst
 class WineServiceImpl @Autowired constructor(
     private val wineRepository: WineRepository,
     private val winePromotionRepository: WinePromotionRepository,
-    private val wineEmbeddingService: WineEmbeddingService
+    private val wineEmbeddingService: WineEmbeddingService,
 ) : WineService {
 
     override fun getWineList(

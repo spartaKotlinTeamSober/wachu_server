@@ -2,6 +2,7 @@ package sparta.nbcamp.wachu.domain.wine.dto
 
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
+import sparta.nbcamp.wachu.domain.wine.service.WineImageGetter
 import java.io.Serializable
 
 data class WineResponse(
@@ -19,9 +20,10 @@ data class WineResponse(
     val style: String?,
     val country: String?,
     val region: String?,
+    val imageUrl: String
 ) : Serializable {
-
     companion object {
+
         fun from(entity: Wine): WineResponse {
             return WineResponse(
                 id = entity.id,
@@ -37,6 +39,7 @@ data class WineResponse(
                 style = entity.style,
                 country = entity.country,
                 region = entity.region,
+                imageUrl = WineImageGetter.getWineImage(entity.wineType)
             )
         }
     }

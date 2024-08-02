@@ -1,8 +1,10 @@
 package sparta.nbcamp.wachu.infra.media
 
+import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import sparta.nbcamp.wachu.domain.wine.service.WineImageGetter
 import sparta.nbcamp.wachu.infra.aws.s3.S3Service
 import sparta.nbcamp.wachu.infra.tika.TikaUtil
 
@@ -27,5 +29,15 @@ class MediaS3ServiceImpl(
         //없으면 전체 upload
         logger.info("upload files: $filePath")
         return fileList.map { s3Service.upload(it, filePath) }
+    }
+
+    override fun getS3Image(filePath: String): MutableList<String> {
+        //경로 안에 모든 파일을 불러옴
+        return s3Service.getImage(filePath).toMutableList()
+    }
+
+    @PostConstruct
+    fun init() {
+        WineImageGetter.init(this)
     }
 }
