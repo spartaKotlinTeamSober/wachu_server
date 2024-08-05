@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.domain.member.emailcode.service
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.mail.MailSendException
 import org.springframework.mail.SimpleMailMessage
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit
 class CodeService(
     private val mailSender: JavaMailSender,
     private val redisTemplate: RedisTemplate<String, String>,
+    @Value("\${spring.mail.username}") private val mailUsername: String
 ) {
     fun sendCode(email: String): String {
         val code = generateCode()
@@ -19,7 +21,7 @@ class CodeService(
         val codeTimeout = redisTemplate.getExpire(email, TimeUnit.MINUTES)
 
         val message = SimpleMailMessage().apply {
-            from = System.getenv("MAIL_USERNAME")
+            from = mailUsername
             setTo(email)
             subject = "Your Verification Code"
             text = "Your verification code is: $code."
