@@ -50,7 +50,7 @@ class WineEmbeddingService(
     fun recommendWine(wineId: Long): List<Pair<WineEmbeddingData, Double>> {
         return embeddingUtility.recommendWineList(
             targetWine = wineRepository.findByIdOrNull(wineId) ?: throw ModelNotFoundException("wine", wineId),
-            everyWineList = wineRepository.findAll(Pageable.unpaged()).content
+            everyWineList = wineRepository.findAll(Pageable.ofSize(100)).content
         )
     }
 
