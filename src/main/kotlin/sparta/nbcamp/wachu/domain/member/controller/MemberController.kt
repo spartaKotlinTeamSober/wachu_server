@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.domain.member.controller
 
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -52,6 +53,20 @@ class MemberController(
 
         return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(token.accessToken)
+    }
+
+    @PostMapping("/auth/logout")
+    fun logout(response: HttpServletResponse): ResponseEntity<Void> {
+        val deleteCookie = ResponseCookie.from("refreshToken", "")
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .maxAge(0)
+            .path("/")
+            .build()
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+            .build()
     }
 
     @PostMapping(
