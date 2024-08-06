@@ -5,7 +5,9 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.mail.MailSendException
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -14,7 +16,8 @@ class CodeService(
     private val redisTemplate: RedisTemplate<String, String>,
     @Value("\${spring.mail.username}") private val mailUsername: String
 ) {
-    fun sendCode(email: String): String {
+    @Async("mailExecutor")
+    fun sendCode(email: String): CompletableFuture<String> {
         val code = generateCode()
         saveCode(email, code)
 
@@ -26,12 +29,12 @@ class CodeService(
             subject = "Your Verification Code"
             text = "Your verification code is: $code."
         }
-        try {
+        return try {
             mailSender.send(message)
+            CompletableFuture.completedFuture("Verify within $codeTimeout minutes")
         } catch (e: MailSendException) {
-            throw MailSendException("Error : $e", e)
+            CompletableFuture.failedFuture(e)
         }
-        return "Verify within $codeTimeout minutes"
     }
 
     fun checkCode(email: String, code: String): Boolean {
