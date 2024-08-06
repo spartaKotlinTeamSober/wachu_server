@@ -78,4 +78,9 @@ class WineController(
         return ResponseEntity.status(HttpStatus.OK)
             .body(wineService.recommendWine(request = RecommendWineRequest(preferWineId = preferWineId)))
     }
+
+    @GetMapping("/deploySuccess")
+    fun wiwiwiwine() {
+        TODO()
+    }
 }
