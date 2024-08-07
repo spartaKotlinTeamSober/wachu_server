@@ -93,7 +93,7 @@ class PairingServiceTest {
 
     @Test
     fun `getPairingPage 하면 pairing 페이지를 반환한다`() {
-        val result = pairingService.getPairingPage(defaultPageable)
+        val result = pairingService.getAllPairings(defaultPageable)
         result.size shouldBe defaultPairingPage.size
         result.forEachIndexed { index, response ->
             response.title shouldBe defaultPairingPage.content[index].title

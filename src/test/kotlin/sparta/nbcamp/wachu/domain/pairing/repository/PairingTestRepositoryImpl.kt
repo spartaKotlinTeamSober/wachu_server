@@ -9,7 +9,7 @@ import java.util.logging.Logger
 
 class PairingTestRepositoryImpl(
     private val pairing: Pairing,
-    private val pairingPage: Page<Pairing>
+    private val pairingPage: Page<Pairing>,
 ) : PairingRepository {
     override fun findById(id: Long): Pairing? {
         if (id !in 1..10) return null
@@ -26,5 +26,13 @@ class PairingTestRepositoryImpl(
 
     override fun delete(pairing: Pairing) {
         Logger.getLogger("PairingTestRepositoryImpl").log(Level.INFO, "delete")
+    }
+
+    override fun findFetchJoin(wineId: Long, pageable: Pageable): Page<Pairing> {
+        return pairingPage
+    }
+
+    override fun findByWineId(wineId: Long, pageable: Pageable): Page<Pairing> {
+        return pairingPage
     }
 }

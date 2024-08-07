@@ -1,13 +1,19 @@
 package sparta.nbcamp.wachu.domain.wine.controller
 
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingByWineIdRequest
+import sparta.nbcamp.wachu.domain.pairing.dto.v1.PairingResponse
+import sparta.nbcamp.wachu.domain.pairing.service.v1.PairingService
 import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
@@ -17,9 +23,10 @@ import sparta.nbcamp.wachu.domain.wine.service.WineService
 @RestController
 class WineController(
     private val wineService: WineService,
+    private val pairingService: PairingService,
 ) {
 
-    @GetMapping()
+    @GetMapping
     fun getWineList(
         @RequestParam(value = "query", defaultValue = "") query: String,
         @RequestParam(value = "price") price: Int?,
@@ -77,5 +84,14 @@ class WineController(
     fun recommendWine(@RequestParam preferWineId: Long /*@RequestBody request: RecommendWineRequest*/): ResponseEntity<List<WineResponse>> {
         return ResponseEntity.status(HttpStatus.OK)
             .body(wineService.recommendWine(request = RecommendWineRequest(preferWineId = preferWineId)))
+    }
+
+    @GetMapping("/{wineId}/pairings")
+    fun getPairingsByWineId(
+        @PathVariable wineId: Long,
+        @RequestBody request: PairingByWineIdRequest,
+        @PageableDefault(page = 0, size = 10) pageable: Pageable,
+    ): ResponseEntity<Page<PairingResponse>> {
+        return ResponseEntity.ok(pairingService.getPairingsByWineId(wineId, pageable))
     }
 }
