@@ -7,7 +7,6 @@ import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -17,7 +16,7 @@ class CodeService(
     @Value("\${spring.mail.username}") private val mailUsername: String
 ) {
     @Async("mailExecutor")
-    fun sendCode(email: String): CompletableFuture<String> {
+    fun sendCode(email: String) {
         val code = generateCode()
         saveCode(email, code)
 
@@ -27,11 +26,10 @@ class CodeService(
             subject = "Your Verification Code"
             text = "Your verification code is: $code."
         }
-        return try {
+        try {
             mailSender.send(message)
-            CompletableFuture.completedFuture("Email send successfully")
         } catch (e: MailSendException) {
-            CompletableFuture.failedFuture(e)
+            throw e
         }
     }
 
