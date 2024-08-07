@@ -46,4 +46,5 @@ jobs:
           script_stop: true
           script: |
             kill -9 $(ps -ef | grep java | head -n 1 | awk '{print $2}') |
-            rm nohub.out | nohup java -jar *.jar 1> /dev/null 2>&1 &
+            rm nohub.out |
+            nohup java -jar *.jar 1> /dev/null 2>&1 &
