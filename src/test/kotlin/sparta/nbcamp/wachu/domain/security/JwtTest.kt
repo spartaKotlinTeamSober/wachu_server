@@ -7,11 +7,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import sparta.nbcamp.wachu.WachuApplication
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import java.nio.charset.StandardCharsets
 
-@SpringBootTest
+@SpringBootTest(classes = [WachuApplication::class])
 //@ActiveProfiles("test")
 class JwtTest {
 

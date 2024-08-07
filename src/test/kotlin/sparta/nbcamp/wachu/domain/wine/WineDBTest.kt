@@ -8,12 +8,13 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Page
+import sparta.nbcamp.wachu.WachuApplication
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.service.WineService
 
 @Transactional
-@SpringBootTest
+@SpringBootTest(classes = [WachuApplication::class])
 //@ActiveProfiles("test")
 class WineDBTest {
 
