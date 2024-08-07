@@ -21,8 +21,6 @@ class CodeService(
         val code = generateCode()
         saveCode(email, code)
 
-        val codeTimeout = redisTemplate.getExpire(email, TimeUnit.MINUTES)
-
         val message = SimpleMailMessage().apply {
             from = mailUsername
             setTo(email)
@@ -31,7 +29,7 @@ class CodeService(
         }
         return try {
             mailSender.send(message)
-            CompletableFuture.completedFuture("Verify within $codeTimeout minutes")
+            CompletableFuture.completedFuture("Email send successfully")
         } catch (e: MailSendException) {
             CompletableFuture.failedFuture(e)
         }
