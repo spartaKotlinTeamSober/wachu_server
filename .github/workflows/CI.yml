@@ -33,8 +33,8 @@ jobs:
 
       - name: set yml
         run: |
-          mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application.yml
+          mkdir -p ./src/main/resources
+          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
           find src
 
       # run은 사용자 지정 스크립트 실행
