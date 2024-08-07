@@ -10,19 +10,28 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
 import org.springframework.data.domain.PageRequest
 import org.springframework.test.context.ActiveProfiles
+import sparta.nbcamp.wachu.domain.member.entity.Member
+import sparta.nbcamp.wachu.domain.member.entity.MemberRole
+import sparta.nbcamp.wachu.domain.member.repository.MemberJpaRepository
 import sparta.nbcamp.wachu.domain.pairing.model.v1.Pairing
 import sparta.nbcamp.wachu.domain.pairing.repository.v1.PairingJpaRepository
 import sparta.nbcamp.wachu.domain.pairing.repository.v1.PairingQueryDslRepository
+import sparta.nbcamp.wachu.domain.pairing.repository.v1.PairingQueryDslRepositoryImpl
+import sparta.nbcamp.wachu.domain.review.repository.v1.ReviewJpaRepository
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineJpaRepository
-import sparta.nbcamp.wachu.infra.querydsl.QueryDslSupport
 
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(QueryDslSupport::class)
+@Import(PairingQueryDslRepositoryImpl::class)
 class PairingRepositoryTest {
+    @Autowired
+    private lateinit var reviewJpaRepository: ReviewJpaRepository
+
+    @Autowired
+    private lateinit var memberJpaRepository: MemberJpaRepository
 
     @Autowired
     private lateinit var wineJpaRepository: WineJpaRepository
@@ -37,8 +46,23 @@ class PairingRepositoryTest {
 
     @BeforeEach
     fun setUp() {
+        reviewJpaRepository.deleteAll()
+        memberJpaRepository.deleteAll()
         wineJpaRepository.deleteAll()
         pairingJpaRepository.deleteAll()
+        val testMembers = List(10) { index ->
+            Member(
+                email = "test$index",
+                password = "test$index",
+                nickname = "test$index",
+                profileImageUrl = "test$index",
+                memberRole = MemberRole.MEMBER,
+            )
+        }
+        memberJpaRepository.saveAll(testMembers)
+
+        val savedMembers = memberJpaRepository.findAll()
+
         val testWines = List(10) { index ->
             Wine(
                 name = "testWine$index",
@@ -56,18 +80,21 @@ class PairingRepositoryTest {
                 embedding = "test"
             )
         }
-        val testPairings = testWines.flatMap { wine ->
-            List(100) { index ->
-                Pairing(
-                    wine = wine,
-                    memberId = index.toLong(),
-                    title = "test$index",
-                    description = "testDescription$index",
-                    photoUrl = "testPhoto$index$"
-                )
+        wineJpaRepository.saveAll(testWines)
+
+        val testPairings = savedMembers.flatMap { member ->
+            testWines.flatMap { wine ->
+                List(10) { index ->
+                    Pairing(
+                        wine = wine,
+                        memberId = member.id!!,
+                        title = "test$index",
+                        description = "testDescription$index",
+                        photoUrl = "testPhoto$index$"
+                    )
+                }
             }
         }
-        wineJpaRepository.saveAll(testWines)
         pairingJpaRepository.saveAll(testPairings)
     }
 

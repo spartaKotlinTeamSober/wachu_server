@@ -86,6 +86,10 @@ dependencies {
 
     //EmailValidation
     implementation("org.springframework.boot:spring-boot-starter-mail")
+
+    //mySql
+    implementation("mysql:mysql-connector-java:8.0.30")
+
 }
 
 kotlin {
