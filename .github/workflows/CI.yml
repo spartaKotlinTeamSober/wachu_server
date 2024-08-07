@@ -36,6 +36,7 @@ jobs:
           mkdir -p ./src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
           find src
+          cat ./src/main/resources/application.yml
 
       # run은 사용자 지정 스크립트 실행
       - name: run unittest
