@@ -21,7 +21,6 @@ import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
 import sparta.nbcamp.wachu.domain.member.service.MemberService
 import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
-import java.util.concurrent.CompletableFuture
 
 @RestController
 class MemberController(
@@ -30,8 +29,9 @@ class MemberController(
 ) {
 
     @PostMapping("/auth/sign-up/email-validation")
-    fun sendValidationCode(@RequestBody request: SendCodeRequest): CompletableFuture<String> {
-        return codeService.sendCode(request.email)
+    fun sendValidationCode(@RequestBody request: SendCodeRequest): ResponseEntity<Any> {
+        codeService.sendCode(request.email)
+        return ResponseEntity.ok("Email send successfully")
     }
 
     @PostMapping("/auth/sign-up")
