@@ -28,15 +28,15 @@ jobs:
           distribution: 'adopt' # See 'Supported distributions' for available options
           java-version: '17'
 
-      - name: make executable gradlew
-        run: chmod +x ./gradlew
-
       - name: set yml
         run: |
           mkdir -p ./src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
           find src
           cat ./src/main/resources/application.yml
+
+      - name: make executable gradlew
+        run: chmod +x ./gradlew
 
       # run은 사용자 지정 스크립트 실행
       - name: run unittest
