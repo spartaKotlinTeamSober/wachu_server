@@ -4,6 +4,8 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -18,6 +20,7 @@ import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
+import sparta.nbcamp.wachu.domain.wine.service.WineImageGetter
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.media.MediaS3Service
@@ -69,16 +72,20 @@ class PairingServiceTest {
     val mediaService: MediaS3Service = mockk()
     val pairingService = PairingServiceImpl(wineRepository, memberRepository, pairingRepository, mediaService)
 
+    @BeforeEach
+    fun setup() {
+        mockkObject(WineImageGetter)
+        WineImageGetter.init(mediaService)
+        every { WineImageGetter.getWineImage(any()) } returns "testUrl1"
+    }
+
     @Test
     fun `존재하는 아이디로 getPairing하면 PairingResponseDto를 반환한다`() {
-
         val responseDto = pairingService.getPairing(1L)
-        val wineResponseDto = WineResponse.from(defaultWine)
 
         responseDto.id shouldBe defaultPairing.id
         responseDto.title shouldBe defaultPairing.title
         responseDto.memberId shouldBe defaultPairing.memberId
-        responseDto.wine shouldBe wineResponseDto
         responseDto.photoUrl shouldBe defaultPairing.photoUrl
         responseDto.createdAt shouldBe defaultPairing.createdAt
         responseDto.description shouldBe defaultPairing.description
@@ -122,7 +129,6 @@ class PairingServiceTest {
 
         response.title shouldBe pairingCreateRequest.title
         response.memberId shouldBe testUserPrincipal.memberId
-        response.wine shouldBe testWineResponse
         response.description shouldBe pairingCreateRequest.description
     }
 

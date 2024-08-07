@@ -9,8 +9,11 @@ object WineImageGetter {
 
     fun getWineImage(wineType: WineType): String {
         val list = mediaS3Service.getS3Image(S3FilePath.WINE.path + wineType.path)
-        list.removeFirst()//첫번째 원소는 파일경로만 있어서 제외
-        return list.random()
+        list.forEach { println(it) }
+        return if (list.isNotEmpty()) {
+            list.removeFirst()//첫번째 원소는 파일경로만 있어서 제외
+            list.random()
+        } else ""
     }
 
     fun init(mediaS3Service: MediaS3Service) {

@@ -4,6 +4,8 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -20,6 +22,7 @@ import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
+import sparta.nbcamp.wachu.domain.wine.service.WineImageGetter
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
@@ -80,6 +83,13 @@ class ReviewServiceTest {
         ReviewTestRepositoryImpl(defaultReview, defaultReviewPage, defaultReviewMultiMediaList)
 
     val reviewService = ReviewServiceImpl(wineRepository, memberRepository, reviewRepository, mediaService)
+
+    @BeforeEach
+    fun setup() {
+        mockkObject(WineImageGetter)
+        WineImageGetter.init(mediaService)
+        every { WineImageGetter.getWineImage(any()) } returns "testUrl1"
+    }
 
     @Test
     fun `존재하는 아이디로 getReview하면 ReviewResponseDto를 반환한다`() {
