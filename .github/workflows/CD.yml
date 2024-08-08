@@ -52,7 +52,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           source: "./data/embedding-data.json"
-          target: "~/wachu-server/build/data/"
+          target: "~/wachu-server/build/"
 
       - name: copy jar to server
         uses: appleboy/scp-action@master
@@ -76,4 +76,5 @@ jobs:
           script: |
             kill -9 $(ps -ef | grep java | head -n 1 | awk '{print $2}') |
             rm -f ~/wachu-server/build/libs/nohup.out
-            nohup java -jar ~/wachu-server/build/libs/*.jar > /dev/null 2>&1 &
+            export SPRING_CONFIG_LOCATION=~/wachu-server/build/resources/application.yml
+            nohup java -jar ~/wachu-server/build/libs/*.jar
