@@ -62,7 +62,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           source: "./build/libs/*.jar"
-          target: "~/run/"
+          target: "~/run/main"
           strip_components: 2
 
       - name: SSH Commands
