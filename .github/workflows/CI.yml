@@ -30,9 +30,6 @@ jobs:
 
       - name: set yml
         run: |
-          mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
-          cat ./src/main/resources/application.yml
           mkdir -p ./src/test/resources/
           echo "${{ secrets.APPLICATION_TEST_YML }}" | base64 --decode > ./src/test/resources/application.yml
 
