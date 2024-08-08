@@ -40,7 +40,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           source: "./build/resources/application.yml"
-          target: "~/resources/"
+          target: "~"
           strip_components: 2
 
       - name: copy to embedding
