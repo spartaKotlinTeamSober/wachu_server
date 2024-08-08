@@ -25,6 +25,7 @@ jobs:
         run: |
           mkdir -p ./build/resources/
           echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./build/resources/application.yml
+          cat ./build/resources/application.yml
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -74,5 +75,5 @@ jobs:
           script_stop: true
           script: |
             kill -9 $(ps -ef | grep java | head -n 1 | awk '{print $2}') |
-            rm nohub.out |
+            rm nohup.out |
             nohup java -jar *.jar 1> /dev/null 2>&1 &
