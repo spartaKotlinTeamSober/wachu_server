@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.test.context.ActiveProfiles
 import sparta.nbcamp.wachu.WachuApplication
 import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.repository.WinePromotionRepository
@@ -19,7 +20,7 @@ import sparta.nbcamp.wachu.domain.wine.service.WineService
 import sparta.nbcamp.wachu.infra.redis.EvictCache
 
 @SpringBootTest(classes = [WachuApplication::class])
-//@ActiveProfiles("test")
+@ActiveProfiles("test")
 class WinePromotionCacheTest {
 
     @Autowired

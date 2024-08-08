@@ -9,12 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.test.context.ActiveProfiles
 import sparta.nbcamp.wachu.WachuApplication
 import sparta.nbcamp.wachu.domain.wine.repository.WinePromotionRepository
 
 @Transactional
 @SpringBootTest(classes = [WachuApplication::class])
-//@ActiveProfiles("test")
+@ActiveProfiles("test")
 class WinePromotionDBTest {
 
     @Autowired

@@ -30,11 +30,8 @@ jobs:
 
       - name: set yml
         run: |
-          mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
-
-      - name: show environment variables
-        run: printenv
+          mkdir -p ./src/test/resources
+          echo "${{ secrets.APPLICATION_TEST_YML }}" | base64 --decode > ./src/test/resources/application.yml
 
       - name: make executable gradlew
         run: chmod +x ./gradlew
@@ -43,7 +40,6 @@ jobs:
       - name: run unittest
         run: |
           ./gradlew clean test -i --scan
-
 
       - name: result send slack
         uses: 8398a7/action-slack@v3
