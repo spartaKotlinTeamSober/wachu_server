@@ -45,7 +45,7 @@ dependencies {
 
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
-    
+
     // Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
@@ -86,8 +86,9 @@ dependencies {
     //EmailValidation
     implementation("org.springframework.boot:spring-boot-starter-mail")
 
+    implementation("com.h2database:h2")
     //mySql
-    implementation("mysql:mysql-connector-java:8.0.30")
+    //implementation("mysql:mysql-connector-java:8.0.30")
 }
 
 kotlin {
