@@ -31,7 +31,8 @@ class MemberController(
 
     @PostMapping("/auth/sign-up/email-validation")
     fun sendValidationCode(@RequestBody request: SendCodeRequest): ResponseEntity<Any> {
-        return ResponseEntity.status(HttpStatus.OK).body(codeService.sendCode(request.email))
+        codeService.sendCode(request.email)
+        return ResponseEntity.ok("Email send successfully")
     }
 
     @PostMapping("/auth/sign-up")
