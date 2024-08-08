@@ -25,6 +25,7 @@ jobs:
         run: |
           mkdir -p ./build/resources/
           echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./build/resources/application.yml
+          find build
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -41,7 +42,7 @@ jobs:
           port: 22
           source: "./build/resources/application.yml"
           target: "~/resources/"
-          strip_components: 2
+          strip_components: 3
 
       - name: copy to embedding
         uses: appleboy/scp-action@master
