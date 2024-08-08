@@ -31,8 +31,11 @@ jobs:
       - name: set yml
         run: |
           mkdir -p ./src/main/resources
+          mkdir -p ./src/test/resources
           echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_YML }}" > ./src/test/resources/application.yml
           cat ./src/main/resources/application.yml
+          cat ./src/test/resources/application.yml
 
       - name: show environment variables
         run: printenv
