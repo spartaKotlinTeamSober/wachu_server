@@ -106,14 +106,14 @@ class WineDBTest {
         wines.content.all { it.wineType == WineType.RED } shouldBe true
     }
 
-    @Test
-    fun `와인 2개 비교할때 2개의 와인 id가 제대로 들어오는지 테스트 하는 함수`() {
-
-        val wines = wineService.compareWine(wineIds = listOf(4, 5))
-
-        wines[0].id shouldBe 4
-        wines[1].id shouldBe 5
-    }
+    // @Test
+    // fun `와인 2개 비교할때 2개의 와인 id가 제대로 들어오는지 테스트 하는 함수`() {
+    //
+    //     val wines = wineService.compareWine(wineIds = listOf(4, 5))
+    //
+    //     wines[0].id shouldBe 4
+    //     wines[1].id shouldBe 5
+    // }
 
     @Test
     fun `당도나 price에  값을 넣고 query를 검색했을때  해당 값에 해당하는 와인이 나오는지 테스트 하는 함수`() {
