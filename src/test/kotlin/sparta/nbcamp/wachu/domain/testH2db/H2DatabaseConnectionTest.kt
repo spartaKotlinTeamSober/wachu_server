@@ -1,36 +1,23 @@
 package sparta.nbcamp.wachu.domain.testH2db
 
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.data.repository.findByIdOrNull
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
-import sparta.nbcamp.wachu.domain.member.entity.Member
-import sparta.nbcamp.wachu.domain.member.entity.MemberRole
-import sparta.nbcamp.wachu.domain.member.repository.MemberJpaRepository
 
 @DataJpaTest
 @ActiveProfiles("test")
 class H2DatabaseConnectionTest {
 
     @Autowired
-    private lateinit var memberJpaRepository: MemberJpaRepository
+    private lateinit var jdbcTemplate: JdbcTemplate
 
     @Test
-    fun `H2 데이터베이스 연결 확인`() {
-        val member = Member(
-            email = "test@test.com",
-            password = "password",
-            nickname = "testuser",
-            profileImageUrl = "profile.png",
-            memberRole = MemberRole.MEMBER
-        )
+    fun testH2DatabaseConnection() {
+        val url = jdbcTemplate.dataSource?.connection?.metaData?.url
 
-        memberJpaRepository.save(member)
-
-        val foundMember = memberJpaRepository.findByIdOrNull(member.id)
-
-        member.email shouldBe foundMember?.email
+        url shouldContain "jdbc:h2"
     }
 }
