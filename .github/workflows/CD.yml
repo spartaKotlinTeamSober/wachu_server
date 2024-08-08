@@ -75,6 +75,5 @@ jobs:
           script_stop: true
           script: |
             kill -9 $(ps -ef | grep java | head -n 1 | awk '{print $2}') || true
-            rm -f ~/wachu-server/build/libs/nohup.out
             export SPRING_CONFIG_LOCATION=~/wachu-server/build/resources/application.yml
             nohup java -jar ~/wachu-server/build/libs/*.jar
