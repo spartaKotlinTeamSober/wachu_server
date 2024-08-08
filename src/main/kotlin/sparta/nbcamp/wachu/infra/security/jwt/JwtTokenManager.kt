@@ -14,11 +14,10 @@ import java.time.Instant
 import java.util.Date
 
 @Component
-class JwtTokenManager {
-    @Value("\${auth.jwt.issuer}")
-    private lateinit var issuer: String
-    @Value("\${auth.jwt.secret}")
-    private lateinit var secret: String
+class JwtTokenManager(
+    @Value("\${auth.jwt.issuer}") private var issuer: String,
+    @Value("\${auth.jwt.secret}") private var secret: String,
+) {
 
     companion object {
         const val TOKEN_TYPE_KEY = "tokenType"
