@@ -6,14 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
 import sparta.nbcamp.wachu.domain.member.entity.Member
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import sparta.nbcamp.wachu.domain.member.repository.MemberJpaRepository
 
 @DataJpaTest
 @ActiveProfiles("test")
-@TestPropertySource(locations = ["classpath:application-test.yml"])
 class H2DatabaseConnectionTest {
 
     @Autowired

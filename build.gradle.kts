@@ -92,7 +92,6 @@ dependencies {
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa")
     testImplementation("com.h2database:h2")
-    testRuntimeOnly("com.h2database:h2")
 }
 
 kotlin {
