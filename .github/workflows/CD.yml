@@ -75,5 +75,5 @@ jobs:
           script_stop: true
           script: |
             kill -9 $(ps -ef | grep java | head -n 1 | awk '{print $2}') |
-            ~/wachu-server/build/libs/rm nohup.out |
-            ~/wachu-server/build/libs/nohup java -jar *.jar 1> /dev/null 2>&1 &
+            rm -f ~/wachu-server/build/libs/nohup.out
+            nohup java -jar ~/wachu-server/build/libs/*.jar > /dev/null 2>&1 &
