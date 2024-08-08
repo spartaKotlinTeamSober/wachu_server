@@ -31,8 +31,11 @@ jobs:
       - name: set yml
         run: |
           mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
-          find src
+          echo "${{ secrets.APPLICATION_YML }}" | ./src/main/resources/application.yml
+          cat ./src/main/resources/application.yml
+
+      - name: show environment variables
+        run: printenv
 
       - name: make executable gradlew
         run: chmod +x ./gradlew
@@ -41,9 +44,3 @@ jobs:
       - name: run unittest
         run: |
           ./gradlew clean test -d
-
-      - name: show environment variables
-        run: printenv
-
-      - name: show created yml
-        run: cat ./src/main/resources/application.yml
