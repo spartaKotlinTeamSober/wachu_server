@@ -41,7 +41,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           source: "./build/resources/application.yml"
-          target: "~/run/resources/main/"
+          target: "~~/wachu-server/build/resources/main"
           strip_components: 3
 
       - name: copy to embedding
@@ -52,7 +52,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           source: "./data/embedding-data.json"
-          target: "~/run/"
+          target: "~/wachu-server/build/data/"
 
       - name: copy jar to server
         uses: appleboy/scp-action@master
@@ -62,7 +62,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           source: "./build/libs/*.jar"
-          target: "~/run/main"
+          target: "~/wachu-server/build/libs/"
           strip_components: 2
 
       - name: SSH Commands
@@ -75,5 +75,5 @@ jobs:
           script_stop: true
           script: |
             kill -9 $(ps -ef | grep java | head -n 1 | awk '{print $2}') |
-            rm nohup.out |
-            nohup java -jar *.jar 1> /dev/null 2>&1 &
+            ~/wachu-server/build/libs/rm nohup.out |
+            ~/wachu-server/build/libs/nohup java -jar *.jar 1> /dev/null 2>&1 &
