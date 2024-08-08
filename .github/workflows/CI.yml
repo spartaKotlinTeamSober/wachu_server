@@ -1,9 +1,9 @@
 name: CI
 
 on:
-  push:
-    branches: [ dev, feat/* ]
-  # github pull request 생성시
+  #  push:
+  #    branches: [ dev, feat/* ]
+  #  # github pull request 생성시
   pull_request:
     branches:
       - dev # -로 여러 브랜치를 명시하는 것도 가능
