@@ -72,7 +72,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          script_stop: true
           script: |
             kill -9 $(ps -ef | grep java | head -n 1 | awk '{print $2}') || true
             export SPRING_CONFIG_LOCATION=~/wachu-server/build/resources/application.yml
