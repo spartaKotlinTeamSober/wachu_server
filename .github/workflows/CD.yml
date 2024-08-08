@@ -41,7 +41,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           source: "./build/resources/application.yml"
-          target: "~/resources/"
+          target: "~/run/resources/"
           strip_components: 3
 
       - name: copy to embedding
@@ -52,7 +52,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           source: "./data/embedding-data.json"
-          target: "~"
+          target: "~/run/"
 
       - name: copy jar to server
         uses: appleboy/scp-action@master
@@ -62,8 +62,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           source: "./build/libs/*.jar"
-          target: "~"
-          strip_components: 2
+          target: "~/run/"
+          strip_components: 3
 
       - name: SSH Commands
         uses: appleboy/ssh-action@v0.1.6
