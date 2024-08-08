@@ -31,7 +31,7 @@ jobs:
       - name: set yml
         run: |
           mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" > base64 --decode > ./src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
           cat ./src/main/resources/application.yml
 
       - name: show environment variables
