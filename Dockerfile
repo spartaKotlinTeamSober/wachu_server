@@ -11,5 +11,8 @@ ARG JAR_FILE=build/libs/*.jar
 # JAR_FILE을 app.jar로 복사
 COPY ${JAR_FILE} app.jar
 
+# JSON 파일을 컨테이너의 적절한 위치에 복사
+COPY ./data/embedding-data.json /data/embedding-data.json
+
 # 운영 및 개발에서 사용되는 환경 설정을 분리
 ENTRYPOINT ["nohup", "java", "-jar", "-Dspring.profiles.active=dev", "/app.jar", ">", "nohup-dev.out", "2>&1", "&"]
