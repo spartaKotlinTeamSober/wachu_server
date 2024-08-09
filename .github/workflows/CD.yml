@@ -52,7 +52,7 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/docker-dev
 
       ## deploy to develop
-      - name: Deploy to dev
+      - name: Deploy to application
         uses: appleboy/ssh-action@master
         id: deploy-dev
         with:
@@ -67,7 +67,7 @@ jobs:
             sudo docker image prune -f
 
       ## deploy to develop
-      - name: Deploy to dev
+      - name: Deploy to application2
         uses: appleboy/ssh-action@master
         id: deploy-dev
         with:
