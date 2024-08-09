@@ -35,9 +35,16 @@ class MemberController(
         return ResponseEntity.ok("Email send successfully")
     }
 
-    @PostMapping("/auth/sign-up")
-    fun signUp(@RequestBody request: SignUpRequest): ResponseEntity<SignUpResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request))
+    @PostMapping(
+        "/auth/sign-up",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun signUp(
+        @RequestBody request: SignUpRequest,
+        @RequestPart(name = "image") multipartFile: MultipartFile
+    ): ResponseEntity<SignUpResponse> {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request, multipartFile))
     }
 
     @PostMapping("/auth/login")

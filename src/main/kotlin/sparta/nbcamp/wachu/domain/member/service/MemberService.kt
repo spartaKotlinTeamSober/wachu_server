@@ -13,7 +13,7 @@ import sparta.nbcamp.wachu.infra.security.oauth.dto.OAuthResponse
 interface MemberService {
     fun sendValidationCode(request: SendCodeRequest)
 
-    fun signup(request: SignUpRequest): SignUpResponse
+    fun signup(request: SignUpRequest, multipartFile: MultipartFile): SignUpResponse
 
     fun login(request: LoginRequest): TokenResponse
 
