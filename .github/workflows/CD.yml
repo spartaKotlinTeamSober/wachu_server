@@ -64,6 +64,6 @@ jobs:
           port: 22
           script: |
             sudo docker ps
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/docker-test-dev
-            sudo docker run -d -p 8081:8081 ${{ secrets.DOCKER_USERNAME }}/docker-test-dev
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/docker-dev
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/docker-dev
             sudo docker image prune -f
