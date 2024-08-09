@@ -34,7 +34,10 @@ class ReviewServiceImpl(
     override fun getReview(id: Long): ReviewResponse {
         val review = reviewRepository.findById(id)
             ?: throw ModelNotFoundException("Review", id)
-        return ReviewResponse.from(review)
+
+        val mediaList = reviewRepository.mediaFindAll(id).map { ReviewMultiMediaResponse.from(it) }
+
+        return ReviewResponse.from(review, mediaList)
     }
 
     @Transactional
