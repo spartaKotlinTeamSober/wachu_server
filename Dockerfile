@@ -1,5 +1,5 @@
-# open jdk 11 버전의 환경을 구성
-FROM adoptopenjdk/openjdk11:latest
+# open jdk 17 버전의 환경을 구성
+FROM adoptopenjdk/openjdk17:latest
 
 # 노출할 포트를 설정
 EXPOSE 8080
