@@ -81,7 +81,7 @@ jobs:
             sudo docker stop $(sudo docker ps -q)
             sudo docker rm $(sudo docker ps -a -q)
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/docker-dev
-            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/docker-dev /bin/bash -c "ln -fs /usr/share/zoneinfo/Asia/Seoul /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && java -jar -Dspring.profiles.active=dev /app.jar"
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/docker-dev
             sudo docker image prune -f
 
       # 인스턴스2에 배포
@@ -96,7 +96,7 @@ jobs:
             sudo docker stop $(sudo docker ps -q)
             sudo docker rm $(sudo docker ps -a -q)
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/docker-dev
-            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/docker-dev /bin/bash -c "ln -fs /usr/share/zoneinfo/Asia/Seoul /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && java -jar -Dspring.profiles.active=dev /app.jar"
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/docker-dev
             sudo docker image prune -f
 
       # 결과 Slack에 전송
