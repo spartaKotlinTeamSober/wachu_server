@@ -4,6 +4,7 @@ import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMediaType
 import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
 
 data class ReviewMultiMediaResponse(
+    val id: Long,
     val reviewId: Long,
     val mediaUrl: String,
     val mediaType: ReviewMediaType,
@@ -11,6 +12,7 @@ data class ReviewMultiMediaResponse(
     companion object {
         fun from(media: ReviewMultiMedia): ReviewMultiMediaResponse {
             return ReviewMultiMediaResponse(
+                id = media.id!!,
                 reviewId = media.reviewId,
                 mediaUrl = media.mediaUrl,
                 mediaType = media.mediaType,

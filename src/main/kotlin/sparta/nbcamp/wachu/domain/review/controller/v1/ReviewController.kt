@@ -7,7 +7,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewMultiMediaResponse
 import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewRequest
@@ -35,13 +41,14 @@ class ReviewController(
         return ResponseEntity.ok(reviewService.getReview(reviewId))
     }
 
-    @PostMapping
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun createReview(
         @AuthenticationPrincipal userprincipal: UserPrincipal,
-        @RequestBody reviewRequest: ReviewRequest,
+        @RequestPart reviewRequest: ReviewRequest,
+        @RequestPart(name = "images", required = false) multipartFile: List<MultipartFile>?
     ): ResponseEntity<ReviewResponse> {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(reviewService.createReview(userprincipal, reviewRequest))
+            .body(reviewService.createReview(userprincipal, reviewRequest, multipartFile))
     }
 
     @DeleteMapping("/{reviewId}")
@@ -61,7 +68,7 @@ class ReviewController(
     fun createReviewMedia(
         @AuthenticationPrincipal userprincipal: UserPrincipal,
         @PathVariable reviewId: Long,
-        @RequestPart(name = "image", required = false) multipartFileList: List<MultipartFile>
+        @RequestPart(name = "images", required = false) multipartFileList: List<MultipartFile>
     ): ResponseEntity<List<ReviewMultiMediaResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(reviewService.createReviewMedia(userprincipal, reviewId, multipartFileList))

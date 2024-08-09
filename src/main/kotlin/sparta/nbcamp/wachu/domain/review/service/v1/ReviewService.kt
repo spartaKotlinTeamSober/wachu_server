@@ -11,7 +11,12 @@ import sparta.nbcamp.wachu.infra.security.jwt.UserPrincipal
 interface ReviewService {
     fun getReviewPage(pageable: Pageable): Page<ReviewResponse>
     fun getReview(id: Long): ReviewResponse
-    fun createReview(userPrincipal: UserPrincipal, reviewRequest: ReviewRequest): ReviewResponse
+    fun createReview(
+        userPrincipal: UserPrincipal,
+        reviewRequest: ReviewRequest,
+        images: List<MultipartFile>?
+    ): ReviewResponse
+
     fun deleteReview(userPrincipal: UserPrincipal, id: Long)
     fun createReviewMedia(
         userPrincipal: UserPrincipal,

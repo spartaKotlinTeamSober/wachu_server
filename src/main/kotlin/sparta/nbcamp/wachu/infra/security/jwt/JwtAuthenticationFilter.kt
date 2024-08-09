@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.security.jwt
 
+import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -45,6 +46,11 @@ class JwtAuthenticationFilter(
                 SecurityContextHolder.getContext().authentication = authentication
             }.onFailure {
                 logger.debug("Token validation failed", it)
+                if (it is ExpiredJwtException) {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired")
+
+                    return
+                }
             }
         }
 

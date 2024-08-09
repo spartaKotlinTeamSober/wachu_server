@@ -34,17 +34,34 @@ class ReviewServiceImpl(
     override fun getReview(id: Long): ReviewResponse {
         val review = reviewRepository.findById(id)
             ?: throw ModelNotFoundException("Review", id)
-        return ReviewResponse.from(review)
+
+        val mediaList = reviewRepository.mediaFindAll(id).map { ReviewMultiMediaResponse.from(it) }
+
+        return ReviewResponse.from(review, mediaList)
     }
 
     @Transactional
-    override fun createReview(userPrincipal: UserPrincipal, reviewRequest: ReviewRequest): ReviewResponse {
+    override fun createReview(
+        userPrincipal: UserPrincipal,
+        reviewRequest: ReviewRequest,
+        images: List<MultipartFile>?
+    ): ReviewResponse {
         val wine = wineRepository.findByIdOrNull(reviewRequest.wineId)
             ?: throw ModelNotFoundException("Wine", reviewRequest.wineId)
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        val review = ReviewRequest.toEntity(wine, member.id!!, reviewRequest)
-        return ReviewResponse.from(reviewRepository.save(review))
+        val review = reviewRepository.save(ReviewRequest.toEntity(wine, member.id!!, reviewRequest))
+
+        var mediaList: List<ReviewMultiMediaResponse> = emptyList()
+
+        if (!images.isNullOrEmpty()) {
+            mediaList = mediaS3Service.upload(images, S3FilePath.REVIEW.path + "${review.id}/")
+                .let { it.map { url -> ReviewMultiMedia.toEntity(review.id!!, url, ReviewMediaType.IMAGE) } }
+                .let { reviewRepository.mediaSave(it) }
+                .let { it.map { multiMedia -> ReviewMultiMediaResponse.from(multiMedia) } }
+        }
+
+        return ReviewResponse.from(review, mediaList)
     }
 
     override fun deleteReview(userPrincipal: UserPrincipal, id: Long) {
