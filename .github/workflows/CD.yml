@@ -1,6 +1,9 @@
 name: CD
 
 on:
+  push:
+    branches:
+      - feat/*
   workflow_dispatch:
   pull_request:
     branches:
@@ -37,12 +40,27 @@ jobs:
           echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
           find src
 
+      # application-dev.yml 복사
+      - name: set yml
+        run: |
+          mkdir -p ./src/main/resources
+          echo "${{ secrets.APPLICATION_DEV_YML }}" | base64 --decode > ./src/main/resources/application-dev.yml
+          find src
+
+      # application-prod.yml 복사
+      - name: set yml
+        run: |
+          mkdir -p ./src/main/resources
+          echo "${{ secrets.APPLICATION_PROD_YML }}" | base64 --decode > ./src/main/resources/application-prod.yml
+          find src
+
+
       # gradle 빌드
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
       - name: gradlew bootJar
-        run: ./gradlew bootJar
+        run: ./gradlew bootJar -Pprod
 
       # docker 빌드 & 푸쉬
       - name: Docker build & push
@@ -60,7 +78,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            sudo docker ps
+            sudo docker stop $(sudo docker ps -q)
+            sudo docker rm $(sudo docker ps -a -q)
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/docker-dev
             sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/docker-dev
             sudo docker image prune -f
@@ -74,7 +93,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            sudo docker ps
+            sudo docker stop $(sudo docker ps -q)
+            sudo docker rm $(sudo docker ps -a -q)
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/docker-dev
             sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/docker-dev
             sudo docker image prune -f
