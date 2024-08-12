@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -96,13 +97,26 @@ class MemberController(
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
     }
 
-    @PatchMapping("/auth/profile")
+    @PatchMapping(
+        "/auth/profile",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun updateProfile(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestBody request: UpdateRequest,
         @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
     ): ResponseEntity<SignUpResponse> {
         return ResponseEntity.ok().body(memberService.updateProfile(userPrincipal, request, multipartFile))
+    }
+
+    @PatchMapping("/auth/profile/email-update")
+    fun confirmUpdateEmail(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+        @RequestBody request: SendCodeRequest,
+        @RequestParam code: String
+    ): ResponseEntity<SignUpResponse> {
+        return ResponseEntity.ok().body(memberService.confirmUpdateEmail(userPrincipal, request, code))
     }
 
     @PostMapping("/auth/refresh-token")

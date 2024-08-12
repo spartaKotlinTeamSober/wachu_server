@@ -28,6 +28,8 @@ interface MemberService {
         multipartFile: MultipartFile?,
     ): SignUpResponse
 
+    fun confirmUpdateEmail(userPrincipal: UserPrincipal, request: SendCodeRequest, code: String): SignUpResponse
+
     fun socialLogin(request: OAuthResponse): TokenResponse
 
     fun refreshAccessToken(refreshToken: String): TokenResponse

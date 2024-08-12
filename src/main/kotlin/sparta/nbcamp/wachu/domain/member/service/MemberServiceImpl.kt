@@ -119,13 +119,32 @@ class MemberServiceImpl @Autowired constructor(
     ): SignUpResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        request.email?.let { member.email = it }
-        request.password?.let { member.password = passwordEncoder.encode(it) }
+        request.email?.let {
+            check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
+            check(request.email != member.email) { "기존과 동일한 이메일" }
+            codeService.sendCode(request.email)
+        }
+        request.password?.let {
+            check(request.password == request.confirmPassword) { "설정한 비밀번호와 다름" }
+            member.password = passwordEncoder.encode(it)
+        }
         request.nickname?.let { member.nickname = it }
         multipartFile?.let {
             val profileUrl = mediaS3Service.upload(multipartFile, S3FilePath.PROFILE.path)
             member.profileImageUrl = profileUrl
         }
+        return SignUpResponse.from(member)
+    }
+
+    override fun confirmUpdateEmail(
+        userPrincipal: UserPrincipal,
+        request: SendCodeRequest,
+        code: String,
+    ): SignUpResponse {
+        val member = memberRepository.findById(userPrincipal.memberId)
+            ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
+        check(codeService.checkCode(request.email, code)) { "인증코드가 맞지 않음" }
+        member.email = request.email
         return SignUpResponse.from(member)
     }
 
