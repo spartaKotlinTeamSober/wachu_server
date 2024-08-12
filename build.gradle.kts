@@ -90,6 +90,9 @@ dependencies {
     testRuntimeOnly("com.h2database:h2")
     //mySql
     implementation("mysql:mysql-connector-java:8.0.30")
+
+    // test
+    testImplementation("com.h2database:h2")
 }
 
 kotlin {

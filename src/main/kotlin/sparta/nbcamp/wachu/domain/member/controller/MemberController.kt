@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.domain.member.controller
 
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -30,7 +31,8 @@ class MemberController(
 
     @PostMapping("/auth/sign-up/email-validation")
     fun sendValidationCode(@RequestBody request: SendCodeRequest): ResponseEntity<Any> {
-        return ResponseEntity.status(HttpStatus.OK).body(codeService.sendCode(request.email))
+        codeService.sendCode(request.email)
+        return ResponseEntity.ok("Email send successfully")
     }
 
     @PostMapping("/auth/sign-up")
@@ -52,6 +54,20 @@ class MemberController(
 
         return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(token.accessToken)
+    }
+
+    @PostMapping("/auth/logout")
+    fun logout(response: HttpServletResponse): ResponseEntity<Void> {
+        val deleteCookie = ResponseCookie.from("refreshToken", "")
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .maxAge(0)
+            .path("/")
+            .build()
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+            .build()
     }
 
     @PostMapping(
