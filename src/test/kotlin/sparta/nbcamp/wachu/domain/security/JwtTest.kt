@@ -6,11 +6,13 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import sparta.nbcamp.wachu.domain.member.entity.MemberRole
 import sparta.nbcamp.wachu.infra.security.jwt.JwtTokenManager
 import java.nio.charset.StandardCharsets
 
+@SpringBootTest
 @ActiveProfiles("test")
 class JwtTest {
 
