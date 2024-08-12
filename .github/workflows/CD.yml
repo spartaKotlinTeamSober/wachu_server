@@ -59,8 +59,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: gradlew build
-        run: ./gradlew clean build -Pprod
+      - name: gradlew bootJar
+        run: ./gradlew bootJar -Pprod
 
       # docker 빌드 & 푸쉬
       - name: Docker build & push
