@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
@@ -18,6 +19,7 @@ import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
+import sparta.nbcamp.wachu.domain.member.dto.UpdateRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
 import sparta.nbcamp.wachu.domain.member.service.MemberService
@@ -42,7 +44,7 @@ class MemberController(
     )
     fun signUp(
         @RequestBody request: SignUpRequest,
-        @RequestPart(name = "image") multipartFile: MultipartFile
+        @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
     ): ResponseEntity<SignUpResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request, multipartFile))
     }
@@ -92,6 +94,15 @@ class MemberController(
     @GetMapping("/auth/profile/")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<ProfileResponse> {
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
+    }
+
+    @PatchMapping("/auth/profile")
+    fun updateProfile(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+        @RequestBody request: UpdateRequest,
+        @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
+    ): ResponseEntity<SignUpResponse> {
+        return ResponseEntity.ok().body(memberService.updateProfile(userPrincipal, request, multipartFile))
     }
 
     @PostMapping("/auth/refresh-token")
