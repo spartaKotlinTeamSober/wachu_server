@@ -1,24 +1,39 @@
 auth:
   jwt:
-    issuer: test
-    secret: testtesttesttesttesttesttest
+    issuer: test.test.test
+    secret: testtesttesttesttesttesttesttest
+
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
   datasource:
     username: sa
     password:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:~/test
-
   h2:
     console:
       enabled: true
-
   jpa:
-    hibernate:
-      ddl-auto: create-drop
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+        ddl-auto: create
+        default_batch_fetch_size: 100
+        dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type.descriptor.sql: trace
+        orm.jdbc.bind: trace
 
 embedding:
   file:
