@@ -1,6 +1,6 @@
 package sparta.nbcamp.wachu.domain.member.dto
 
-data class UpdateRequest(
+data class ProfileUpdateRequest(
     val email: String?,
     val password: String?,
     val confirmPassword: String?,
