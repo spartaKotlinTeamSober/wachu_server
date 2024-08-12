@@ -17,6 +17,7 @@ import sparta.nbcamp.wachu.domain.review.model.v1.Review
 import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMediaType
 import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
 import sparta.nbcamp.wachu.domain.review.repository.ReviewTestRepositoryImpl
+import sparta.nbcamp.wachu.domain.review.repository.v1.ReviewMultiMediaRepository
 import sparta.nbcamp.wachu.domain.review.service.v1.ReviewServiceImpl
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
@@ -79,10 +80,12 @@ class ReviewServiceTest {
     val wineRepository: WineRepository = mockk()
     val memberRepository: MemberRepository = mockk()
     val mediaService: MediaS3Service = mockk()
+    val reviewMultiMediaRepository: ReviewMultiMediaRepository = mockk()
     val reviewRepository =
         ReviewTestRepositoryImpl(defaultReview, defaultReviewPage, defaultReviewMultiMediaList)
 
-    val reviewService = ReviewServiceImpl(wineRepository, memberRepository, reviewRepository, mediaService)
+    val reviewService =
+        ReviewServiceImpl(wineRepository, memberRepository, reviewRepository, reviewMultiMediaRepository, mediaService)
 
     @BeforeEach
     fun setup() {
@@ -138,7 +141,9 @@ class ReviewServiceTest {
             "test", "test", "test", "test"
         ).apply { id = testUserPrincipal.memberId }
 
-        val response = reviewService.createReview(testUserPrincipal, reviewCreateRequest)
+        val images = listOf<MultipartFile>()
+
+        val response = reviewService.createReview(testUserPrincipal, reviewCreateRequest, images)
 
         response.title shouldBe reviewCreateRequest.title
         response.memberId shouldBe testUserPrincipal.memberId
