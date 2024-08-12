@@ -26,25 +26,32 @@ class ReviewServiceImpl(
     private val reviewRepository: ReviewRepository,
     private val mediaS3Service: MediaS3Service
 ) : ReviewService {
+
+    @Transactional(readOnly = true)
     override fun getReviewPage(pageable: Pageable): Page<ReviewResponse> {
-        return reviewRepository.findAll(pageable).map { ReviewResponse.from(it) }
+        val reviews = reviewRepository.findAll(pageable)
+        val memberIds = reviews.map { it.memberId }.toList()
+        val members = memberRepository.findAllById(memberIds).associateBy { it.id }
+        return reviews.map { review -> ReviewResponse.from(review, members[review.memberId]!!) }
     }
 
     @Transactional(readOnly = true)
     override fun getReview(id: Long): ReviewResponse {
         val review = reviewRepository.findById(id)
             ?: throw ModelNotFoundException("Review", id)
-        return ReviewResponse.from(review)
+        val member = memberRepository.findById(review.memberId)
+            ?: throw ModelNotFoundException("Member", review.memberId)
+        return ReviewResponse.from(review, member)
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     override fun createReview(userPrincipal: UserPrincipal, reviewRequest: ReviewRequest): ReviewResponse {
         val wine = wineRepository.findByIdOrNull(reviewRequest.wineId)
             ?: throw ModelNotFoundException("Wine", reviewRequest.wineId)
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        val review = ReviewRequest.toEntity(wine, member.id!!, reviewRequest)
-        return ReviewResponse.from(reviewRepository.save(review))
+        val review = reviewRequest.toEntity(wine, member.id!!)
+        return ReviewResponse.from(reviewRepository.save(review), member)
     }
 
     override fun deleteReview(userPrincipal: UserPrincipal, id: Long) {
