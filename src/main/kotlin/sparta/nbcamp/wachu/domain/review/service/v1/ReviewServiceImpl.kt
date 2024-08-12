@@ -68,7 +68,7 @@ class ReviewServiceImpl(
                 .let { it.map { multiMedia -> ReviewMultiMediaResponse.from(multiMedia) } }
         }
 
-        return ReviewResponse.from(review, mediaList)
+        return ReviewResponse.from(review, member, mediaList)
     }
 
     @Transactional
