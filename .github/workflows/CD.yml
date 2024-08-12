@@ -1,9 +1,6 @@
 name: CD
 
 on:
-  push:
-    branches:
-      - feat/*
   workflow_dispatch:
   pull_request:
     branches:
