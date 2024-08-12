@@ -125,14 +125,12 @@ class MemberServiceImpl @Autowired constructor(
             codeService.sendCode(request.email)
         }
         request.password?.let {
+            check(request.confirmPassword != null) { "비밀번호 확인 필요" }
             check(request.password == request.confirmPassword) { "설정한 비밀번호와 다름" }
-            member.password = passwordEncoder.encode(it)
+            member.changePassword(request.password, passwordEncoder)
         }
-        request.nickname?.let { member.nickname = it }
-        multipartFile?.let {
-            val profileUrl = mediaS3Service.upload(multipartFile, S3FilePath.PROFILE.path)
-            member.profileImageUrl = profileUrl
-        }
+        request.nickname?.let { member.changeNickname(request.nickname) }
+        multipartFile?.let { member.changeProfileImageUrl(multipartFile, mediaS3Service) }
         return SignUpResponse.from(member)
     }
 
