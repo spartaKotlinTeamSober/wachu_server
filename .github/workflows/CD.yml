@@ -60,7 +60,9 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: gradlew bootJar
-        run: ./gradlew bootJar -Pprod
+        run: |
+          ./gradlew bootJar 
+
 
       # docker 빌드 & 푸쉬
       - name: Docker build & push
