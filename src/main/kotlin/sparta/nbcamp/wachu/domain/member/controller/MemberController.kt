@@ -70,7 +70,7 @@ class MemberController(
     }
 
     @PostMapping(
-        "/auth/profile",
+        "/api/v1/profile",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
@@ -81,7 +81,7 @@ class MemberController(
         return ResponseEntity.status(HttpStatus.CREATED).body(memberService.uploadProfile(userPrincipal, multipartFile))
     }
 
-    @GetMapping("/auth/profile/")
+    @GetMapping("/api/v1/profile/")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<ProfileResponse> {
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
     }
