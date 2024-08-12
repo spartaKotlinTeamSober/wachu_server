@@ -7,10 +7,10 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
+import sparta.nbcamp.wachu.domain.member.dto.ProfileUpdateRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
-import sparta.nbcamp.wachu.domain.member.dto.UpdateRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
 import sparta.nbcamp.wachu.domain.member.entity.Member
@@ -44,11 +44,11 @@ class MemberServiceImpl @Autowired constructor(
         check(request.password == request.confirmPassword) { "처음에 설정한 비밀번호와 다름" }
         check(!memberRepository.existsByNickname(request.nickname)) { "이미 존재하는 닉네임" }
         val member = SignUpRequest.toEntity(request, passwordEncoder)
-        memberRepository.addMember(member)
         multipartFile?.let {
             val profileUrl = mediaS3Service.upload(multipartFile, S3FilePath.PROFILE.path)
             member.profileImageUrl = profileUrl
         }
+        memberRepository.addMember(member)
         return SignUpResponse.from(member)
     }
 
@@ -114,7 +114,7 @@ class MemberServiceImpl @Autowired constructor(
     @Transactional
     override fun updateProfile(
         userPrincipal: UserPrincipal,
-        request: UpdateRequest,
+        request: ProfileUpdateRequest,
         multipartFile: MultipartFile?,
     ): SignUpResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
