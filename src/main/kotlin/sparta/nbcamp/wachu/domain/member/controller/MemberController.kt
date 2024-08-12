@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
+import sparta.nbcamp.wachu.domain.member.dto.ProfileUpdateRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
-import sparta.nbcamp.wachu.domain.member.dto.UpdateRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
 import sparta.nbcamp.wachu.domain.member.service.MemberService
@@ -81,7 +81,7 @@ class MemberController(
     }
 
     @PostMapping(
-        "/auth/profile",
+        "/api/v1/profile",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
@@ -92,25 +92,25 @@ class MemberController(
         return ResponseEntity.status(HttpStatus.CREATED).body(memberService.uploadProfile(userPrincipal, multipartFile))
     }
 
-    @GetMapping("/auth/profile/")
+    @GetMapping("/api/v1/profile/")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<ProfileResponse> {
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
     }
 
     @PatchMapping(
-        "/auth/profile",
+        "/api/v1/profile",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun updateProfile(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
-        @RequestBody request: UpdateRequest,
+        @RequestBody request: ProfileUpdateRequest,
         @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
     ): ResponseEntity<SignUpResponse> {
         return ResponseEntity.ok().body(memberService.updateProfile(userPrincipal, request, multipartFile))
     }
 
-    @PatchMapping("/auth/profile/email-update")
+    @PatchMapping("/api/v1/profile/email-update")
     fun confirmUpdateEmail(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestBody request: SendCodeRequest,
