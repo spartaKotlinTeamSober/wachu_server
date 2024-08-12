@@ -45,7 +45,7 @@ jobs:
       # test 진행
       - name: run unittest
         run: |
-          ./gradlew clean test --scan
+          ./gradlew clean test -i --scan
 
       # 결과 Slack에 전송
       - name: result send slack
