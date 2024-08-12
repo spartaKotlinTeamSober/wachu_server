@@ -4,6 +4,8 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -14,12 +16,14 @@ import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewRequest
 import sparta.nbcamp.wachu.domain.review.model.v1.Review
 import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMediaType
 import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
+import sparta.nbcamp.wachu.domain.review.repository.ReviewMultiMediaTestRepository
 import sparta.nbcamp.wachu.domain.review.repository.ReviewTestRepositoryImpl
 import sparta.nbcamp.wachu.domain.review.service.v1.ReviewServiceImpl
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
+import sparta.nbcamp.wachu.domain.wine.service.WineImageGetter
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
@@ -45,9 +49,13 @@ class ReviewServiceTest {
         embedding = "test"
     )
 
+    val defaultMember = Member(
+        "test", "test", "test", "test"
+    ).apply { id = 1L }
+
     val defaultReview = Review(
         wine = defaultWine,
-        memberId = 1L,
+        memberId = defaultMember.id!!,
         title = "test",
         description = "test",
         score = 1.5
@@ -56,7 +64,7 @@ class ReviewServiceTest {
     val defaultReviewList = List(10) { index ->
         Review(
             wine = defaultWine,
-            memberId = index.toLong(),
+            memberId = defaultMember.id!!,
             title = "test$index",
             description = "testDescription$index",
             score = index.toDouble()
@@ -77,18 +85,33 @@ class ReviewServiceTest {
     val memberRepository: MemberRepository = mockk()
     val mediaService: MediaS3Service = mockk()
     val reviewRepository =
-        ReviewTestRepositoryImpl(defaultReview, defaultReviewPage, defaultReviewMultiMediaList)
+        ReviewTestRepositoryImpl(defaultReview, defaultReviewPage)
+    val reviewMultiMediaRepository = ReviewMultiMediaTestRepository(defaultReviewMultiMediaList)
 
-    val reviewService = ReviewServiceImpl(wineRepository, memberRepository, reviewRepository, mediaService)
+    val reviewService = ReviewServiceImpl(
+        wineRepository = wineRepository,
+        memberRepository = memberRepository,
+        reviewRepository = reviewRepository,
+        reviewMediaRepository = reviewMultiMediaRepository,
+        mediaS3Service = mediaService
+    )
+
+    @BeforeEach
+    fun setup() {
+        mockkObject(WineImageGetter)
+        WineImageGetter.init(mediaService)
+        every { WineImageGetter.getWineImage(any()) } returns "testUrl1"
+    }
 
     @Test
     fun `존재하는 아이디로 getReview하면 ReviewResponseDto를 반환한다`() {
+        every { memberRepository.findById(any()) } returns defaultMember
         val responseDto = reviewService.getReview(1L)
         val wineResponseDto = WineResponse.from(defaultWine)
 
         responseDto.id shouldBe defaultReview.id
         responseDto.title shouldBe defaultReview.title
-        responseDto.memberId shouldBe defaultReview.memberId
+        responseDto.member.id shouldBe defaultMember.id
         responseDto.wine shouldBe wineResponseDto
         responseDto.score shouldBe defaultReview.score
         responseDto.createdAt shouldBe defaultReview.createdAt
@@ -104,7 +127,9 @@ class ReviewServiceTest {
 
     @Test
     fun `getReviewPage 하면 review 페이지를 반환한다`() {
+        every { memberRepository.findAllById(any()) } returns listOf(defaultMember)
         val result = reviewService.getReviewPage(defaultPageable)
+
         result.size shouldBe defaultReviewPage.size
         result.forEachIndexed { index, response ->
             response.title shouldBe defaultReviewPage.content[index].title
@@ -123,15 +148,13 @@ class ReviewServiceTest {
         every { wineRepository.findByIdOrNull(1L) } returns testWine
         val testWineResponse = WineResponse.from(testWine)
 
-        val testUserPrincipal = UserPrincipal(memberId = 1L, memberRole = setOf("MEMBER"))
-        every { memberRepository.findById(any()) } returns Member(
-            "test", "test", "test", "test"
-        ).apply { id = testUserPrincipal.memberId }
+        val testUserPrincipal = UserPrincipal(memberId = defaultMember.id!!, memberRole = setOf("MEMBER"))
+        every { memberRepository.findById(any()) } returns defaultMember
 
-        val response = reviewService.createReview(testUserPrincipal, reviewCreateRequest)
+        val response = reviewService.createReview(testUserPrincipal, reviewCreateRequest, null)
 
         response.title shouldBe reviewCreateRequest.title
-        response.memberId shouldBe testUserPrincipal.memberId
+        response.member.id shouldBe testUserPrincipal.memberId
         response.wine shouldBe testWineResponse
         response.score shouldBe reviewCreateRequest.score
         response.description shouldBe reviewCreateRequest.description
