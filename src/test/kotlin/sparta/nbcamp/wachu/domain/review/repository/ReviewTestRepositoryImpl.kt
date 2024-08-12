@@ -3,7 +3,6 @@ package sparta.nbcamp.wachu.domain.review.repository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import sparta.nbcamp.wachu.domain.review.model.v1.Review
-import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
 import sparta.nbcamp.wachu.domain.review.repository.v1.ReviewRepository
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -11,7 +10,6 @@ import java.util.logging.Logger
 class ReviewTestRepositoryImpl(
     private val review: Review,
     private val reviewPage: Page<Review>,
-    private val reviewMultiMedia: List<ReviewMultiMedia>,
 ) : ReviewRepository {
     override fun findById(id: Long): Review? {
         if (id !in 1..10) return null
