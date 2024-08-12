@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
-import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
 import sparta.nbcamp.wachu.domain.member.service.MemberService
@@ -36,7 +35,7 @@ class MemberController(
     }
 
     @PostMapping("/auth/sign-up")
-    fun signUp(@RequestBody request: SignUpRequest): ResponseEntity<SignUpResponse> {
+    fun signUp(@RequestBody request: SignUpRequest): ResponseEntity<ProfileResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request))
     }
 
