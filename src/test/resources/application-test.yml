@@ -1,3 +1,7 @@
+auth:
+  jwt:
+    issuer: test
+    secret: testtesttesttesttesttesttest
 spring:
   datasource:
     username: sa

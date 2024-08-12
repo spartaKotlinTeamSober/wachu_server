@@ -33,11 +33,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-            #application.yml 복사
-      - name: set yml
-        run: |
-          mkdir -p ./src/main/resources/
-          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./src/main/resources/application.yml
+      #      #application.yml 복사
+      #      - name: set yml
+      #        run: |
+      #          mkdir -p ./src/test/resources/
+      #          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > ./src/test/resources/application.yml
 
       - name: make executable gradlew
         run: chmod +x ./gradlew
@@ -45,7 +45,7 @@ jobs:
       # test 진행
       - name: run unittest
         run: |
-          ./gradlew clean test --scan -Ptest
+          ./gradlew clean test --scan
 
       # 결과 Slack에 전송
       - name: result send slack
