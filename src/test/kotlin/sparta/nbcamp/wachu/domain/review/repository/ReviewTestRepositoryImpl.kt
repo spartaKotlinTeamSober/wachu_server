@@ -29,12 +29,4 @@ class ReviewTestRepositoryImpl(
     override fun delete(review: Review) {
         Logger.getLogger("ReviewTestRepositoryImpl").log(Level.INFO, "delete")
     }
-
-    override fun mediaFindAll(reviewId: Long): List<ReviewMultiMedia> {
-        return reviewMultiMedia
-    }
-
-    override fun mediaSave(media: List<ReviewMultiMedia>): List<ReviewMultiMedia> {
-        return reviewMultiMedia
-    }
 }
