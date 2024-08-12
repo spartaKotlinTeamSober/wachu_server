@@ -292,4 +292,3 @@ application.properties
 application.yml
 application-dev.yml
 application-prod.yml
-/data
