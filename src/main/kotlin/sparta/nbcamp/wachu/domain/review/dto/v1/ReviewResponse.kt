@@ -14,9 +14,10 @@ data class ReviewResponse(
     val description: String,
     val score: Double,
     val createdAt: LocalDateTime,
+    val mediaList: List<ReviewMultiMediaResponse>,
 ) {
     companion object {
-        fun from(review: Review, member: Member): ReviewResponse {
+        fun from(review: Review, member: Member, mediaList: List<ReviewMultiMediaResponse> = emptyList()): ReviewResponse {
             return ReviewResponse(
                 id = review.id!!,
                 wine = WineResponse.from(review.wine),
@@ -25,6 +26,7 @@ data class ReviewResponse(
                 description = review.description,
                 score = review.score,
                 createdAt = review.createdAt,
+                mediaList = mediaList,
             )
         }
     }

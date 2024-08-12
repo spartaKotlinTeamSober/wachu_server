@@ -11,6 +11,7 @@ import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewRequest
 import sparta.nbcamp.wachu.domain.review.dto.v1.ReviewResponse
 import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMediaType
 import sparta.nbcamp.wachu.domain.review.model.v1.ReviewMultiMedia
+import sparta.nbcamp.wachu.domain.review.repository.v1.ReviewMultiMediaRepository
 import sparta.nbcamp.wachu.domain.review.repository.v1.ReviewRepository
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.AccessDeniedException
@@ -24,6 +25,7 @@ class ReviewServiceImpl(
     private val wineRepository: WineRepository,
     private val memberRepository: MemberRepository,
     private val reviewRepository: ReviewRepository,
+    private val reviewMediaRepository: ReviewMultiMediaRepository,
     private val mediaS3Service: MediaS3Service
 ) : ReviewService {
 
@@ -41,19 +43,35 @@ class ReviewServiceImpl(
             ?: throw ModelNotFoundException("Review", id)
         val member = memberRepository.findById(review.memberId)
             ?: throw ModelNotFoundException("Member", review.memberId)
-        return ReviewResponse.from(review, member)
+        val mediaList = reviewMediaRepository.mediaFindAll(id).map { ReviewMultiMediaResponse.from(it) }
+        return ReviewResponse.from(review, member, mediaList)
     }
 
     @Transactional(readOnly = true)
-    override fun createReview(userPrincipal: UserPrincipal, reviewRequest: ReviewRequest): ReviewResponse {
+    override fun createReview(
+        userPrincipal: UserPrincipal,
+        reviewRequest: ReviewRequest,
+        images: List<MultipartFile>?
+    ): ReviewResponse {
         val wine = wineRepository.findByIdOrNull(reviewRequest.wineId)
             ?: throw ModelNotFoundException("Wine", reviewRequest.wineId)
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        val review = reviewRequest.toEntity(wine, member.id!!)
-        return ReviewResponse.from(reviewRepository.save(review), member)
+        val review = reviewRepository.save(reviewRequest.toEntity(wine, member.id!!))
+
+        var mediaList: List<ReviewMultiMediaResponse> = emptyList()
+
+        if (!images.isNullOrEmpty()) {
+            mediaList = mediaS3Service.upload(images, S3FilePath.REVIEW.path + "${review.id}/")
+                .let { it.map { url -> ReviewMultiMedia.toEntity(review.id!!, url, ReviewMediaType.IMAGE) } }
+                .let { reviewMediaRepository.mediaSave(it) }
+                .let { it.map { multiMedia -> ReviewMultiMediaResponse.from(multiMedia) } }
+        }
+
+        return ReviewResponse.from(review, mediaList)
     }
 
+    @Transactional
     override fun deleteReview(userPrincipal: UserPrincipal, id: Long) {
         val review = reviewRepository.findById(id)
             ?: throw ModelNotFoundException("Review", id)
@@ -64,6 +82,7 @@ class ReviewServiceImpl(
             )
         ) { throw AccessDeniedException("not your review") }
 
+        reviewMediaRepository.deleteAllByReviewId(id)
         reviewRepository.delete(review)
     }
 
@@ -84,10 +103,10 @@ class ReviewServiceImpl(
 
         val mediaList = mediaS3Service.upload(multipartFileList, S3FilePath.REVIEW.path + "$reviewId/")
             .let { it.map { url -> ReviewMultiMedia.toEntity(reviewId, url, ReviewMediaType.IMAGE) } }
-        return reviewRepository.mediaSave(mediaList).map { ReviewMultiMediaResponse.from(it) }
+        return reviewMediaRepository.mediaSave(mediaList).map { ReviewMultiMediaResponse.from(it) }
     }
 
     override fun getReviewMultiMedia(reviewId: Long): List<ReviewMultiMediaResponse> {
-        return reviewRepository.mediaFindAll(reviewId).map { ReviewMultiMediaResponse.from(it) }
+        return reviewMediaRepository.mediaFindAll(reviewId).map { ReviewMultiMediaResponse.from(it) }
     }
 }
