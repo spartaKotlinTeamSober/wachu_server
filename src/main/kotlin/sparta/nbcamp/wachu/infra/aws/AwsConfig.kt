@@ -29,8 +29,10 @@ class AwsConfig {
 
     @Bean
     fun s3Presigner(): S3Presigner {
+        val credentials = AwsBasicCredentials.create(accessKey, secretKey)
         return S3Presigner.builder()
             .region(Region.AP_NORTHEAST_2) // 원하는 지역으로 설정
+            .credentialsProvider(StaticCredentialsProvider.create(credentials))
             .build()
     }
 }
