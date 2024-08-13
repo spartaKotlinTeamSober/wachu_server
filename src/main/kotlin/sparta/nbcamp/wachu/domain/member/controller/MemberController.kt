@@ -10,12 +10,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
+import sparta.nbcamp.wachu.domain.member.dto.ProfileUpdateRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
@@ -34,9 +36,16 @@ class MemberController(
         return ResponseEntity.ok("Email send successfully")
     }
 
-    @PostMapping("/auth/sign-up")
-    fun signUp(@RequestBody request: SignUpRequest): ResponseEntity<ProfileResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request))
+    @PostMapping(
+        "/auth/sign-up",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun signUp(
+        @RequestBody request: SignUpRequest,
+        @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
+    ): ResponseEntity<ProfileResponse> {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request, multipartFile))
     }
 
     @PostMapping("/auth/login")
@@ -84,6 +93,28 @@ class MemberController(
     @GetMapping("/api/v1/profile")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<ProfileResponse> {
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
+    }
+
+    @PostMapping("/api/v1/profile/email-validation")
+    fun sendVerificationCodeForEmailUpdate(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+        @RequestBody request: SendCodeRequest
+    ): ResponseEntity<ProfileResponse> {
+        codeService.sendCode(request.email)
+        return ResponseEntity.ok().body(memberService.sendVerificationCodeForEmailUpdate(userPrincipal, request))
+    }
+
+    @PutMapping(
+        "/api/v1/profile",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun updateProfile(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+        @RequestBody request: ProfileUpdateRequest,
+        @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
+    ): ResponseEntity<ProfileResponse> {
+        return ResponseEntity.ok().body(memberService.updateProfile(userPrincipal, request, multipartFile))
     }
 
     @PostMapping("/auth/refresh-token")

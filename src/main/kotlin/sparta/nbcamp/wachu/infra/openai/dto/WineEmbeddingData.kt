@@ -1,10 +1,9 @@
 package sparta.nbcamp.wachu.infra.openai.dto
 
-import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 
 data class WineEmbeddingData(
-    val wine: WineResponse,
+    val wine: WineDataResponse,
     val data: List<WineEmbeddingDataItem>
 ) {
     fun aromaFilteredList(): WineEmbeddingData {
@@ -30,7 +29,7 @@ data class WineEmbeddingData(
                 }
                 .let {
                     WineEmbeddingData(
-                        WineResponse.from(wine),
+                        WineDataResponse.from(wine),
                         it
                     )
                 }

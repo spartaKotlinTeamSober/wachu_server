@@ -82,7 +82,7 @@ class WineServiceImpl @Autowired constructor(
 
     override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {
         return wineEmbeddingService.recommendWine(request.preferWineId)
-            .map { it.first.wine }
+            .map { WineResponse.convert(it.first.wine) }
     }
 
     private fun getDirection(sort: String) = when (sort.lowercase()) {
