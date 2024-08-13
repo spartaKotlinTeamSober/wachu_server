@@ -19,7 +19,6 @@ import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
 import sparta.nbcamp.wachu.domain.member.dto.ProfileUpdateRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
-import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
 import sparta.nbcamp.wachu.domain.member.service.MemberService
@@ -45,9 +44,9 @@ class MemberController(
     fun signUp(
         @RequestBody request: SignUpRequest,
         @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
-    ): ResponseEntity<SignUpResponse> {
+    ): ResponseEntity<ProfileResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request, multipartFile))
-    }
+        }
 
     @PostMapping("/auth/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<String> {

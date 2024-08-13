@@ -10,4 +10,5 @@ interface MemberRepository {
     fun addMember(member: Member): Member
     fun findById(id: Long): Member?
     fun findByProviderAndProviderId(provider: String, providerId: String): Member?
+    fun findAllById(ids: List<Long>): List<Member>
 }

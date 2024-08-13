@@ -9,7 +9,6 @@ import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
 import sparta.nbcamp.wachu.domain.member.dto.ProfileUpdateRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
-import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
@@ -38,7 +37,7 @@ class MemberServiceImpl @Autowired constructor(
         codeService.sendCode(request.email)
     }
 
-    override fun signup(request: SignUpRequest, multipartFile: MultipartFile?): SignUpResponse {
+    override fun signup(request: SignUpRequest, multipartFile: MultipartFile?): ProfileResponse {
         check(codeService.checkCode(request.email, request.code)) { "인증코드가 맞지 않음" }
         check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
         check(request.password == request.confirmPassword) { "처음에 설정한 비밀번호와 다름" }
@@ -49,7 +48,7 @@ class MemberServiceImpl @Autowired constructor(
             member.profileImageUrl = profileUrl
         }
         memberRepository.addMember(member)
-        return SignUpResponse.from(member)
+        return ProfileResponse.from(member)
     }
 
     override fun socialLogin(request: OAuthResponse): TokenResponse {
@@ -115,13 +114,13 @@ class MemberServiceImpl @Autowired constructor(
     override fun sendVerificationCodeForEmailUpdate(
         userPrincipal: UserPrincipal,
         request: SendCodeRequest
-    ): SignUpResponse {
+    ): ProfileResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
         check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
         check(request.email != member.email) { "기존과 동일한 이메일" }
         codeService.sendCode(request.email)
-        return SignUpResponse.from(member)
+        return ProfileResponse.from(member)
     }
 
     @Transactional
@@ -129,7 +128,7 @@ class MemberServiceImpl @Autowired constructor(
         userPrincipal: UserPrincipal,
         request: ProfileUpdateRequest,
         multipartFile: MultipartFile?,
-    ): SignUpResponse {
+    ): ProfileResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
         request.email?.let {
@@ -144,7 +143,7 @@ class MemberServiceImpl @Autowired constructor(
         }
         request.nickname?.let { member.changeNickname(request.nickname) }
         multipartFile?.let { member.changeProfileImageUrl(multipartFile, mediaS3Service) }
-        return SignUpResponse.from(member)
+        return ProfileResponse.from(member)
     }
 
     override fun refreshAccessToken(refreshToken: String): TokenResponse {

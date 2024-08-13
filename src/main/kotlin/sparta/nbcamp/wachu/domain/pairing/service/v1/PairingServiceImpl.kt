@@ -26,14 +26,23 @@ class PairingServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getPairingPage(pageable: Pageable): Page<PairingResponse> {
-        return pairingRepository.findAll(pageable).map { PairingResponse.from(it) }
+        val pairings = pairingRepository.findAll(pageable)
+        val memberIds = pairings.map { it.memberId }.toList()
+        val members = memberRepository.findAllById(memberIds).associateBy { it.id }
+
+        return pairings.map { pairing ->
+            PairingResponse.from(pairing, members[pairing.memberId]!!)
+        }
     }
 
     @Transactional(readOnly = true)
     override fun getPairing(id: Long): PairingResponse {
         val pairing = pairingRepository.findById(id)
             ?: throw ModelNotFoundException("Pairing", id)
-        return PairingResponse.from(pairing)
+        val member = memberRepository.findById(pairing.memberId)
+            ?: throw ModelNotFoundException("Member", pairing.memberId)
+
+        return PairingResponse.from(pairing, member)
     }
 
     @Transactional
@@ -48,9 +57,9 @@ class PairingServiceImpl(
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
 
         val imageUrl = multipartFile.let { mediaS3Service.upload(multipartFile, S3FilePath.PAIRING.path) }
-        val pairing = PairingRequest.toEntity(wine, member.id!!, pairingRequest, imageUrl)
+        val pairing = pairingRequest.toEntity(wine, member.id!!, imageUrl)
 
-        return PairingResponse.from(pairingRepository.save(pairing))
+        return PairingResponse.from(pairingRepository.save(pairing), member)
     }
 
     override fun deletePairing(userPrincipal: UserPrincipal, id: Long) {
