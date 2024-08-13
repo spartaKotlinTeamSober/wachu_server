@@ -290,4 +290,7 @@ gradle-app.setting
 /.jqwik-database
 application.properties
 application.yml
+application-dev.yml
+application-prod.yml
+application-test.yml
 /data

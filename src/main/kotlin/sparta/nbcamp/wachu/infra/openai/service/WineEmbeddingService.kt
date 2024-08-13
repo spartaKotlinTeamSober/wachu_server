@@ -1,9 +1,9 @@
 package sparta.nbcamp.wachu.infra.openai.service
 
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
+import sparta.nbcamp.wachu.infra.batches.winedata.InMemoryCache
 import sparta.nbcamp.wachu.infra.openai.common.utils.WineEmbeddingUtility
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
 
@@ -11,6 +11,8 @@ import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
 class WineEmbeddingService(
     private val wineRepository: WineRepository,
     private val embeddingUtility: WineEmbeddingUtility,
+    private val inMemoryCache: InMemoryCache,
+    private val wineEventListener: WineEventListener
 ) {
     private var minPrice: Int = 0
     private var maxPrice: Int = 0
@@ -21,7 +23,7 @@ class WineEmbeddingService(
     }
 
     fun createEveryWineEmbedding(): List<WineEmbeddingData> {
-        return wineRepository.findAll(Pageable.unpaged()).content
+        return wineRepository.findAll()
             .map { WineEmbeddingData.fromWine(it) }
             .map { wineEmbeddingData ->
                 val transformedData = embeddingUtility.inputListToEmbeddingData(
@@ -48,9 +50,10 @@ class WineEmbeddingService(
     }
 
     fun recommendWine(wineId: Long): List<Pair<WineEmbeddingData, Double>> {
+        if (!wineEventListener.isLoaded()) throw IllegalStateException("데이터 로드중")
         return embeddingUtility.recommendWineList(
-            targetWine = wineRepository.findByIdOrNull(wineId) ?: throw ModelNotFoundException("wine", wineId),
-            everyWineList = wineRepository.findAll(Pageable.unpaged()).content
+            targetWine = inMemoryCache.getWine(wineId) ?: throw ModelNotFoundException("wine", wineId),
+            everyWineList = inMemoryCache.getWines()
         )
     }
 

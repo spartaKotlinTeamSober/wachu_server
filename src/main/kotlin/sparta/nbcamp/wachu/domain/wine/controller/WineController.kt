@@ -78,4 +78,10 @@ class WineController(
         return ResponseEntity.status(HttpStatus.OK)
             .body(wineService.recommendWine(request = RecommendWineRequest(preferWineId = preferWineId)))
     }
+
+    @GetMapping("/deploySuccess")
+    fun recommendWinessssss(@RequestParam preferWineId: Long /*@RequestBody request: RecommendWineRequest*/): ResponseEntity<List<WineResponse>> {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(wineService.recommendWine(request = RecommendWineRequest(preferWineId = preferWineId)))
+    }
 }

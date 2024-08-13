@@ -4,6 +4,8 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -18,6 +20,7 @@ import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
+import sparta.nbcamp.wachu.domain.wine.service.WineImageGetter
 import sparta.nbcamp.wachu.exception.AccessDeniedException
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.media.MediaS3Service
@@ -42,9 +45,13 @@ class PairingServiceTest {
         embedding = "test"
     )
 
+    val defaultMember = Member(
+        "test", "test", "test", "test"
+    ).apply { id = 1L }
+
     val defaultPairing = Pairing(
         wine = defaultWine,
-        memberId = 1L,
+        memberId = defaultMember.id!!,
         title = "test",
         description = "test",
         photoUrl = "test"
@@ -53,7 +60,7 @@ class PairingServiceTest {
     val defaultPairingList = List(10) { index ->
         Pairing(
             wine = defaultWine,
-            memberId = index.toLong(),
+            memberId = defaultMember.id!!,
             title = "test$index",
             description = "testDescription$index",
             photoUrl = "testPhoto$index$"
@@ -69,15 +76,22 @@ class PairingServiceTest {
     val mediaService: MediaS3Service = mockk()
     val pairingService = PairingServiceImpl(wineRepository, memberRepository, pairingRepository, mediaService)
 
+    @BeforeEach
+    fun setup() {
+        mockkObject(WineImageGetter)
+        WineImageGetter.init(mediaService)
+        every { WineImageGetter.getWineImage(any()) } returns "testUrl1"
+    }
+
     @Test
     fun `존재하는 아이디로 getPairing하면 PairingResponseDto를 반환한다`() {
-
+        every { memberRepository.findById(any()) } returns defaultMember
         val responseDto = pairingService.getPairing(1L)
         val wineResponseDto = WineResponse.from(defaultWine)
 
         responseDto.id shouldBe defaultPairing.id
         responseDto.title shouldBe defaultPairing.title
-        responseDto.memberId shouldBe defaultPairing.memberId
+        responseDto.member.id shouldBe defaultPairing.memberId
         responseDto.wine shouldBe wineResponseDto
         responseDto.photoUrl shouldBe defaultPairing.photoUrl
         responseDto.createdAt shouldBe defaultPairing.createdAt
@@ -93,6 +107,7 @@ class PairingServiceTest {
 
     @Test
     fun `getPairingPage 하면 pairing 페이지를 반환한다`() {
+        every { memberRepository.findAllById(any()) } returns defaultPairingList.map { defaultMember }
         val result = pairingService.getPairingPage(defaultPageable)
         result.size shouldBe defaultPairingPage.size
         result.forEachIndexed { index, response ->
@@ -111,9 +126,7 @@ class PairingServiceTest {
         every { wineRepository.findByIdOrNull(1L) } returns testWine
         val testWineResponse = WineResponse.from(testWine)
         val testUserPrincipal = UserPrincipal(memberId = 1L, memberRole = setOf("MEMBER"))
-        every { memberRepository.findById(any()) } returns Member(
-            "test", "test", "test", "test"
-        ).apply { id = testUserPrincipal.memberId }
+        every { memberRepository.findById(any()) } returns defaultMember
 
         val image = mockk<MultipartFile>()
         val imageUrl = "test"
@@ -121,7 +134,7 @@ class PairingServiceTest {
         val response = pairingService.createPairing(testUserPrincipal, pairingCreateRequest, image)
 
         response.title shouldBe pairingCreateRequest.title
-        response.memberId shouldBe testUserPrincipal.memberId
+        response.member.id shouldBe testUserPrincipal.memberId
         response.wine shouldBe testWineResponse
         response.description shouldBe pairingCreateRequest.description
     }

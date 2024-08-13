@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
+import sparta.nbcamp.wachu.domain.member.dto.ProfileUpdateRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
-import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.dto.TokenResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
@@ -37,14 +37,18 @@ class MemberServiceImpl @Autowired constructor(
         codeService.sendCode(request.email)
     }
 
-    override fun signup(request: SignUpRequest): SignUpResponse {
+    override fun signup(request: SignUpRequest, multipartFile: MultipartFile?): ProfileResponse {
         check(codeService.checkCode(request.email, request.code)) { "인증코드가 맞지 않음" }
         check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
         check(request.password == request.confirmPassword) { "처음에 설정한 비밀번호와 다름" }
         check(!memberRepository.existsByNickname(request.nickname)) { "이미 존재하는 닉네임" }
         val member = SignUpRequest.toEntity(request, passwordEncoder)
+        multipartFile?.let {
+            val profileUrl = mediaS3Service.upload(multipartFile, S3FilePath.PROFILE.path)
+            member.changeProfileImageUrl(profileUrl)
+        }
         memberRepository.addMember(member)
-        return SignUpResponse.from(member)
+        return ProfileResponse.from(member)
     }
 
     override fun socialLogin(request: OAuthResponse): TokenResponse {
@@ -96,13 +100,55 @@ class MemberServiceImpl @Autowired constructor(
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
         val profileUrl = mediaS3Service.upload(multipartFile, S3FilePath.PROFILE.path)
-        member.profileImageUrl = profileUrl
+        member.changeProfileImageUrl(profileUrl)
         return ProfileResponse.from(member)
     }
 
     override fun getProfile(userPrincipal: UserPrincipal): ProfileResponse {
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
+        return ProfileResponse.from(member)
+    }
+
+    @Transactional
+    override fun sendVerificationCodeForEmailUpdate(
+        userPrincipal: UserPrincipal,
+        request: SendCodeRequest
+    ): ProfileResponse {
+        val member = memberRepository.findById(userPrincipal.memberId)
+            ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
+        check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
+        check(request.email != member.email) { "기존과 동일한 이메일" }
+        codeService.sendCode(request.email)
+        return ProfileResponse.from(member)
+    }
+
+    @Transactional
+    override fun updateProfile(
+        userPrincipal: UserPrincipal,
+        request: ProfileUpdateRequest,
+        multipartFile: MultipartFile?,
+    ): ProfileResponse {
+        val member = memberRepository.findById(userPrincipal.memberId)
+            ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
+        request.email?.let {
+            check(request.code != null) { "인증코드 필요" }
+            check(codeService.checkCode(request.email, request.code)) { "인증코드가 맞지 않음" }
+            member.changeEmail(request.email)
+        }
+        request.password?.let {
+            check(request.confirmPassword != null) { "비밀번호 확인 필요" }
+            check(request.password == request.confirmPassword) { "설정한 비밀번호와 다름" }
+            member.changePassword(request.password, passwordEncoder)
+        }
+        request.nickname?.let {
+            check(!memberRepository.existsByNickname(request.nickname)) { "이미 존재하는 닉네임" }
+            member.changeNickname(request.nickname)
+        }
+        multipartFile?.let {
+            val profileUrl = mediaS3Service.upload(multipartFile, S3FilePath.PROFILE.path)
+            member.changeProfileImageUrl(profileUrl)
+        }
         return ProfileResponse.from(member)
     }
 

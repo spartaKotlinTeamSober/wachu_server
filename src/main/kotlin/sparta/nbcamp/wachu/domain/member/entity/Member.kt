@@ -8,19 +8,20 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.springframework.security.crypto.password.PasswordEncoder
 
 @Entity
 @Table(name = "member")
 class Member(
 
     @Column(name = "email", length = 50, unique = true)
-    val email: String?,
+    var email: String?,
 
     @Column(name = "password", length = 60)
-    val password: String,
+    var password: String,
 
     @Column(name = "nickname", length = 50, unique = true)
-    val nickname: String?,
+    var nickname: String?,
 
     @Column(name = "profile_image_url")
     var profileImageUrl: String?,
@@ -38,4 +39,20 @@ class Member(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
-)
+) {
+    fun changeEmail(email: String) {
+        this.email = email
+    }
+
+    fun changePassword(password: String, passwordEncoder: PasswordEncoder) {
+        this.password = passwordEncoder.encode(password)
+    }
+
+    fun changeNickname(nickname: String) {
+        this.nickname = nickname
+    }
+
+    fun changeProfileImageUrl(profileImageUrl: String) {
+        this.profileImageUrl = profileImageUrl
+    }
+}

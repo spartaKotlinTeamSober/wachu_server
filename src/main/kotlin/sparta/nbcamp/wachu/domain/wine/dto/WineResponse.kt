@@ -3,6 +3,7 @@ package sparta.nbcamp.wachu.domain.wine.dto
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
 import sparta.nbcamp.wachu.domain.wine.service.WineImageGetter
+import sparta.nbcamp.wachu.infra.openai.dto.WineDataResponse
 import java.io.Serializable
 
 data class WineResponse(
@@ -23,7 +24,6 @@ data class WineResponse(
     val imageUrl: String
 ) : Serializable {
     companion object {
-
         fun from(entity: Wine): WineResponse {
             return WineResponse(
                 id = entity.id,
@@ -40,6 +40,25 @@ data class WineResponse(
                 country = entity.country,
                 region = entity.region,
                 imageUrl = WineImageGetter.getWineImage(entity.wineType)
+            )
+        }
+
+        fun convert(dto: WineDataResponse): WineResponse {
+            return WineResponse(
+                id = dto.id,
+                name = dto.name,
+                sweetness = dto.sweetness,
+                acidity = dto.acidity,
+                body = dto.body,
+                tannin = dto.tannin,
+                wineType = dto.wineType,
+                aroma = dto.aroma,
+                price = dto.price,
+                kind = dto.kind,
+                style = dto.style,
+                country = dto.country,
+                region = dto.region,
+                imageUrl = WineImageGetter.getWineImage(dto.wineType)
             )
         }
     }

@@ -1,5 +1,6 @@
 package sparta.nbcamp.wachu.domain.member.controller
 
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -9,14 +10,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import sparta.nbcamp.wachu.domain.member.dto.LoginRequest
 import sparta.nbcamp.wachu.domain.member.dto.ProfileResponse
+import sparta.nbcamp.wachu.domain.member.dto.ProfileUpdateRequest
 import sparta.nbcamp.wachu.domain.member.dto.SignUpRequest
-import sparta.nbcamp.wachu.domain.member.dto.SignUpResponse
 import sparta.nbcamp.wachu.domain.member.emailcode.dto.SendCodeRequest
 import sparta.nbcamp.wachu.domain.member.emailcode.service.CodeService
 import sparta.nbcamp.wachu.domain.member.service.MemberService
@@ -30,12 +32,20 @@ class MemberController(
 
     @PostMapping("/auth/sign-up/email-validation")
     fun sendValidationCode(@RequestBody request: SendCodeRequest): ResponseEntity<Any> {
-        return ResponseEntity.status(HttpStatus.OK).body(codeService.sendCode(request.email))
+        codeService.sendCode(request.email)
+        return ResponseEntity.ok("Email send successfully")
     }
 
-    @PostMapping("/auth/sign-up")
-    fun signUp(@RequestBody request: SignUpRequest): ResponseEntity<SignUpResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request))
+    @PostMapping(
+        "/auth/sign-up",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun signUp(
+        @RequestBody request: SignUpRequest,
+        @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
+    ): ResponseEntity<ProfileResponse> {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request, multipartFile))
     }
 
     @PostMapping("/auth/login")
@@ -54,8 +64,22 @@ class MemberController(
             .body(token.accessToken)
     }
 
+    @PostMapping("/auth/logout")
+    fun logout(response: HttpServletResponse): ResponseEntity<Void> {
+        val deleteCookie = ResponseCookie.from("refreshToken", "")
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .maxAge(0)
+            .path("/")
+            .build()
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+            .build()
+    }
+
     @PostMapping(
-        "/auth/profile",
+        "/api/v1/profile",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
@@ -66,9 +90,31 @@ class MemberController(
         return ResponseEntity.status(HttpStatus.CREATED).body(memberService.uploadProfile(userPrincipal, multipartFile))
     }
 
-    @GetMapping("/auth/profile/")
+    @GetMapping("/api/v1/profile/")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<ProfileResponse> {
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
+    }
+
+    @PostMapping("/api/v1/profile/email-validation")
+    fun sendVerificationCodeForEmailUpdate(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+        @RequestBody request: SendCodeRequest
+    ): ResponseEntity<ProfileResponse> {
+        codeService.sendCode(request.email)
+        return ResponseEntity.ok().body(memberService.sendVerificationCodeForEmailUpdate(userPrincipal, request))
+    }
+
+    @PutMapping(
+        "/api/v1/profile",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun updateProfile(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+        @RequestBody request: ProfileUpdateRequest,
+        @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
+    ): ResponseEntity<ProfileResponse> {
+        return ResponseEntity.ok().body(memberService.updateProfile(userPrincipal, request, multipartFile))
     }
 
     @PostMapping("/auth/refresh-token")
