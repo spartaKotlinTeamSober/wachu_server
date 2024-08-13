@@ -8,11 +8,16 @@ import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import software.amazon.awssdk.services.s3.presigner.S3Presigner
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest
 import java.io.IOException
+import java.net.URL
+import java.time.Duration
 
 @Service
 class S3Service @Autowired constructor(
     private val s3client: S3Client,
+    private val s3Presigner: S3Presigner
 ) {
     @Value("\${aws.s3.bucket}")
     private lateinit var bucket: String
@@ -45,5 +50,31 @@ class S3Service @Autowired constructor(
         return imageList.contents().map {
             "https://cdn.sober-wachu.com/${it.key()}"
         }
+    }
+
+    fun generatePresignedUrl(
+        file: MultipartFile,
+        filePath: String,
+        expirationMinutes: Long = 10 // URL 만료 시간. 별도 설정 없을 시 기본 시간 적용됨
+    ): URL {
+
+        val keyName = filePath + file.originalFilename // S3에 저장할 파일 경로 및 이름
+
+        // 파일을 S3에 업로드하는 요청 설정
+        val putObjectRequest = PutObjectRequest.builder()
+            .bucket(bucket)
+            .key(keyName)
+            .build()
+
+        // 프리사인드 요청 생성
+        val presignRequest = PutObjectPresignRequest.builder()
+            .putObjectRequest(putObjectRequest)
+            .signatureDuration(Duration.ofMinutes(expirationMinutes))
+            .build()
+
+        // 프리사인드 URL 생성
+        val presignedUrl = s3Presigner.presignPutObject(presignRequest).url()
+
+        return presignedUrl
     }
 }
