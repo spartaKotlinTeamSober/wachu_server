@@ -9,7 +9,7 @@ import java.io.File
 
 @Component
 class WineEmbeddingJsonHandler(
-    @Value("\${embedding.file.path}") private val filePath: String
+    @Value("\${embedding.file.path}") private var filePath: String
 ) {
     private val mapper = jacksonObjectMapper().apply { registerModules(kotlinModule()) }
     private val file = File(filePath)

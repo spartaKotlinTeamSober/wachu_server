@@ -21,15 +21,13 @@ data class ReviewRequest(
         return this.score in 0.0..5.0 && this.score % 0.5 == 0.0
     }
 
-    companion object {
-        fun toEntity(wine: Wine, memberId: Long, reviewRequest: ReviewRequest): Review {
-            return Review(
-                wine = wine,
-                memberId = memberId,
-                title = reviewRequest.title,
-                description = reviewRequest.description,
-                score = reviewRequest.score,
-            )
-        }
+    fun toEntity(wine: Wine, memberId: Long): Review {
+        return Review(
+            wine = wine,
+            memberId = memberId,
+            title = this.title,
+            description = this.description,
+            score = this.score,
+        )
     }
 }

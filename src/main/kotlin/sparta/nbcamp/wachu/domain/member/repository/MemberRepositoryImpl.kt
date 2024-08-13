@@ -31,4 +31,8 @@ class MemberRepositoryImpl(
     override fun findByProviderAndProviderId(provider: String, providerId: String): Member? {
         return memberJpaRepository.findByProviderAndProviderId(provider, providerId)
     }
+
+    override fun findAllById(ids: List<Long>): List<Member> {
+        return memberJpaRepository.findAllById(ids)
+    }
 }

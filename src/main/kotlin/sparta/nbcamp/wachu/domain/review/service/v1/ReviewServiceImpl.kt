@@ -28,21 +28,26 @@ class ReviewServiceImpl(
     private val reviewMediaRepository: ReviewMultiMediaRepository,
     private val mediaS3Service: MediaS3Service
 ) : ReviewService {
+
+    @Transactional(readOnly = true)
     override fun getReviewPage(pageable: Pageable): Page<ReviewResponse> {
-        return reviewRepository.findAll(pageable).map { ReviewResponse.from(it) }
+        val reviews = reviewRepository.findAll(pageable)
+        val memberIds = reviews.map { it.memberId }.toList()
+        val members = memberRepository.findAllById(memberIds).associateBy { it.id }
+        return reviews.map { review -> ReviewResponse.from(review, members[review.memberId]!!) }
     }
 
     @Transactional(readOnly = true)
     override fun getReview(id: Long): ReviewResponse {
         val review = reviewRepository.findById(id)
             ?: throw ModelNotFoundException("Review", id)
-
+        val member = memberRepository.findById(review.memberId)
+            ?: throw ModelNotFoundException("Member", review.memberId)
         val mediaList = reviewMediaRepository.mediaFindAll(id).map { ReviewMultiMediaResponse.from(it) }
-
-        return ReviewResponse.from(review, mediaList)
+        return ReviewResponse.from(review, member, mediaList)
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     override fun createReview(
         userPrincipal: UserPrincipal,
         reviewRequest: ReviewRequest,
@@ -52,7 +57,7 @@ class ReviewServiceImpl(
             ?: throw ModelNotFoundException("Wine", reviewRequest.wineId)
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        val review = reviewRepository.save(ReviewRequest.toEntity(wine, member.id!!, reviewRequest))
+        val review = reviewRepository.save(reviewRequest.toEntity(wine, member.id!!))
 
         var mediaList: List<ReviewMultiMediaResponse> = emptyList()
 
@@ -63,7 +68,7 @@ class ReviewServiceImpl(
                 .let { it.map { multiMedia -> ReviewMultiMediaResponse.from(multiMedia) } }
         }
 
-        return ReviewResponse.from(review, mediaList)
+        return ReviewResponse.from(review, member, mediaList)
     }
 
     @Transactional
