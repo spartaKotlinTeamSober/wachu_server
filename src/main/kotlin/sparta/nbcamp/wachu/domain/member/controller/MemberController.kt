@@ -46,7 +46,7 @@ class MemberController(
         @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
     ): ResponseEntity<ProfileResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request, multipartFile))
-        }
+    }
 
     @PostMapping("/auth/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<String> {
@@ -99,7 +99,7 @@ class MemberController(
     fun sendVerificationCodeForEmailUpdate(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestBody request: SendCodeRequest
-    ): ResponseEntity<SignUpResponse> {
+    ): ResponseEntity<ProfileResponse> {
         codeService.sendCode(request.email)
         return ResponseEntity.ok().body(memberService.sendVerificationCodeForEmailUpdate(userPrincipal, request))
     }
@@ -113,7 +113,7 @@ class MemberController(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestBody request: ProfileUpdateRequest,
         @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
-    ): ResponseEntity<SignUpResponse> {
+    ): ResponseEntity<ProfileResponse> {
         return ResponseEntity.ok().body(memberService.updateProfile(userPrincipal, request, multipartFile))
     }
 
