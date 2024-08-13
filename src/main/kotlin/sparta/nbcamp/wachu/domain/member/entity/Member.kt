@@ -9,9 +9,6 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.web.multipart.MultipartFile
-import sparta.nbcamp.wachu.infra.aws.s3.S3FilePath
-import sparta.nbcamp.wachu.infra.media.MediaS3Service
 
 @Entity
 @Table(name = "member")
@@ -55,7 +52,7 @@ class Member(
         this.nickname = nickname
     }
 
-    fun changeProfileImageUrl(multipartFile: MultipartFile, mediaS3Service: MediaS3Service) {
-        this.profileImageUrl = mediaS3Service.upload(multipartFile, S3FilePath.PROFILE.path)
+    fun changeProfileImageUrl(profileImageUrl: String) {
+        this.profileImageUrl = profileImageUrl
     }
 }

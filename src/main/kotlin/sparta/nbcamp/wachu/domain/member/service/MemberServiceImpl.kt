@@ -45,7 +45,7 @@ class MemberServiceImpl @Autowired constructor(
         val member = SignUpRequest.toEntity(request, passwordEncoder)
         multipartFile?.let {
             val profileUrl = mediaS3Service.upload(multipartFile, S3FilePath.PROFILE.path)
-            member.profileImageUrl = profileUrl
+            member.changeProfileImageUrl(profileUrl)
         }
         memberRepository.addMember(member)
         return ProfileResponse.from(member)
@@ -100,7 +100,7 @@ class MemberServiceImpl @Autowired constructor(
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
         val profileUrl = mediaS3Service.upload(multipartFile, S3FilePath.PROFILE.path)
-        member.profileImageUrl = profileUrl
+        member.changeProfileImageUrl(profileUrl)
         return ProfileResponse.from(member)
     }
 
@@ -141,8 +141,14 @@ class MemberServiceImpl @Autowired constructor(
             check(request.password == request.confirmPassword) { "설정한 비밀번호와 다름" }
             member.changePassword(request.password, passwordEncoder)
         }
-        request.nickname?.let { member.changeNickname(request.nickname) }
-        multipartFile?.let { member.changeProfileImageUrl(multipartFile, mediaS3Service) }
+        request.nickname?.let {
+            check(!memberRepository.existsByNickname(request.nickname)) { "이미 존재하는 닉네임" }
+            member.changeNickname(request.nickname)
+        }
+        multipartFile?.let {
+            val profileUrl = mediaS3Service.upload(multipartFile, S3FilePath.PROFILE.path)
+            member.changeProfileImageUrl(profileUrl)
+        }
         return ProfileResponse.from(member)
     }
 
