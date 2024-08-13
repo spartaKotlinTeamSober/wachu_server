@@ -43,6 +43,10 @@ class Member(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 ) {
+    fun changeEmail(email: String) {
+        this.email = email
+    }
+
     fun changePassword(password: String, passwordEncoder: PasswordEncoder) {
         this.password = passwordEncoder.encode(password)
     }

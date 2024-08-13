@@ -112,6 +112,19 @@ class MemberServiceImpl @Autowired constructor(
     }
 
     @Transactional
+    override fun sendVerificationCodeForEmailUpdate(
+        userPrincipal: UserPrincipal,
+        request: SendCodeRequest
+    ): SignUpResponse {
+        val member = memberRepository.findById(userPrincipal.memberId)
+            ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
+        check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
+        check(request.email != member.email) { "기존과 동일한 이메일" }
+        codeService.sendCode(request.email)
+        return SignUpResponse.from(member)
+    }
+
+    @Transactional
     override fun updateProfile(
         userPrincipal: UserPrincipal,
         request: ProfileUpdateRequest,
@@ -120,9 +133,9 @@ class MemberServiceImpl @Autowired constructor(
         val member = memberRepository.findById(userPrincipal.memberId)
             ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
         request.email?.let {
-            check(!memberRepository.existsByEmail(request.email)) { "존재하는 이메일" }
-            check(request.email != member.email) { "기존과 동일한 이메일" }
-            codeService.sendCode(request.email)
+            check(request.code != null) { "인증코드 필요" }
+            check(codeService.checkCode(request.email, request.code)) { "인증코드가 맞지 않음" }
+            member.changeEmail(request.email)
         }
         request.password?.let {
             check(request.confirmPassword != null) { "비밀번호 확인 필요" }
@@ -131,18 +144,6 @@ class MemberServiceImpl @Autowired constructor(
         }
         request.nickname?.let { member.changeNickname(request.nickname) }
         multipartFile?.let { member.changeProfileImageUrl(multipartFile, mediaS3Service) }
-        return SignUpResponse.from(member)
-    }
-
-    override fun confirmUpdateEmail(
-        userPrincipal: UserPrincipal,
-        request: SendCodeRequest,
-        code: String,
-    ): SignUpResponse {
-        val member = memberRepository.findById(userPrincipal.memberId)
-            ?: throw ModelNotFoundException("Member", userPrincipal.memberId)
-        check(codeService.checkCode(request.email, code)) { "인증코드가 맞지 않음" }
-        member.email = request.email
         return SignUpResponse.from(member)
     }
 

@@ -22,13 +22,13 @@ interface MemberService {
 
     fun getProfile(userPrincipal: UserPrincipal): ProfileResponse
 
+    fun sendVerificationCodeForEmailUpdate(userPrincipal: UserPrincipal, request: SendCodeRequest): SignUpResponse
+
     fun updateProfile(
         userPrincipal: UserPrincipal,
         request: ProfileUpdateRequest,
         multipartFile: MultipartFile?,
     ): SignUpResponse
-
-    fun confirmUpdateEmail(userPrincipal: UserPrincipal, request: SendCodeRequest, code: String): SignUpResponse
 
     fun socialLogin(request: OAuthResponse): TokenResponse
 

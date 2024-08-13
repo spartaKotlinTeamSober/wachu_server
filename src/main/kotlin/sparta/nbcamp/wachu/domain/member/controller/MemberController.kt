@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -97,6 +96,15 @@ class MemberController(
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
     }
 
+    @PostMapping("/api/v1/profile/email-validation")
+    fun sendVerificationCodeForEmailUpdate(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+        @RequestBody request: SendCodeRequest
+    ): ResponseEntity<SignUpResponse> {
+        codeService.sendCode(request.email)
+        return ResponseEntity.ok().body(memberService.sendVerificationCodeForEmailUpdate(userPrincipal, request))
+    }
+
     @PatchMapping(
         "/api/v1/profile",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
@@ -108,15 +116,6 @@ class MemberController(
         @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
     ): ResponseEntity<SignUpResponse> {
         return ResponseEntity.ok().body(memberService.updateProfile(userPrincipal, request, multipartFile))
-    }
-
-    @PatchMapping("/api/v1/profile/email-update")
-    fun confirmUpdateEmail(
-        @AuthenticationPrincipal userPrincipal: UserPrincipal,
-        @RequestBody request: SendCodeRequest,
-        @RequestParam code: String
-    ): ResponseEntity<SignUpResponse> {
-        return ResponseEntity.ok().body(memberService.confirmUpdateEmail(userPrincipal, request, code))
     }
 
     @PostMapping("/auth/refresh-token")
