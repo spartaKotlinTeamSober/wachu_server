@@ -2,6 +2,9 @@ package sparta.nbcamp.wachu.infra.aws.s3
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
@@ -13,6 +16,7 @@ import java.io.IOException
 @Service
 class S3Service @Autowired constructor(
     private val s3client: S3Client,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
     @Value("\${aws.s3.bucket}")
     private lateinit var bucket: String
@@ -45,5 +49,10 @@ class S3Service @Autowired constructor(
         return imageList.contents().map {
             "https://cdn.sober-wachu.com/${it.key()}"
         }
+    }
+
+    @EventListener(ApplicationReadyEvent::class)
+    fun onApplicationReadyEvent(event: ApplicationReadyEvent) {
+        eventPublisher.publishEvent(S3CreateEvent(this))
     }
 }
