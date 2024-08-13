@@ -12,8 +12,8 @@ class WineRepositoryImpl(
     private val wineQueryDslRepository: WineQueryDslRepository
 ) : WineRepository {
 
-    override fun findAll(pageable: Pageable): Page<Wine> {
-        return wineJpaRepository.findAll(pageable)
+    override fun findAll(): List<Wine> {
+        return wineJpaRepository.findAll()
     }
 
     override fun findByNameContaining(query: String, pageable: Pageable): Page<Wine> {
