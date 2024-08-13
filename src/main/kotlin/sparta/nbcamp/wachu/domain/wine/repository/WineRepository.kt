@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 
 interface WineRepository {
-    fun findAll(pageable: Pageable): Page<Wine>
+    fun findAll(): List<Wine>
 
     fun findByNameContaining(query: String, pageable: Pageable): Page<Wine>
 
