@@ -42,7 +42,7 @@ class MemberController(
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun signUp(
-        @RequestBody request: SignUpRequest,
+        @RequestPart request: SignUpRequest,
         @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
     ): ResponseEntity<ProfileResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request, multipartFile))
