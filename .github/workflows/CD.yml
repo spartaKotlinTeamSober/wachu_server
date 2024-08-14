@@ -3,7 +3,7 @@ name: CD
 on:
   push:
     branches:
-      - refactor
+      - refactor/*
   workflow_dispatch:
   pull_request:
     branches:
