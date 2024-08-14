@@ -8,6 +8,7 @@ import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.CookieValue
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -75,6 +76,14 @@ class MemberController(
             .build()
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+            .build()
+    }
+
+    @DeleteMapping("/auth/deactivate")
+    fun deactivate(@AuthenticationPrincipal principal: UserPrincipal): ResponseEntity<Void> {
+        memberService.deactivate(principal)
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build()
     }
 

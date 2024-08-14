@@ -35,4 +35,8 @@ class MemberRepositoryImpl(
     override fun findAllById(ids: List<Long>): List<Member> {
         return memberJpaRepository.findAllById(ids)
     }
+
+    override fun deactivate(memberId: Long) {
+        memberJpaRepository.deleteById(memberId)
+    }
 }
