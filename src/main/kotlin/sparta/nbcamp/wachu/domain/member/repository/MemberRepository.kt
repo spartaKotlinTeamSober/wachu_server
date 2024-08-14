@@ -11,4 +11,5 @@ interface MemberRepository {
     fun findById(id: Long): Member?
     fun findByProviderAndProviderId(provider: String, providerId: String): Member?
     fun findAllById(ids: List<Long>): List<Member>
+    fun deactivate(memberId: Long)
 }
