@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
+import sparta.nbcamp.wachu.domain.wine.dto.WineRecommendResponse
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.service.WineService
 
@@ -74,14 +75,20 @@ class WineController(
     }
 
     @GetMapping("/recommend")
-    fun recommendWine(@RequestParam preferWineId: Long /*@RequestBody request: RecommendWineRequest*/): ResponseEntity<List<WineResponse>> {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(wineService.recommendWine(request = RecommendWineRequest(preferWineId = preferWineId)))
-    }
+    fun recommendWine(
+        @RequestParam preferWineId: Long,
+        @RequestParam priceWeight: Int,
+        @RequestParam tastyWeight: Int,
+        @RequestParam aromaWeight: Int
+    ): ResponseEntity<List<WineRecommendResponse>> {
+        val request = RecommendWineRequest(
+            preferWineId = preferWineId,
+            priceWeight = priceWeight,
+            tastyWeight = tastyWeight,
+            aromaWeight = aromaWeight
+        )
 
-    @GetMapping("/deploySuccess")
-    fun recommendWinessssss(@RequestParam preferWineId: Long /*@RequestBody request: RecommendWineRequest*/): ResponseEntity<List<WineResponse>> {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(wineService.recommendWine(request = RecommendWineRequest(preferWineId = preferWineId)))
+            .body(wineService.recommendWine(request))
     }
 }

@@ -39,7 +39,7 @@ class Wine(
     @Column(name = "price")
     var price: Int?,
 
-    @Column(name = "kind", length = 50)
+    @Column(name = "kind", length = 255)
     val kind: String?,
 
     @Column(name = "style", length = 50)

@@ -47,7 +47,7 @@ class ReviewServiceImpl(
         return ReviewResponse.from(review, member, mediaList)
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     override fun createReview(
         userPrincipal: UserPrincipal,
         reviewRequest: ReviewRequest,
