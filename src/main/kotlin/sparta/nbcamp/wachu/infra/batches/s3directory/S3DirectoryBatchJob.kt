@@ -26,7 +26,6 @@ class S3DirectoryBatchJob(
         WineType.entries.forEach {
             s3Service.getImage(S3FilePath.WINE.path + it.path)
                 .also { element ->
-                    println(element.toString())
                     inMemoryDirectory.set(it, element)
                 }
         }

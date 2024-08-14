@@ -8,10 +8,16 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.SQLDelete
+import org.hibernate.annotations.SQLRestriction
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "member")
+@SQLDelete(sql = "UPDATE member SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 class Member(
 
     @Column(name = "email", length = 50, unique = true)
@@ -35,6 +41,16 @@ class Member(
 
     @Column(name = "provider_id")
     val providerId: String? = null,
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(name = "is_deleted")
+    val isDeleted: Boolean = false,
+
+    @Column(name = "deleted_at")
+    val deletedAt: LocalDateTime? = null,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

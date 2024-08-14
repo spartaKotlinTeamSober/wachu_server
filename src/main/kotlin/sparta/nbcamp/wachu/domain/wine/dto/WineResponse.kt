@@ -39,7 +39,7 @@ data class WineResponse(
                 style = entity.style,
                 country = entity.country,
                 region = entity.region,
-                imageUrl = WineImageGetter.getWineImage(entity.wineType)
+                imageUrl = WineImageGetter.getWineImage(entity.wineType, entity.id)
             )
         }
 
@@ -58,7 +58,7 @@ data class WineResponse(
                 style = dto.style,
                 country = dto.country,
                 region = dto.region,
-                imageUrl = WineImageGetter.getWineImage(dto.wineType)
+                imageUrl = WineImageGetter.getWineImage(dto.wineType, dto.id)
             )
         }
     }
