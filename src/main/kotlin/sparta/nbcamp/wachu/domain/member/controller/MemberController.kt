@@ -90,7 +90,7 @@ class MemberController(
         return ResponseEntity.status(HttpStatus.CREATED).body(memberService.uploadProfile(userPrincipal, multipartFile))
     }
 
-    @GetMapping("/api/v1/profile/")
+    @GetMapping("/api/v1/profile")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<ProfileResponse> {
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
     }
