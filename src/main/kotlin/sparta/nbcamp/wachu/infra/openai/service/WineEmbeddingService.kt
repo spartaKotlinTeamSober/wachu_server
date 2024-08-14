@@ -1,6 +1,7 @@
 package sparta.nbcamp.wachu.infra.openai.service
 
 import org.springframework.stereotype.Service
+import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.repository.WineRepository
 import sparta.nbcamp.wachu.exception.ModelNotFoundException
 import sparta.nbcamp.wachu.infra.batches.winedata.InMemoryCache
@@ -49,11 +50,14 @@ class WineEmbeddingService(
         return wineEmbeddingData.copy(data = transformedData)
     }
 
-    fun recommendWine(wineId: Long): List<Pair<WineEmbeddingData, Double>> {
+    fun recommendWine(request: RecommendWineRequest): List<Pair<WineEmbeddingData, Double>> {
+        val wineId = request.preferWineId
+
         if (!wineEventListener.isLoaded()) throw IllegalStateException("데이터 로드중")
         return embeddingUtility.recommendWineList(
             targetWine = inMemoryCache.getWine(wineId) ?: throw ModelNotFoundException("wine", wineId),
-            everyWineList = inMemoryCache.getWines()
+            everyWineList = inMemoryCache.getWines(),
+            request = request
         )
     }
 
