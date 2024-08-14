@@ -1,6 +1,9 @@
 name: CD
 
 on:
+  push:
+    branches:
+      - refactor
   workflow_dispatch:
   pull_request:
     branches:
