@@ -10,14 +10,12 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.SQLDelete
-import org.hibernate.annotations.SQLRestriction
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "member")
 @SQLDelete(sql = "UPDATE member SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@SQLRestriction("is_deleted = false")
 class Member(
 
     @Column(name = "email", length = 50, unique = true)
