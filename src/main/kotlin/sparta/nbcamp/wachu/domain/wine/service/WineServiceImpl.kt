@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import sparta.nbcamp.wachu.domain.wine.dto.PromotionWineResponse
 import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
+import sparta.nbcamp.wachu.domain.wine.dto.WineRecommendResponse
 import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.repository.WinePromotionRepository
@@ -80,9 +81,9 @@ class WineServiceImpl @Autowired constructor(
         return winePromotionRepository.findPromotionWineList(pageable)
     }
 
-    override fun recommendWine(request: RecommendWineRequest): List<WineResponse> {
-        return wineEmbeddingService.recommendWine(request.preferWineId)
-            .map { it.first.wine }
+    override fun recommendWine(request: RecommendWineRequest): List<WineRecommendResponse> {
+        return wineEmbeddingService.recommendWine(request)
+            .map { WineRecommendResponse.from(it) }
     }
 
     private fun getDirection(sort: String) = when (sort.lowercase()) {

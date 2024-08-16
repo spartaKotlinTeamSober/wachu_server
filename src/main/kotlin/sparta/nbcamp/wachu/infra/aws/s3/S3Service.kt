@@ -2,6 +2,7 @@ package sparta.nbcamp.wachu.infra.aws.s3
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
@@ -17,7 +18,8 @@ import java.time.Duration
 @Service
 class S3Service @Autowired constructor(
     private val s3client: S3Client,
-    private val s3Presigner: S3Presigner
+    private val s3Presigner: S3Presigner,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
     @Value("\${aws.s3.bucket}")
     private lateinit var bucket: String

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.CookieValue
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -42,7 +43,7 @@ class MemberController(
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun signUp(
-        @RequestBody request: SignUpRequest,
+        @RequestPart request: SignUpRequest,
         @RequestPart(name = "image", required = false) multipartFile: MultipartFile?
     ): ResponseEntity<ProfileResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.signup(request, multipartFile))
@@ -78,6 +79,14 @@ class MemberController(
             .build()
     }
 
+    @DeleteMapping("/auth/deactivate")
+    fun deactivate(@AuthenticationPrincipal principal: UserPrincipal): ResponseEntity<Void> {
+        memberService.deactivate(principal)
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build()
+    }
+
     @PostMapping(
         "/api/v1/profile",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
@@ -90,7 +99,7 @@ class MemberController(
         return ResponseEntity.status(HttpStatus.CREATED).body(memberService.uploadProfile(userPrincipal, multipartFile))
     }
 
-    @GetMapping("/api/v1/profile/")
+    @GetMapping("/api/v1/profile")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<ProfileResponse> {
         return ResponseEntity.ok().body(memberService.getProfile(userPrincipal))
     }

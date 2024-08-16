@@ -1,9 +1,14 @@
 package sparta.nbcamp.wachu.infra.openai.common.utils
 
 import org.springframework.stereotype.Component
+import sparta.nbcamp.wachu.domain.wine.dto.RecommendWineRequest
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.infra.openai.client.OpenAIEmbeddingClient
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData
+import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData.Companion.AROMA_KEY
+import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData.Companion.AROMA_PREFIX
+import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData.Companion.PRICE_KEY
+import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingData.Companion.TASTY_KEY
 import sparta.nbcamp.wachu.infra.openai.dto.WineEmbeddingDataItem
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -25,6 +30,7 @@ class WineEmbeddingUtility(
     fun recommendWineList(
         targetWine: Wine,
         everyWineList: List<Wine>,
+        request: RecommendWineRequest,
         top: Int = 10
     ): List<Pair<WineEmbeddingData, Double>> {
         val targetEmbeddingData = WineEmbeddingData.fromWine(targetWine)
@@ -36,9 +42,15 @@ class WineEmbeddingUtility(
                 val compareEmbeddingData = WineEmbeddingData.fromWine(compareWine)
                     .apply { data.forEach { it.embedding = retrieveEmbedding(it.property) } }
 
-                val similarity = compareWineEmbeddingData(targetEmbeddingData, compareEmbeddingData)
+                val similarityMap = compareWineEmbeddingData(
+                    targetData = targetEmbeddingData,
+                    compareData = compareEmbeddingData,
+                    request = request
+                )
 
-                compareEmbeddingData to similarity
+                compareEmbeddingData.similarityMap = similarityMap
+
+                compareEmbeddingData to similarityMap.values.average()
             }
             .sortedByDescending { it.second }
             .take(top)
@@ -48,17 +60,25 @@ class WineEmbeddingUtility(
         return cosineSimilarity(target, compare)
     }
 
-    fun compareWineEmbeddingData(targetData: WineEmbeddingData, compareData: WineEmbeddingData): Double {
-        val similarityList = mutableListOf<Double>()
+    fun compareWineEmbeddingData(
+        targetData: WineEmbeddingData,
+        compareData: WineEmbeddingData,
+        request: RecommendWineRequest
+    ): Map<String, Double> {
+        val similarityMap = mutableMapOf<String, Double>()
 
         targetData.data.forEach { targetItem ->
             val key = targetItem.property.split(":")[0]
             val compareItem = compareData.data.find { it.property.contains(key) }
             if (compareItem != null) {
-                if (key == WineEmbeddingData.PRICE_KEY) {
-                    similarityList.add(1 - abs(targetItem.embedding[0] - compareItem.embedding[0]))
-                } else if (!key.contains(WineEmbeddingData.AROMA_PREFIX)) {
-                    similarityList.add(cosineSimilarity(targetItem.embedding, compareItem.embedding))
+                if (key == PRICE_KEY) {
+                    similarityMap[PRICE_KEY] =
+                        (1 - abs(targetItem.embedding[0] - compareItem.embedding[0])) * (1 + (request.priceWeight / 100.0))
+                } else if (!key.contains(AROMA_PREFIX)) {
+                    similarityMap[TASTY_KEY] =
+                        cosineSimilarity(
+                            targetItem.embedding, compareItem.embedding
+                        ) * (1 + (request.tastyWeight / 100.0))
                 }
             }
         }
@@ -74,9 +94,13 @@ class WineEmbeddingUtility(
             compareAromaList.map { it.embedding }
         ).map { it / compareAromaList.size }
 
-        similarityList.add(compareEmbedding(targetAromaEmbeddingSum, compareAromaEmbeddingSum))
+        similarityMap[AROMA_KEY] =
+            compareEmbedding(
+                targetAromaEmbeddingSum,
+                compareAromaEmbeddingSum
+            ) * (1 + (request.aromaWeight / 100.0))
 
-        return similarityList.average()
+        return similarityMap
     }
 
     fun retrieveEmbedding(property: String): List<Double> {

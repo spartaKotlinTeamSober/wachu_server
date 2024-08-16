@@ -82,7 +82,6 @@ class MemberServiceImpl @Autowired constructor(
     }
 
     override fun login(request: LoginRequest): TokenResponse {
-
         val loginMember = memberRepository.findByEmail(request.email) ?: throw IllegalStateException("이메일이 없음")
         check(
             passwordEncoder.matches(
@@ -163,6 +162,10 @@ class MemberServiceImpl @Autowired constructor(
             },
             onFailure = { throw IllegalStateException(" 토큰이 검증되지않음") }
         )
+    }
+
+    override fun deactivate(principal: UserPrincipal) {
+        memberRepository.deactivate(principal.memberId)
     }
 
     override fun testImage(multipartFile: MultipartFile): String {

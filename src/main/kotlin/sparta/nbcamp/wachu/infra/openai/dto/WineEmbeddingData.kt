@@ -1,11 +1,11 @@
 package sparta.nbcamp.wachu.infra.openai.dto
 
-import sparta.nbcamp.wachu.domain.wine.dto.WineResponse
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 
 data class WineEmbeddingData(
-    val wine: WineResponse,
-    val data: List<WineEmbeddingDataItem>
+    val wine: WineDataResponse,
+    val data: List<WineEmbeddingDataItem>,
+    var similarityMap: Map<String, Double> = emptyMap()
 ) {
     fun aromaFilteredList(): WineEmbeddingData {
         return WineEmbeddingData(wine, this.data.filter { it.isAroma() })
@@ -13,7 +13,9 @@ data class WineEmbeddingData(
 
     companion object {
         const val AROMA_PREFIX = "aroma_"
+        const val AROMA_KEY = "aroma"
         const val PRICE_KEY = "price"
+        const val TASTY_KEY = "tasty"
 
         fun fromMap(data: Map<String, List<Double>>): List<WineEmbeddingDataItem> {
             return data.map { WineEmbeddingDataItem(it.key, it.value) }
@@ -30,7 +32,7 @@ data class WineEmbeddingData(
                 }
                 .let {
                     WineEmbeddingData(
-                        WineResponse.from(wine),
+                        WineDataResponse.from(wine),
                         it
                     )
                 }

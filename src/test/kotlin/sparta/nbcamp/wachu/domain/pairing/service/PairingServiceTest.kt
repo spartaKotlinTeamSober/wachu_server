@@ -80,7 +80,7 @@ class PairingServiceTest {
     fun setup() {
         mockkObject(WineImageGetter)
         WineImageGetter.init(mediaService)
-        every { WineImageGetter.getWineImage(any()) } returns "testUrl1"
+        every { WineImageGetter.getWineImage(any(), any()) } returns "testUrl1"
     }
 
     @Test

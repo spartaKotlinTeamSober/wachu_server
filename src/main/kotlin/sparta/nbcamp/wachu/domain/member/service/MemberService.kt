@@ -33,5 +33,7 @@ interface MemberService {
 
     fun refreshAccessToken(refreshToken: String): TokenResponse
 
+    fun deactivate(principal: UserPrincipal)
+
     fun testImage(multipartFile: MultipartFile): String
 }

@@ -65,11 +65,11 @@ class NaverOAuth2LoginClient(
             if (response.statusCode.is2xxSuccessful) {
                 response.body?.accessToken ?: throw RuntimeException("네이버 AccessToken 조회 실패: 응답 본문이 비어있음")
             } else {
-                println("Error fetching access token: ${response.statusCode} - ${response.body}")
+                //println("Error fetching access token: ${response.statusCode} - ${response.body}")
                 throw RuntimeException("네이버 AccessToken 조회 실패: ${response.statusCode}")
             }
         } catch (e: Exception) {
-            println("Exception occurred while fetching access token: ${e.message}")
+            //println("Exception occurred while fetching access token: ${e.message}")
             throw RuntimeException("네이버 AccessToken 조회 실패: ${e.message}", e)
         }
     }
