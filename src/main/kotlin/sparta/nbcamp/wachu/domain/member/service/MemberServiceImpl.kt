@@ -164,4 +164,8 @@ class MemberServiceImpl @Autowired constructor(
             onFailure = { throw IllegalStateException(" 토큰이 검증되지않음") }
         )
     }
+
+    override fun testImage(multipartFile: MultipartFile): String {
+        return mediaS3Service.getPresignedUrl(multipartFile, S3FilePath.PROFILE.path).toString()
+    }
 }

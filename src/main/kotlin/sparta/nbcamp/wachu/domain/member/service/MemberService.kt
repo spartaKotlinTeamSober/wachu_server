@@ -32,4 +32,6 @@ interface MemberService {
     fun socialLogin(request: OAuthResponse): TokenResponse
 
     fun refreshAccessToken(refreshToken: String): TokenResponse
+
+    fun testImage(multipartFile: MultipartFile): String
 }

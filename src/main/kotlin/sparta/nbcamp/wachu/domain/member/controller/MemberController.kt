@@ -124,4 +124,13 @@ class MemberController(
         val tokenResponse = memberService.refreshAccessToken(refreshToken)
         return ResponseEntity.ok().body(tokenResponse.accessToken)
     }
+
+    @PostMapping(
+        "/test/image",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun testImage(@RequestPart(name = "image") multipartFile: MultipartFile): ResponseEntity<String> {
+        return ResponseEntity.ok().body(memberService.testImage(multipartFile))
+    }
 }
