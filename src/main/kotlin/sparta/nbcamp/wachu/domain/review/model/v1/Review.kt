@@ -27,7 +27,7 @@ class Review(
     @Column(length = 100)
     val title: String,
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     val description: String,
 
     @Column

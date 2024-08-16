@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
+import sparta.nbcamp.wachu.domain.common.QueryDslUtils.getOrderSpecifier
 import sparta.nbcamp.wachu.domain.review.model.v1.QReview
 import sparta.nbcamp.wachu.domain.review.model.v1.Review
 import sparta.nbcamp.wachu.domain.wine.entity.QWine
@@ -20,6 +21,7 @@ class ReviewQueryDslRepository : QueryDslSupport() {
             .leftJoin(review.wine, wine).fetchJoin()
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
+            .orderBy(*getOrderSpecifier(pageable, review))
             .fetch()
 
         val total = queryFactory
