@@ -1,15 +1,11 @@
 package sparta.nbcamp.wachu.domain.wine.repository
 
 import com.querydsl.core.BooleanBuilder
-import com.querydsl.core.types.Expression
-import com.querydsl.core.types.Order
-import com.querydsl.core.types.OrderSpecifier
-import com.querydsl.core.types.dsl.EntityPathBase
-import com.querydsl.core.types.dsl.PathBuilder
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
+import sparta.nbcamp.wachu.domain.common.QueryDslUtils.getOrderSpecifier
 import sparta.nbcamp.wachu.domain.wine.entity.QWine
 import sparta.nbcamp.wachu.domain.wine.entity.Wine
 import sparta.nbcamp.wachu.domain.wine.entity.WineType
@@ -80,19 +76,5 @@ class WineQueryDslRepositoryImpl : WineQueryDslRepository, QueryDslSupport() {
         return queryFactory.select(wine.price.max())
             .from(wine)
             .fetchOne() ?: Int.MAX_VALUE
-    }
-
-    private fun getOrderSpecifier(
-        pageable: Pageable,
-        path: EntityPathBase<*>
-    ): Array<OrderSpecifier<*>> {
-        val pathBuilder = PathBuilder(path.type, path.metadata)
-
-        return pageable.sort.toList().map { order ->
-            OrderSpecifier(
-                if (order.isAscending) Order.ASC else Order.DESC,
-                pathBuilder.get(order.property) as Expression<Comparable<*>>
-            )
-        }.toTypedArray()
     }
 }

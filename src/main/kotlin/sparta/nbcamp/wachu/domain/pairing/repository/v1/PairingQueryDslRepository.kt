@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
+import sparta.nbcamp.wachu.domain.common.QueryDslUtils.getOrderSpecifier
 import sparta.nbcamp.wachu.domain.pairing.model.v1.Pairing
 import sparta.nbcamp.wachu.domain.pairing.model.v1.QPairing
 import sparta.nbcamp.wachu.domain.wine.entity.QWine
@@ -20,6 +21,7 @@ class PairingQueryDslRepository : QueryDslSupport() {
             .leftJoin(pairing.wine, wine).fetchJoin()
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
+            .orderBy(*getOrderSpecifier(pageable, pairing))
             .fetch()
 
         val total = queryFactory
