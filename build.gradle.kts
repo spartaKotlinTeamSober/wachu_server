@@ -83,7 +83,6 @@ dependencies {
     //Apache Tika
     implementation("org.apache.tika:tika-core:2.4.1")
     implementation("org.apache.tika:tika-parsers-standard-package:2.4.1")
-    implementation("org.apache.httpcomponents:httpclient:4.5.14")
 
     //EmailValidation
     implementation("org.springframework.boot:spring-boot-starter-mail")
