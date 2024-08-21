@@ -103,12 +103,12 @@
 
 ### ERD
 
-<img width="700" alt="스크린샷 2024-08-02 165919" src="/articles/images/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202024-08-02%20165919.png">
+<img width="700" alt="ERD 2024-08-21" src="/articles/images/ERD%202024-08-21.png">
 <p align="left"><a href="https://www.erdcloud.com/d/YufkQycpAoqJrQxH8">ERD Details</a></p>
 
 ### API Specification
 
-<img width="700" alt="스크린샷 2024-08-02 170103" src="/articles/images/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202024-08-02%20170103.png">
+<img width="700" alt="API명세서 2024-08-21" src="/articles/images/API%EB%AA%85%EC%84%B8%EC%84%9C%202024-08-21.png">
 <p align="left"><a href="https://www.notion.so/mobzz/5b64388740ca482e94ef66d3c796406e?v=c8969e4be59c4127937e39dc3af7c195">API Details</a></p>
 
 # <p align="right"><a href="#-목차-">🔝</a></p>
