@@ -90,7 +90,7 @@
 
 ### System
 
-<img width="700" alt="system" src="articles/images/system.png">
+<img width="700" alt="스크린샷 2024-08-22 184002.png" src="articles/images/스크린샷 2024-08-22 184002.png">
 
 ### Service
 
